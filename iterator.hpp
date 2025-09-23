@@ -14,36 +14,71 @@ namespace ft
         typedef T &reference;
 
     private:
-        pointer ptr;
+        pointer _ptr;
 
     public:
-        vector_iterator();
-        vector_iterator(pointer ptr);
-        ~vector_iterator();
-        
+        vector_iterator() : _ptr(NULL)
+        {
+        }
+        vector_iterator(pointer _ptr) : _ptr(_ptr)
+        {
+        }
+        ~vector_iterator()
+        {
+        }
+
+        reference operator*()
+        {
+            return *_ptr;
+        }
+
+        vector_iterator &operator++()
+        {
+            ++_ptr;
+            return *this;
+        }
+
+        vector_iterator operator++(int)
+        {
+            vector_iterator ans = *this;
+            ++_ptr;
+            return ans;
+        }
+
+        vector_iterator &operator--()
+        {
+            --_ptr;
+            return *this;
+        }
+
+        vector_iterator operator--(int)
+        {
+            vector_iterator ans = *this;
+            --_ptr;
+            return ans;
+        }
+
+        vector_iterator &operator+=(difference_type n)
+        {
+            _ptr += n;
+            return *this;
+        }
+
+        vector_iterator &operator-=(difference_type n)
+        {
+            _ptr -= n;
+            return *this;
+        }
+
+        vector_iterator operator+(difference_type n) const
+        {
+            return vector_iterator(_ptr + n);
+        }
+
+        vector_iterator operator-(difference_type n) const
+        {
+            return vector_iterator(_ptr - n);
+        }
     };
-
-
-
-
-
-    template <class T>
-    vector_iterator<T>::vector_iterator() : ptr(NULL)
-    {
-    }
-
-    template <class T>
-    vector_iterator<T>::vector_iterator(pointer ptr) : ptr(ptr)
-    {}
-
-    template <class T>
-    vector_iterator<T>::~vector_iterator()
-    {}
-
-
-
-
-
-
 
 };
