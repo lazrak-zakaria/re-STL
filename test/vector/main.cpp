@@ -7,37 +7,31 @@ class m
 {
 public:
     // Default constructor
+
+    int data;
     m() {
-        // std::cout << "Default constructor called" << std::endl;
+        std::cout << "Default constructor called" << std::endl;
     }
 
+    
     // Copy constructor
     m(const m& other) {
-        // std::cout << "Copy constructor called" << std::endl;
+        std::cout << "Copy constructor called" << std::endl;
     }
 
     // Destructor
     ~m() {
-        // std::cout << "Destructor called" << std::endl;
+        std::cout << "Destructor called" << std::endl;
     }
 };
 int main()
 {
-    // ft::vector<m> v;
-
-
-
-    std::vector<int> myvector;
-    std::vector<int>::iterator it;
-
-    it = myvector.begin();
-    myvector.insert ( it , 200 );
+    std::cout << "Before vector creation\n";
+    std::vector<m> v;
+    v.insert(v.begin(), m());
+    v[0].data = 78;
+    std::cout << v[0].data << "\n";
+    std::cout << "After vector creation\n";
     
-    for (int i = 0 ; i < myvector.size(); ++i)
-    {
-        std::cout << myvector[i] << " ";
-
-    }
-    std::cout << "\n";
     return 0;
 }
