@@ -1,6 +1,7 @@
 #ifndef FT_VECTOR_HPP
 #define FT_VECTOR_HPP
 
+#include <memory>
 #include "iterator.hpp"
 #define __RATIO__FT__VECTOR__ 2
 namespace ft
@@ -101,8 +102,7 @@ namespace ft
             _allocator.deallocate(temp_ptr, old_capacity);
         }
 
-
-        void resize (size_type n, value_type val = value_type())
+        void resize(size_type n, value_type val = value_type())
         {
             if (n < _size)
             {
@@ -117,7 +117,7 @@ namespace ft
                 if (n > _capacity)
                     reserve(n);
                 for (int i = _size; i < n; ++i)
-                    push_back(val);   
+                    push_back(val);
             }
         }
 
@@ -131,8 +131,65 @@ namespace ft
             return _size == 0;
         }
 
+        iterator insert(iterator position, const value_type &val)
+        {
+            difference_type pos = position - begin();
 
+            if (pos == _size)
+                push_back(val);
+            else
+                insert(position, 1, val);
+            return iterator(_ptr + pos);
+        }
 
+        void insert(iterator position, size_type n, const value_type &val)
+        {
+            size_type available = _capacity - _size;
+            difference_type pos = position - begin();
+
+            if (n > available)
+            {
+                value_type *temp_ptr = _ptr;
+                size_type old_capacity = _capacity;
+                _ptr = _allocator.allocate(_capacity * __RATIO__FT__VECTOR__ + n);
+                _capacity = _capacity * __RATIO__FT__VECTOR__ + n;
+
+                size_type offset = 0;
+
+                for (int i = 0; i < _size; ++i)
+                {
+                    if (i == pos)
+                    {
+                        for (int j = 0; j < n; ++j)
+                            _allocator.construct(_ptr + i + j, val);
+                        offset = n;
+                    }
+                    _allocator.construct(_ptr + i + offset, *(temp_ptr + i));
+                    _allocator.destroy(temp_ptr + i);
+                }
+                _allocator.deallocate(temp_ptr, old_capacity);
+                _size += n;
+            }
+            else
+            {
+                size_type ending_pos = _size + n - 1;
+                while (ending_pos != pos + n - 1)
+                {
+                    _allocator.construct(_ptr + ending_pos, *(_ptr + (ending_pos - n)));
+                    _allocator.destroy(_ptr + (ending_pos - n));
+                    ending_pos--;
+                }
+                for (int i = 0; i < n; ++i)
+                    _allocator.construct(_ptr + pos + i, val);
+            }
+        }
+
+        template <class InputIterator>
+        void insert(iterator position, InputIterator first, InputIterator last)
+        {
+            for (; first != last; first++, last++)
+                insert(position, *first);
+        }
 
         // iterator
         iterator begin()
