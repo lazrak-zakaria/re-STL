@@ -79,6 +79,12 @@ namespace ft
         {
             return vector_iterator(_ptr - n);
         }
+
+
+        reference operator[](difference_type n) const { return *(_ptr + n); }
+        difference_type operator-(const vector_iterator& other) const { return _ptr - other._ptr; }
+
+
     };
 
 };
