@@ -4,6 +4,8 @@
 #include <memory>
 #include "iterator.hpp"
 #define __RATIO__FT__VECTOR__ 2
+#define __MAX_SIZE_FT_VECTOR__ 1073741823
+
 namespace ft
 {
 
@@ -33,7 +35,6 @@ namespace ft
         allocator_type _allocator;
 
     public:
-        T pub;
 
         explicit vector(const allocator_type &alloc = allocator_type()) : _ptr(NULL), _size(0), _capacity(0), _allocator(alloc)
         {
@@ -191,6 +192,36 @@ namespace ft
                 insert(position, *first);
         }
 
+        iterator erase(iterator position)
+        {
+            return erase(position, position + 1);
+        }
+
+        iterator erase(iterator first, iterator last)
+        {
+            size_type pos = first - begin();
+            size_type howmuch = last - first;
+
+            for (int i = pos; i < pos + howmuch; ++i)
+                _allocator.destroy(_ptr + i);
+
+            iterator start = last;
+            iterator finish = end();
+
+            for (; start != finish; ++start)
+            {
+                _allocator.construct(_ptr + pos, *(_ptr + (start - begin())));
+                _allocator.destroy(_ptr + (start - begin()));
+            }
+            size -= howmuch;
+            return first;
+        }
+
+        size_type max_size() const
+        {
+            return __MAX_SIZE_FT_VECTOR__;
+        }
+
         // iterator
         iterator begin()
         {
@@ -210,6 +241,30 @@ namespace ft
         const_iterator end() const
         {
             return const_iterator(_ptr + _size);
+        }
+
+        reference operator[](size_type n)
+        {
+            return *(_ptr + n);
+        }
+        const_reference operator[](size_type n) const
+        {
+            return *(_ptr + n);
+        }
+
+
+        vector& operator= (const vector& x)
+        {
+
+            if (&x == this)
+                return *this;
+
+            clear();
+            reserve(x.size());
+            for (int i = 0 ; i < x.size(); i++)
+                _allocator.construct(_ptr+i, *(x._ptr+i));
+            
+            return *this;
         }
     };
 
