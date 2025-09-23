@@ -80,11 +80,21 @@ namespace ft
             return vector_iterator(_ptr - n);
         }
 
+        vector_iterator &operator-=(difference_type n) const
+        {
+            _ptr -= n;
+            return *this;
+        }
+
+
+
+        bool operator!=( vector_iterator &other) 
+        {
+            return _ptr != other._ptr;
+        }
 
         reference operator[](difference_type n) const { return *(_ptr + n); }
-        difference_type operator-(const vector_iterator& other) const { return _ptr - other._ptr; }
-
-
+        difference_type operator-(const vector_iterator &other) const { return _ptr - other._ptr; }
     };
 
 };

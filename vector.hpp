@@ -186,7 +186,7 @@ namespace ft
         }
 
         template <class InputIterator>
-        void insert(iterator position, InputIterator first, InputIterator last)
+        void insert(iterator position, InputIterator first, InputIterator last, int y)
         {
             for (; first != last; first++, last++)
                 insert(position, *first);
@@ -208,12 +208,13 @@ namespace ft
             iterator start = last;
             iterator finish = end();
 
-            for (; start != finish; ++start)
+            for (; start != finish; ++start, pos++)
             {
                 _allocator.construct(_ptr + pos, *(_ptr + (start - begin())));
                 _allocator.destroy(_ptr + (start - begin()));
+                
             }
-            size -= howmuch;
+            _size -= howmuch;
             return first;
         }
 
