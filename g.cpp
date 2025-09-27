@@ -1,5 +1,5 @@
 #include<stdio.h>
-
+#include <iostream>
 #include <deque>
 
 
@@ -27,12 +27,10 @@ struct Foo {
 
 int main(void)
 {
-  typedef int * IntPtr;
-  typedef int Foo::* FooMemberPtr;
-  typedef int (*FuncPtr)();
-  std::deque<int> p;
-  std::deque<int>::iterator it;
-  printf("%d\n",is_pointer<IntPtr>::value);        // prints 1
-  printf("%d\n",is_pointer<FooMemberPtr>::value);  // prints 1
-  printf("%d\n",is_pointer<FuncPtr>::value);       // prints 1
+  int j = - 1;
+  unsigned long long h = 333;
+  if (j < int(h))
+    std::cout << "ok\n";
+  
+
 }
