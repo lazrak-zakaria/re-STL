@@ -1,16 +1,14 @@
 
 
 #include <memory>
-
+#include "deque_iterator.hpp"
 namespace ft
 {
 
     template <
-
         class T,
         class Allocator = std::allocator<T>>
     class deque
-
     {
 
     public:
@@ -23,32 +21,69 @@ namespace ft
 
         typedef unsigned long size_type;
 
+        typedef deque_iterator<T, T *, T &> iterator;
 
     protected:
-        typedef pointer* map_pointer;
+        typedef pointer *map_pointer;
 
-    
     protected:
+        iterator start;
+        iterator finish;
+
         map_pointer map;
         size_type map_size;
+        size_type _buffer_size = 500; 
+
+        allocator_type deque_allocator;
+        std::allocator<value_type *> map_allocator;
 
     public:
-        template <class InputIterator>
-        void assign(InputIterator first, InputIterator last);
-        void assign(size_type n, const value_type &val);
+        iterator begin() { return start; }
+        iterator end() { return finish; }
 
 
+        reference front() {
+            return *begin();
+        }
 
-        iterator insert(iterator position, const value_type &val);
-        void insert(iterator position, size_type n, const value_type &val);
-        template <class InputIterator>
-        void insert(iterator position, InputIterator first, InputIterator last);
+        reference back(){
+            iterator answer = end();
+            answer--;
+            return *answer;
+        }
 
 
-        iterator erase (iterator position);iterator erase (iterator first, iterator last);
+        void allocate_node()
+        {
+            return deque_allocator.allocate(_buffer_size);
+        }
 
+        void create_map_and_nodes(size_type num_elements)
+        {
+            size_type num_of_nodes = num_elements / _buffer_size + 1;
 
-        void resize (size_type n, value_type val = value_type());
+            size_type new_map_size = std::max(map_size, num_of_nodes + 6);
+
+            map_pointer new_map = map_allocator.allocate(new_map_size);// 
+
+            //i want my starting point to be in the middle
+            map_pointer new_start = new_map + 3; 
+            map_pointer new_finish = new_map + new_map_size - 3 - 1;
+
+            map_pointer cur = new_start;
+            while (cur != new_finish)
+            {
+                *cur = allocate_node();
+                cur++;
+            }
+
+            start.set_node(new_start);
+            finish.set_node(new_finish);
+
+            start.cur = start.first;
+            finish.cur = finish.first + num_elements % _buffer_size;
+        }
+
     };
 
 }
