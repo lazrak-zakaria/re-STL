@@ -9,6 +9,8 @@
 
 typedef bool Color;
 
+#include <memory>
+
 template <class T>
 class rb_node
 {
@@ -29,7 +31,9 @@ public:
     }
 };
 
-template <class T>
+template <class T,
+          class Compare = std::less<T>, // set::key_compare/value_compare  // later i should implement my own comparison object
+          class Alloc = std::allocator<T>>
 class rb_tree
 {
 
@@ -220,14 +224,9 @@ public:
     {
         rb_node_ptr head = root;
         while (head != nil)
-        {   
-            
+        {
             if (head->key == key)
-            {
-
                 return head;
-            
-            }
             else if (key < head->key)
                 head = head->left;
             else
@@ -363,6 +362,18 @@ public:
         }
         x->color = BLACK;
     }
+
+    void clear(rb_node_ptr node)
+    {
+        if (node == nil)
+            return;
+
+        clear(node->left);
+        clear(node->right);
+
+        delete node;
+    }
+
     int hei()
     {
         int i = 0;
