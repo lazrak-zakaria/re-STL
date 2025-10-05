@@ -32,11 +32,10 @@ int main() {
 
     std::srand(std::time(nullptr)); 
     for (int i = 0; i < 50; ++i) {
-        int value = std::rand() % 100; 
+        int value = i; 
         rb.insert(value);
     }
-
+    std::cout << rb.delete_node(40) << "\n";
     rb.print();
-    std::cout << rb.hei() << "\n";
     return 0;
 }
