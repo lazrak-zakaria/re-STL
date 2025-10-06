@@ -31,32 +31,32 @@ public:
 #include <chrono>
 using namespace std;
 using namespace std::chrono;
-#include <iostream>
+#include <map>
 #include <cstdlib>
 #include <ctime>    
 int main() {
     rb_tree<int> rb;
 
-    set<int> st;
+    set< int> st;
 
 
-    for (int i = 0; i < 50000; ++i) {
+    auto start1 = high_resolution_clock::now();
+    
+    for (int i = 0; i < 1000; ++i) {
         int value = i; 
         rb.insert(value);
     }
-    for (int i = 0; i < 50000; ++i) {
-        int value = i; 
-        st.insert(value);
-        
-    }
-    auto start1 = high_resolution_clock::now();
-
-    rb.find(50000 -500);
+    // rb.find(50000 -500);
     auto end1 = high_resolution_clock::now();
 
     // --- Second operation ---
     auto start2 = high_resolution_clock::now();
-    st.count(50000 -500) ;
+
+    for (int i = 0; i < 1000; ++i) {
+        int value = i; 
+        st.insert(value);
+        
+    }
     auto end2 = high_resolution_clock::now();
 
     // --- Calculate durations ---
@@ -74,5 +74,12 @@ int main() {
     // }
     // std::cout << rb.delete_node(40) << "\n";
     // rb.print();
+    rb.print();
+
+
+    map<int, int> mp;
+    mp[3] = 55;
+    map<int, int> :: iterator i = mp.begin();
+
     return 0;
 }

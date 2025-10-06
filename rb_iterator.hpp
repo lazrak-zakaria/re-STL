@@ -52,7 +52,7 @@ namespace ft
 
         rb_iterator &operator--()
         {
-            if (node->left!= nil)
+            if (node->left != nil)
             {
                 rb_node_ptr cur = node->left;
                 while (cur != nil)
@@ -73,19 +73,39 @@ namespace ft
             return *this;
         }
 
-        // rb_iterator operator--(int)
-        // {
-        //     rb_iterator ans = *this;
-        //     --(*this);
-        //     return ans;
-        // }
-        // rb_iterator operator++(int)
-        // {
-        //     rb_iterator ans = *this;
-        //     ++(*this);
-        //     return ans;
-        // }
+        pointer operator->()
+        {
+            return &node->key;
+        }
 
+        ref operator*()
+        {
+            return node->key;
+        }
+
+        rb_iterator operator--(int)
+        {
+            rb_iterator ans = *this;
+            --(*this);
+            return ans;
+        }
+
+        rb_iterator operator++(int)
+        {
+            rb_iterator ans = *this;
+            ++(*this);
+            return ans;
+        }
+
+        bool operator==(rb_iterator &it) const
+        {
+            return it->node == node;
+        }
+
+        bool operator!=(rb_iterator &it) const
+        {
+            return it->node != node;
+        }
     };
 
 }
