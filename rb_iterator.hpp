@@ -27,7 +27,7 @@ namespace ft
         rb_iterator() : node(NULL), nil (NULL)
         {}
 
-        rb_iterator(rb_node_ptr node, rb_node_ptr nil) : node(node), nil(nil)
+        rb_iterator(const rb_node_ptr node, rb_node_ptr nil) : node(node), nil(nil)
         {
         }
 
@@ -102,12 +102,12 @@ namespace ft
             return ans;
         }
 
-        bool operator==(rb_iterator &it) const
+        bool operator==(const rb_iterator &it) const
         {
-            return it->node == node;
+            return it.node == node;
         }
 
-        bool operator!=(rb_iterator &it) const
+        bool operator!=(const rb_iterator &it) const
         {
             return it->node != node;
         }

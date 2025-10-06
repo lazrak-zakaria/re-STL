@@ -39,6 +39,8 @@ namespace ft
 }
 
 #include "rb_iterator.hpp"
+
+
 namespace ft
 {
     template <class T,
@@ -265,7 +267,7 @@ namespace ft
             return node;
         }
 
-        rb_node_ptr find(const value_type &key)
+        rb_node_ptr find(const value_type &key) const
         {
             rb_node_ptr cur = root;
             while (cur != nil)
@@ -469,7 +471,7 @@ namespace ft
             while (cur != nil)
             {
                 if (!cmp(val, cur->key) && !cmp(cur->key, val))
-                    return iterator(cur);
+                    return iterator(cur, nil);
                 else if (cmp(val, cur->key))
                 {
                     ans = cur;

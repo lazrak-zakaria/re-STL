@@ -35,9 +35,15 @@ using namespace std::chrono;
 #include <map>
 #include <cstdlib>
 #include <ctime>
+
+#include "../../set.hpp"
+
 int main()
 {
 
+    ft::set<int> r;
+    r.insert(3);
+    r.print();
     ft::rb_tree<int> rb;
     rb.insert(44);
     rb.insert(445234);
@@ -47,12 +53,7 @@ int main()
 
     rb.print();
 
-    cout << rb.size() << "-------\n";
-
-    rb.erase(-453424);
-    rb.erase(4);
-    rb.erase(44);
-    rb.erase(445234);
+    cout << (rb.find_(445234) == rb.end()) << "-------\n";
     rb.print();
     cout << rb.size() << "-------\n";
     
