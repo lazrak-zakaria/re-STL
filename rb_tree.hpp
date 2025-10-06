@@ -148,10 +148,10 @@ namespace ft
             while (cur != nil)
             {
                 parent = cur;
-                if (node->key == cur->key && unique)
+                if (!cmp(node->key, cur->key) && !cmp(cur->key, node->key) && unique)
                     return ft::make_pair(cur, false);
 
-                if (node->key < cur->key)
+                if (cmp(node->key, cur->key))
                     cur = cur->left;
                 else
                     cur = cur->right;
@@ -161,7 +161,7 @@ namespace ft
 
             if (parent == nil)
                 root = node;
-            else if (node->key < parent->key)
+            else if (cmp(node->key, parent->key))
                 parent->left = node;
             else
                 parent->right = node;
@@ -250,9 +250,9 @@ namespace ft
             rb_node_ptr head = root;
             while (head != nil)
             {
-                if (head->key == key)
+                if (!cmp(key, cur->key) && !cmp(cur->key, key))
                     return head;
-                else if (key < head->key)
+                else if (cmp(key, cur->key))
                     head = head->left;
                 else
                     head = head->right;
@@ -436,9 +436,9 @@ namespace ft
             rb_node_ptr ans = nil;
             while (cur != nil)
             {
-                if (val == cur->key)
+                if (!cmp(val, cur->key) && !cmp(cur->key, val))
                     return iterator(cur);
-                else if (val < cur->key)
+                else if (cmp(val, cur->key))
                 {
                     ans = cur;
                     cur = cur->left;
@@ -455,7 +455,7 @@ namespace ft
             rb_node_ptr ans = nil;
             while (cur != nil)
             {
-                if (val < cur->key)
+                if (cmp(val, cur->key))
                 {
                     ans = cur;
                     cur = cur->left;
@@ -472,16 +472,17 @@ namespace ft
             if (node == nil)
                 return 0;
 
-            if (val < node->key)
-                return count(val, node->left);
-            else if (val > node->key)
-                return count(val, node->right);
-            else
+            if (!cmp(val, cur->key) && !cmp(cur->key, val))
             {
                 if (unique)
                     return 1;
                 return 1 + count(val, node->left) + count(val, node->right);
             }
+
+            if (cmp(val, cur->key))
+                return count(val, node->left);
+            else
+                return count(val, node->right);
         }
 
     public:
