@@ -7,6 +7,8 @@
 
 namespace ft
 {
+
+    
     template <class T>
     class rb_iterator
     {
@@ -17,10 +19,13 @@ namespace ft
         typedef T *pointer;
         typedef T &reference;
 
-        typedef rb_node *rb_node_ptr;
+        typedef ft::rb_node<T> *rb_node_ptr;
 
         rb_node_ptr node;
         rb_node_ptr nil;
+
+        rb_iterator() : node(NULL), nil (NULL)
+        {}
 
         rb_iterator(rb_node_ptr node, rb_node_ptr nil) : node(node), nil(nil)
         {
@@ -78,7 +83,7 @@ namespace ft
             return &node->key;
         }
 
-        ref operator*()
+        reference operator*()
         {
             return node->key;
         }
