@@ -35,15 +35,16 @@ using namespace std::chrono;
 #include <map>
 #include <cstdlib>
 #include <ctime>
+#include <vector>
 
 #include "../../set.hpp"
 
 int main()
 {
 
-    ft::set<int> r;
-    r.insert(3);
-    r.print();
+    // ft::set<int> r;
+    // r.insert(3);
+    // r.print();
     ft::rb_tree<int> rb;
     rb.insert(44);
     rb.insert(445234);
@@ -52,10 +53,13 @@ int main()
     rb.insert(4455);
 
     rb.print();
+    // vector<int> a = {3,4,5,6,7,8,10};
 
-    cout << (rb.find_(445234) == rb.end()) << "-------\n";
-    rb.print();
-    cout << rb.size() << "-------\n";
+    // rb.insert(a.begin(), a.end());
+
+    // cout << (rb.find_(445234) == rb.end()) << "-------\n";
+    // rb.print();
+    // cout << rb.size() << "-------\n";
     
     return 0;
 }

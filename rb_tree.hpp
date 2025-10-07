@@ -16,30 +16,29 @@ typedef bool Color;
 
 namespace ft
 {
-    
+
     template <class T>
     class rb_node
     {
-        public:
+    public:
         rb_node *parent;
         rb_node *left;
         rb_node *right;
         T key;
         Color color;
-        
+
         rb_node(const T &key)
-        : key(key), left(nullptr), right(nullptr), parent(nullptr), color(RED)
+            : key(key), left(nullptr), right(nullptr), parent(nullptr), color(RED)
         {
         }
         rb_node()
-        : left(nullptr), right(nullptr), parent(nullptr), color(RED)
+            : left(nullptr), right(nullptr), parent(nullptr), color(RED)
         {
         }
     };
 }
 
 #include "rb_iterator.hpp"
-
 
 namespace ft
 {
@@ -74,9 +73,15 @@ namespace ft
         key_compare cmp;
         bool unique = Unique;
         size_type size_;
+
+        typename allocator_type::template rebind<ft::rb_node<value_type>>::other alloc;
+
         rb_tree()
         {
+            // alloc = alloc();
             nil = new rb_node<T>();
+            nil = alloc.allocate(1);
+            alloc.construct(nil, value_type());
             nil->parent = nil;
             nil->left = nil;
             nil->right = nil;
@@ -86,14 +91,23 @@ namespace ft
             size_ = 0;
         }
 
+        explicit rb_tree(const key_compare &comp, const allocator_type &alloc = allocator_type())
+        {
+            rb_tree();
+            cmp = comp;
+            this.alloc = alloc;
+        }
+
         rb_node_ptr create_node(T key)
         {
-            rb_node_ptr node = new rb_node<T>();
+            rb_node_ptr node = alloc.allocate(1);
+            alloc.construct(node, key);
             node->key = key;
             node->color = RED;
             node->left = nil;
             node->right = nil;
             node->parent = nil;
+
             return node;
         }
 
@@ -141,32 +155,36 @@ namespace ft
             y->parent = x;
         }
 
-
-
-        pair<iterator,bool> insert (const value_type& val)
+        pair<iterator, bool> insert(const value_type &val)
         {
             rb_node_ptr new_node = create_node(val);
+
             ft::pair<rb_node_ptr, bool> is_inserted = insert_node(new_node);
             size_ += is_inserted.second;
-            pair<iterator,bool> ans = ft::make_pair(iterator(is_inserted.first, nil), is_inserted.second);
+            pair<iterator, bool> ans = ft::make_pair(iterator(is_inserted.first, nil), is_inserted.second);
             return ans;
         }
 
-        
-
-        iterator insert (iterator position, const value_type& val)
+        iterator insert(iterator position, const value_type &val)
         {
-            pair<iterator,bool> ans  = insert(val);
+            pair<iterator, bool> ans = insert(val);
             return ans.first;
         }
 
-
+        template <class InputIterator>
+        void insert(InputIterator first, InputIterator last)
+        {
+            while (first != last)
+            {
+                insert(*first);
+                first++;
+            }
+        }
 
         ft::pair<rb_node_ptr, bool> insert_node(rb_node_ptr node)
         {
             rb_node_ptr parent = nil;
             rb_node_ptr cur = root;
-
             while (cur != nil)
             {
                 parent = cur;
@@ -182,7 +200,9 @@ namespace ft
             node->parent = parent;
 
             if (parent == nil)
+            {
                 root = node;
+            }
             else if (cmp(node->key, parent->key))
                 parent->left = node;
             else
@@ -197,9 +217,12 @@ namespace ft
 
             while (cur->parent->color == RED)
             {
+
+
                 rb_node_ptr parent = cur->parent;
                 rb_node_ptr g_parent = parent->parent;
 
+                std::cout << nil << "   " << cur->color << "\n";
                 if (parent == g_parent->left)
                 {
                     rb_node_ptr uncle = g_parent->right;
@@ -294,20 +317,17 @@ namespace ft
             second->parent = first->parent;
         }
 
-
-        void erase (iterator position)
+        void erase(iterator position)
         {
             size_ -= delete_node(position.node); // how can i make rb_tree access to node ? the node gonna be privatre in iter
         }
 
-        
-        size_type erase (const value_type& val)
+        size_type erase(const value_type &val)
         {
             rb_node_ptr to_delete = find(val);
             size_ -= delete_node(to_delete);
             return size_;
         }
-
 
         bool delete_node(rb_node_ptr to_delete)
         {
@@ -434,19 +454,6 @@ namespace ft
             delete node;
         }
 
-        int hei()
-        {
-            int i = 0;
-            rb_node_ptr t = root;
-            while (t != nil)
-            {
-                i += 1;
-                t = t->right;
-                /* code */
-            }
-            return i;
-        }
-
         void print()
         {
             // std::cout << "print\n";
@@ -538,14 +545,12 @@ namespace ft
         iterator begin()
         {
             rb_node_ptr b = rb_minimum(root);
-            // std::cout << b->key << "--\n";
-            return iterator(b, nil); // later change to o(1)
+            return iterator(b, nil);
         }
         iterator end()
         {
             return iterator(nil, nil);
         }
-
 
         size_type size()
         {
