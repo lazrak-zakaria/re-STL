@@ -37,6 +37,7 @@ int main()
     for (int i = 0 ;  i < v.size() ; ++i)
         std::cout << v[i] << "\n";
 
+
     std::cout << "After vector creation\n";
     
     return 0;
