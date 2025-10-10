@@ -27,6 +27,75 @@ namespace ft
               bool Unique = true>
     class hash_table
     {
+    private:
+        typedef hash_node<Key> *hash_node_ptr;
+        typedef hash_table<Key, Hash, Pred, Alloc> *hash_table_ptr;
+
+    private:
+        template <class Key>
+        class _iterator
+        {
+            hash_table_ptr ht;
+            hash_node_ptr node;
+
+        public:
+            typedef std::forward_iterator_tag iterator_category;
+            typedef Key value_type;
+            typedef long long difference_type;
+            typedef Key *pointer;
+            typedef Key &reference;
+            _iterator(hash_node_ptr node, hash_table_ptr ht) : ht(ht), node(node)
+            {
+            }
+
+
+            reference operator*()
+            {
+                return node->key;
+            }
+
+            pointer operator->()
+            {
+                return &node->key;
+            }
+
+            _iterator<Key>& operator++()
+            {
+                if (node->next)
+                    node = node->next;
+                else
+                {
+                    
+                    size_t hsh = hasher()(node->key) % ht->table.size(); // curently i suppose the node->key is just one elmnt not a pair later add keyoftype
+                    hsh++;
+                    while (hsh < ht->table.size())
+                    {
+                        if (ht->table[hsh])
+                            break;
+                        hsh++;
+                    }
+                    if (hsh == ht->table.size())
+                        node = nullptr;
+                    else
+                        node = ht->table[hsh];
+                }
+                return *this;
+            }
+
+            _iterator<Key> operator++(int)
+            {
+                _iterator<Key> ans = *this;
+                ++(*this);
+                return ans;
+            }
+            bool operator==(const _iterator<Key>& oth) const
+            {
+                return this->ht == oth.ht && this->node == oth.node;
+            }
+
+
+        };
+
     public:
         typedef key key_type;
         typedef key value_type;
@@ -36,8 +105,6 @@ namespace ft
         typedef Pred key_equal;
 
     private:
-        typedef hash_node<Key> *hash_node_ptr;
-
         std::vector<hash_node_ptr> table;
         size_t sz;
         key_equal cmp;
@@ -72,7 +139,7 @@ namespace ft
             if (sz = table.size())
             {
                 std::vector<hash_node_ptr> n_table(next_prime(table.size(), 0));
-                
+
                 for (int i = 0; i < table.size(); ++i)
                 {
                     hash_node_ptr cur = table[i];
@@ -85,7 +152,6 @@ namespace ft
 
                         cur = table[i];
                     }
-
                 }
                 table.swap(n_table);
             }
@@ -112,6 +178,34 @@ namespace ft
                 ptr = ptr->next;
             }
             return ptr;
+        }
+
+        bool _erase(const key_type &k)
+        {
+            if (!_find(k))
+                return false;
+
+            size_t hsh = hasher()(k) % table.size();
+            hash_node_ptr ptr = table[hsh];
+
+            hash_node_ptr prev = nullptr;
+            while (ptr)
+            {
+                if (*ptr == k)
+                {
+                    if (prev)
+                        prev->next = ptr->next;
+                    else
+                        table[hsh] = ptr->next;
+                    break;
+                }
+                prev = ptr;
+                ptr = ptr->next;
+            }
+            if (ptr)
+                delete ptr;
+
+            // should i check load_factor in erase ??
         }
     };
 
