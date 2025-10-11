@@ -3,39 +3,12 @@
 
 #include <memory>
 #include "vector_iterator.hpp"
+#include "iterator_traits.hpp"
 #define __RATIO__FT__VECTOR__ 2
 #define __MAX_SIZE_FT_VECTOR__ 1073741823
 
 namespace ft
 {
-    // https://jguegant.github.io/blogs/tech/sfinae-introduction.html
-    template <typename T>
-    struct has_iterator_category
-    {
-    private:
-        typedef char yes[1];
-        typedef char no[2];
-
-        template <typename U>
-        static yes &test(typename std::iterator_traits<U>::iterator_category *);
-
-        template <typename U>
-        static no &test(...);
-
-    public:
-        static const bool value = sizeof(test<T>(0)) == sizeof(yes);
-    };
-
-    template <bool B, class T = void>
-    struct enable_if
-    {
-    };
-
-    template <class T>
-    struct enable_if<true, T>
-    {
-        typedef T type;
-    };
 
     template <typename T, class Alloc = std::allocator<T>>
     class vector
@@ -214,7 +187,7 @@ namespace ft
         }
 
         template <class InputIterator>
-        void insert(iterator position, InputIterator first, InputIterator last, typename enable_if<has_iterator_category<InputIterator>::value>::type * = 0)
+        void insert(iterator position, InputIterator first, InputIterator last, typename ft::enable_if<has_iterator_category<InputIterator>::value>::type * = 0)
         {
             std::cout << "yoyoy\n";
             for (; first != last; first++)
