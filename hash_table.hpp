@@ -48,24 +48,23 @@ namespace ft
             {
             }
 
-
-            reference operator*()
+            reference operator*() const
             {
                 return node->key;
             }
 
-            pointer operator->()
+            pointer operator->() const
             {
                 return &node->key;
             }
 
-            _iterator<Key>& operator++()
+            _iterator<Key> &operator++()
             {
                 if (node->next)
                     node = node->next;
                 else
                 {
-                    
+
                     size_t hsh = hasher()(node->key) % ht->table.size(); // curently i suppose the node->key is just one elmnt not a pair later add keyoftype
                     hsh++;
                     while (hsh < ht->table.size())
@@ -88,12 +87,10 @@ namespace ft
                 ++(*this);
                 return ans;
             }
-            bool operator==(const _iterator<Key>& oth) const
+            bool operator==(const _iterator<Key> &oth) const
             {
                 return this->ht == oth.ht && this->node == oth.node;
             }
-
-
         };
 
     public:
