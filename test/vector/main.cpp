@@ -4,7 +4,7 @@
 #include <vector>
 #include <queue>
 #include <set>
-
+#include <unordered_set>
 class m
 {
 public:
@@ -26,6 +26,10 @@ public:
         std::cout << "Destructor called" << std::endl;
     }
 };
+
+
+
+int k();
 int main()
 {
     // std::cout << "Before vector creation\n";
@@ -43,15 +47,28 @@ int main()
     // std::cout << "After vector creation\n";
     
 
-    std::set<int> s = {1,2,3,45,6,7,8};
+    std::vector<float> a;
+    float h = 50;
+    a.push_back(h);
+    a.push_back(h);
+    a.push_back(h);
+    a.push_back(h);
+    a.push_back(h);
+    std::cout << a[0] << "\n";
+    std::cout << sizeof(k()) << "\n";
 
-    std::priority_queue<int> p(s.begin(), s.end());
-    std::cout << p.size()<<"\n";
-    while (p.empty() == 0)
+    int b[] = {1,2,3,4,5,6,7,8};
+    a.insert(a.begin()+3,2,  2);
+    std::vector<float>::iterator it = a.begin();
+    // ft::vector<int>::iterator i2 = a.end();
+    while (it != a.end())
     {
-        std::cout << p.top() << "\n";
-        p.pop();
+        std::cout << *it << " ";
+        it++;
+        /* code */
     }
+    
+    std::cout <<  "\n";
 
     return 0;
 }
