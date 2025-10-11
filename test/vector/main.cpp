@@ -30,6 +30,10 @@ public:
 
 
 int k();
+
+
+#include <utility>
+
 int main()
 {
     // std::cout << "Before vector creation\n";
@@ -69,6 +73,8 @@ int main()
     }
     
     std::cout <<  "\n";
+    std::pair< const int , int> vv = {1,2};
+    vv.second = 7;
 
     return 0;
 }

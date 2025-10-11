@@ -32,7 +32,7 @@ namespace ft
         typedef hash_table<Key, Hash, Pred, Alloc> *hash_table_ptr;
 
     private:
-        template <class Key>
+        template <class T>
         class _iterator
         {
             hash_table_ptr ht;
@@ -40,10 +40,10 @@ namespace ft
 
         public:
             typedef std::forward_iterator_tag iterator_category;
-            typedef Key value_type;
+            typedef T value_type;
             typedef long long difference_type;
-            typedef Key *pointer;
-            typedef Key &reference;
+            typedef T *pointer;
+            typedef T &reference;
             _iterator(hash_node_ptr node, hash_table_ptr ht) : ht(ht), node(node)
             {
             }
@@ -58,7 +58,7 @@ namespace ft
                 return &node->key;
             }
 
-            _iterator<Key> &operator++()
+            _iterator<T> &operator++()
             {
                 if (node->next)
                     node = node->next;
@@ -81,43 +81,42 @@ namespace ft
                 return *this;
             }
 
-            _iterator<Key> operator++(int)
+            _iterator<T> operator++(int)
             {
-                _iterator<Key> ans = *this;
+                _iterator<T> ans = *this;
                 ++(*this);
                 return ans;
             }
-            bool operator==(const _iterator<Key> &oth) const
+            bool operator==(const _iterator<T> &oth) const
             {
                 return this->ht == oth.ht && this->node == oth.node;
             }
         };
 
     public:
-        typedef key key_type;
-        typedef key value_type;
+        typedef Key key_type;
+        typedef Key value_type;
 
         typedef Hash hasher;
         typedef Alloc allocator_type;
         typedef Pred key_equal;
 
-    private:
+    public:
         std::vector<hash_node_ptr> table;
-        size_t sz;
-        key_equal cmp;
+        size_t sz = 0;
+        Pred cmp;
 
-        const int prime_sz = 28;
-        const unsigned long primes[] =
-            {
-                53, 97, 193, 389, 769,
-                1543, 3079, 6151, 12289, 24593,
-                49157, 98317, 196613, 393241, 786433,
-                1572869, 3145739, 6291469, 12582917, 25165843,
-                50331653, 100663319, 201326611, 402653189, 805306457,
-                1610612741, 3221225473, 4294967291};
-
+        
         size_t next_prime(size_t p)
         {
+            static const int prime_sz = 28;
+            static const unsigned long primes[] = {\
+                    53, 97, 193, 389, 769,
+                    1543, 3079, 6151, 12289, 24593,
+                    49157, 98317, 196613, 393241, 786433,
+                    1572869, 3145739, 6291469, 12582917, 25165843,
+                    50331653, 100663319, 201326611, 402653189, 805306457,
+                    1610612741, 3221225473, 4294967291};
             for (int i = 0; i < prime_sz; ++i)
             {
                 if (primes[i] > p)
@@ -130,13 +129,14 @@ namespace ft
         bool _insert(const key_type &k)
         {
             // if Unique and k exists return ;
+            
             if (Unique && _find(k))
                 return false;
-
-            if (sz = table.size())
+            if (sz == table.size())
             {
-                std::vector<hash_node_ptr> n_table(next_prime(table.size(), 0));
-
+                
+                std::vector<hash_node_ptr> n_table(next_prime(table.size()));
+                
                 for (int i = 0; i < table.size(); ++i)
                 {
                     hash_node_ptr cur = table[i];
@@ -146,7 +146,7 @@ namespace ft
                         size_t hsh = hasher()(k) % n_table.size();
                         cur->next = n_table[hsh];
                         n_table[hsh] = cur;
-
+                        
                         cur = table[i];
                     }
                 }
@@ -154,7 +154,7 @@ namespace ft
             }
 
             size_t hsh = hasher()(k) % table.size();
-            hash_node_ptr node = new hash_node(k);
+            hash_node_ptr node = new hash_node<Key>(k);
             node->next = table[hsh];
             table[hsh] = node;
             ++sz;
@@ -164,13 +164,17 @@ namespace ft
 
         hash_node_ptr _find(const key_type &k)
         {
+            // cmp = Pred();
+ 
+            if (table.empty())
+                return nullptr;
             size_t hsh = hasher()(k) % table.size();
 
             hash_node_ptr ptr = table[hsh];
 
             while (ptr)
             {
-                if (cmp(k, *ptr))
+                if (cmp(k, ptr->key))
                     break;
                 ptr = ptr->next;
             }
@@ -204,8 +208,23 @@ namespace ft
 
             // should i check load_factor in erase ??
         }
+
+
+
+
+        size_t bucket( const Key& key ) const
+        {
+            return hasher()(key) % table.size();
+        }
+
+        size_t bucket_count() const
+        {
+            return table.size();
+        }
     };
 
 }
 
+
+// bucket iterator later;
 #endif
