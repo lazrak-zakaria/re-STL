@@ -21,7 +21,7 @@ namespace ft
         size_t pos = last - first - 1;
         while (pos >= 0)
         {
-            heapify_down(first, last, comp, pos)
+            heapify_down(first, last, comp, pos);
                 pos -= 1;
         }
     }
@@ -29,7 +29,7 @@ namespace ft
     template <class RandomAccessIterator>
     void push_heap(RandomAccessIterator first, RandomAccessIterator last)
     {
-        pop_heap(first, second, std::less<typename RandomAccessIterator::value_type>);
+        pop_heap(first, last, std::less<typename RandomAccessIterator::value_type>());
     }
 
     template <class T>
@@ -61,7 +61,7 @@ namespace ft
     template <class RandomAccessIterator>
     void pop_heap(RandomAccessIterator first, RandomAccessIterator last)
     {
-        pop_heap(first, last, std::less<typename RandomAccessIterator::value_type>);
+        pop_heap(first, last, std::less<typename RandomAccessIterator::value_type>());
     }
 
     template <class RandomAccessIterator, class Compare>
@@ -79,7 +79,7 @@ namespace ft
     {
         size_t sz = last - first;
         size_t child_pos = 0;
-
+        RandomAccessIterator c = first;
         while (pos < sz)
         {
             size_t left_child = pos * 2 + 1;

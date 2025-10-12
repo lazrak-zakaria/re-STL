@@ -110,7 +110,7 @@ namespace ft
             typedef T *pointer;
             typedef T &reference;
 
-            _local_iterator(hash_node_ptr node, ) : node(node)
+            _local_iterator(hash_node_ptr node) : node(node)
             {
             }
 
@@ -155,8 +155,8 @@ namespace ft
         typedef typename allocator_type::pointer pointer;
         typedef typename allocator_type::const_pointer const_pointer;
         typedef _iterator<Key> iterator;
-        typedef _iterator<Key> const_iterator;
-        typedef _local_iterator<Key> local_iterator;
+        typedef _iterator<const Key> const_iterator;
+        typedef _local_iterator<const Key> local_iterator;
         typedef _local_iterator<Key> const_local_iterator;
 
     public:
@@ -186,22 +186,22 @@ namespace ft
 
         void _copy(std::vector<hash_node_ptr> &from, std::vector<hash_node_ptr> &to)
         {
-            for (size_t i = 0; i < table.size(); ++i)
+            for (size_t i = 0; i < from.size(); ++i)
             {
-                hash_node_ptr cur = table[i];
+                hash_node_ptr cur = from[i];
                 while (cur)
                 {
-                    table[i] = cur->next;
-                    size_t hsh = hasher()(k) % n_table.size();
-                    cur->next = n_table[hsh];
-                    n_table[hsh] = cur;
+                    from[i] = cur->next;
+                    size_t hsh = hasher()(cur->key) % to.size();
+                    cur->next = to[hsh];
+                    to[hsh] = cur;
 
-                    cur = table[i];
+                    cur = from[i];
                 }
             }
         }
 
-        ft::make_pair<iterator, bool> _insert(const key_type &k)
+        ft::pair<iterator, bool> _insert(const key_type &k)
         {
             // if Unique and k exists return ;
             hash_node_ptr ptr = _find(k);
@@ -285,11 +285,11 @@ namespace ft
             if (empty())
                 return ans;
 
-            size_t hsh = hasher()(k) % table.size();
+            size_t hsh = hasher()(key) % table.size();
             hash_node_ptr ptr = table[hsh];
             while (ptr)
             {
-                if (cmp(k, ptr->key))
+                if (cmp(key, ptr->key))
                 {
                     ans += 1;
                     if (Unique)
@@ -306,7 +306,7 @@ namespace ft
             return iterator(ans, this);
         }
 
-        const_iterator find(key) const
+        const_iterator find(const Key &key) const
         {
             hash_node_ptr ans = _find(key);
             return const_iterator(ans, this);
@@ -336,14 +336,14 @@ namespace ft
         equal_range(const Key &key)
         {
             ft::pair<hash_node_ptr, hash_node_ptr> _ans = _equal_range(key);
-            return ft::make_pair(iterator(_ans.first, this), iterator(_ans.second, this))
+            return ft::make_pair(iterator(_ans.first, this), iterator(_ans.second, this));
         }
 
         ft::pair<const_iterator, const_iterator>
         equal_range(const Key &key) const
         {
             ft::pair<hash_node_ptr, hash_node_ptr> _ans = _equal_range(key);
-            return ft::make_pair(const_iterator(_ans.first, this), const_iterator(_ans.second, this))
+            return ft::make_pair(const_iterator(_ans.first, this), const_iterator(_ans.second, this));
         }
 
         // Hash policy
@@ -398,7 +398,7 @@ namespace ft
         }
 
         template <class InputIt>
-        void insert(InputIt first, InputIt last, typename ft::enable_if<has_iterator_category<InputIterator>::value>::type * = 0)
+        void insert(InputIt first, InputIt last, typename ft::enable_if<has_iterator_category<InputIt>::value>::type * = 0)
         {
             while (first != last)
             {
