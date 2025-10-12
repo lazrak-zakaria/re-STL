@@ -49,11 +49,11 @@ int main()
 
         for (int i = 0; i < 40; ++i)
             uset.insert(i);
+        std::unordered_set<int>::iterator it = uset.end();
+        // it++;
+        // it++;
 
-        std::unordered_set<int>::const_iterator it = uset.begin();
-        while (it != uset.end()){
-            std::cout << *it++ << "\n";
-        }
+        uset.erase(uset.begin(), it);
         }
 
     // auto start = high_resolution_clock::now();
