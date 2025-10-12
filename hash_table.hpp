@@ -94,7 +94,51 @@ namespace ft
             }
             bool operator==(const _iterator<T> &oth) const
             {
-                return this->ht == oth.ht && this->node == oth.node;
+                return this->node == oth.node;
+            }
+        };
+
+        template <class T>
+        class _local_iterator
+        {
+            hash_node_ptr node;
+
+        public:
+            typedef std::forward_iterator_tag iterator_category;
+            typedef T value_type;
+            typedef long long difference_type;
+            typedef T *pointer;
+            typedef T &reference;
+
+            _local_iterator(hash_node_ptr node, ) : node(node)
+            {
+            }
+
+            reference operator*() const
+            {
+                return node->key;
+            }
+
+            pointer operator->() const
+            {
+                return &node->key;
+            }
+
+            _iterator<T> &operator++()
+            {
+                node = node->next;
+                return *this;
+            }
+
+            _iterator<T> operator++(int)
+            {
+                _iterator<T> ans = *this;
+                ++(*this);
+                return ans;
+            }
+            bool operator==(const _iterator<T> &oth) const
+            {
+                return this->node == oth.node;
             }
         };
 
@@ -112,6 +156,8 @@ namespace ft
         typedef typename allocator_type::const_pointer const_pointer;
         typedef _iterator<Key> iterator;
         typedef _iterator<Key> const_iterator;
+        typedef _local_iterator<Key> local_iterator;
+        typedef _local_iterator<Key> const_local_iterator;
 
     public:
         std::vector<hash_node_ptr> table;
@@ -161,8 +207,8 @@ namespace ft
             hash_node_ptr ptr = _find(k);
             if (Unique && ptr)
                 return ft::make_pair(iterator(ptr, this), false);
-            
-            size_t v = (sz+1) / _max_load_factor;
+
+            size_t v = (sz + 1) / _max_load_factor;
             if (v > table.size())
                 rehash(table.size());
 
@@ -177,8 +223,6 @@ namespace ft
 
         hash_node_ptr _find(const key_type &k)
         {
-            // cmp = Pred();
-
             if (table.empty())
                 return nullptr;
             size_t hsh = hasher()(k) % table.size();
@@ -219,17 +263,7 @@ namespace ft
             }
             if (ptr)
                 delete ptr;
-
-        }
-
-        size_t bucket(const Key &key) const
-        {
-            return hasher()(key) % table.size();
-        }
-
-        size_t bucket_count() const
-        {
-            return table.size();
+            return true;
         }
 
     public:
@@ -334,13 +368,10 @@ namespace ft
             }
         }
 
-
-        float load_factor()const
+        float load_factor() const
         {
             return _max_load_factor;
         }
-
-        
 
         // void reserve()// calls ceil rehash;
 
@@ -375,8 +406,6 @@ namespace ft
                 first++;
             }
         }
-
-
 
         iterator erase(const_iterator pos, const_iterator last)
         {
@@ -414,23 +443,22 @@ namespace ft
 
         iterator erase(iterator pos)
         {
-           iterator _str = pos++;
+            iterator _str = pos++;
             return erase(_str, pos);
         }
 
-        iterator erase(const_iterator pos )
+        iterator erase(const_iterator pos)
         {
             iterator _str = pos++;
             return erase(_str, pos);
         }
 
-        size_type erase( const Key& key )
+        size_type erase(const Key &key)
         {
             return _erase(key);
         }
 
-
-        void swap( hash_table& other )
+        void swap(hash_table &other)
         {
             table.swap(other);
             ft::swap(sz, other.sz);
@@ -438,7 +466,95 @@ namespace ft
             // swap allocator too;
         }
 
-        
+        // Iterators
+        iterator begin()
+        {
+            for (size_t i = 0; i < table.size(); ++i)
+                if (table[i])
+                    return iterator(table[i], this);
+            return iterator(nullptr, this);
+        }
+
+        const_iterator begin() const
+        {
+            return cbegin();
+        }
+        const_iterator cbegin()
+        {
+            for (size_t i = 0; i < table.size(); ++i)
+                if (table[i])
+                    return const_iterator(table[i], this);
+            return const_iterator(nullptr, this);
+        }
+
+        iterator end()
+        {
+            return iterator(nullptr, this);
+        }
+
+        const_iterator end() const
+        {
+            return const_iterator(nullptr, this);
+        }
+        const_iterator cend()
+        {
+            return const_iterator(nullptr, this);
+        }
+
+        // Bucket interface
+        size_t bucket(const Key &key) const
+        {
+            return hasher()(key) % table.size();
+        }
+
+        size_t bucket_count() const
+        {
+            return table.size();
+        }
+        size_type max_bucket_count() const
+        {
+            return 0; //todo
+        }
+        size_type bucket_size(size_type n) const
+        {
+            size_t ans = 0;
+            hash_node_ptr ptr = table[n];
+            while (ptr)
+            {
+                ans++;
+                ptr = ptr->next;
+            }
+            return ans;
+        }
+        local_iterator begin(size_type n)
+        {
+            return local_iterator(table[n]);
+        }
+
+        const_local_iterator begin(size_type n) const
+        {
+            return const_local_iterator(table[n]);
+        }
+
+        const_local_iterator cbegin(size_type n) const
+        {
+            return const_local_iterator(table[n]);
+        }
+
+        local_iterator end(size_type n)
+        {
+            return local_iterator(nullptr);
+        }
+
+        const_local_iterator end(size_type n) const
+        {
+            return const_local_iterator(nullptr);
+        }
+
+        const_local_iterator cend(size_type n) const
+        {
+            return const_local_iterator(nullptr);
+        }
     };
 
 }
