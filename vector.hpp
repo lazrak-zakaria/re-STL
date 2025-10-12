@@ -3,6 +3,7 @@
 
 #include <memory>
 #include "vector_iterator.hpp"
+#include "iterator_traits.hpp"
 #define __RATIO__FT__VECTOR__ 2
 #define __MAX_SIZE_FT_VECTOR__ 1073741823
 
@@ -35,7 +36,6 @@ namespace ft
         allocator_type _allocator;
 
     public:
-
         explicit vector(const allocator_type &alloc = allocator_type()) : _ptr(NULL), _size(0), _capacity(0), _allocator(alloc)
         {
         }
@@ -182,13 +182,15 @@ namespace ft
                 }
                 for (int i = 0; i < n; ++i)
                     _allocator.construct(_ptr + pos + i, val);
+                _size += n;
             }
         }
 
         template <class InputIterator>
-        void insert(iterator position, InputIterator first, InputIterator last, int y)
+        void insert(iterator position, InputIterator first, InputIterator last, typename ft::enable_if<has_iterator_category<InputIterator>::value>::type * = 0)
         {
-            for (; first != last; first++, last++)
+            std::cout << "yoyoy\n";
+            for (; first != last; first++)
                 insert(position, *first);
         }
 
@@ -212,7 +214,6 @@ namespace ft
             {
                 _allocator.construct(_ptr + pos, *(_ptr + (start - begin())));
                 _allocator.destroy(_ptr + (start - begin()));
-                
             }
             _size -= howmuch;
             return first;
@@ -253,8 +254,7 @@ namespace ft
             return *(_ptr + n);
         }
 
-
-        vector& operator= (const vector& x)
+        vector &operator=(const vector &x)
         {
 
             if (&x == this)
@@ -262,9 +262,9 @@ namespace ft
 
             clear();
             reserve(x.size());
-            for (int i = 0 ; i < x.size(); i++)
-                _allocator.construct(_ptr+i, *(x._ptr+i));
-            
+            for (int i = 0; i < x.size(); i++)
+                _allocator.construct(_ptr + i, *(x._ptr + i));
+
             return *this;
         }
     };

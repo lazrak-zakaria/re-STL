@@ -32,6 +32,11 @@ namespace ft
             return *_ptr;
         }
 
+        pointer operator->()
+        {
+            return _ptr;
+        }
+
         vector_iterator &operator++()
         {
             ++_ptr;
@@ -88,7 +93,7 @@ namespace ft
 
 
 
-        bool operator!=( vector_iterator &other) 
+        bool operator!=( const vector_iterator &other) const
         {
             return _ptr != other._ptr;
         }
