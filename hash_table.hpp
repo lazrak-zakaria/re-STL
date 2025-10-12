@@ -6,6 +6,7 @@
 #include <utility>
 #include "utility.hpp"
 #include "iterator_traits.hpp"
+#include "algorithm.hpp"
 
 namespace ft
 {
@@ -120,9 +121,9 @@ namespace ft
 
         size_t next_prime(size_t p)
         {
-            static const int prime_sz = 28;
+            static const int prime_sz = 29;
             static const unsigned long primes[] = {
-                53, 97, 193, 389, 769,
+                53, 97, 193, 257, 389, 769,
                 1543, 3079, 6151, 12289, 24593,
                 49157, 98317, 196613, 393241, 786433,
                 1572869, 3145739, 6291469, 12582917, 25165843,
@@ -160,12 +161,10 @@ namespace ft
             hash_node_ptr ptr = _find(k);
             if (Unique && ptr)
                 return ft::make_pair(iterator(ptr, this), false);
-            if (sz == table.size())
-            {
-                std::vector<hash_node_ptr> n_table(next_prime(table.size()));
-                _copy(table, n_table);
-                table.swap(n_table);
-            }
+            
+            size_t v = (sz+1) / _max_load_factor;
+            if (v > table.size())
+                rehash(table.size());
 
             size_t hsh = hasher()(k) % table.size();
             hash_node_ptr node = new hash_node<Key>(k);
@@ -221,7 +220,6 @@ namespace ft
             if (ptr)
                 delete ptr;
 
-            // should i check load_factor in erase ??
         }
 
         size_t bucket(const Key &key) const
@@ -336,6 +334,14 @@ namespace ft
             }
         }
 
+
+        float load_factor()const
+        {
+            return _max_load_factor;
+        }
+
+        
+
         // void reserve()// calls ceil rehash;
 
         // modifiers
@@ -424,7 +430,15 @@ namespace ft
         }
 
 
+        void swap( hash_table& other )
+        {
+            table.swap(other);
+            ft::swap(sz, other.sz);
+            ft::swap(cmp, other.cmp);
+            // swap allocator too;
+        }
 
+        
     };
 
 }
