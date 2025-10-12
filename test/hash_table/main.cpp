@@ -46,18 +46,23 @@ int main()
         std::unordered_set<int> uset;
 
         // auto start = high_resolution_clock::now();
-        uset.max_load_factor(1);
-        for (int i = 0; i < 400; ++i)
+        uset.max_load_factor(10);
+        for (int i = 0; i < 6; ++i)
         {
             std::cout <<uset.bucket_count() << "\n";
             uset.insert(i);
         }
         std::cout << "---------------\n";
-        for (int i = 0; i < 400; ++i)
-        {
-            std::cout <<uset.bucket_count() << "\n";
-            uset.erase(uset.begin());
-        }
+
+        // for (int i = 0; i < 10; ++i)
+        // {
+        //     std::cout <<uset.bucket_count() << "\n";
+        //     uset.erase(uset.begin());
+        // }
+        std::unordered_set<int> :: local_iterator it = uset.end(500);
+        it++;
+        
+
 
     // auto start = high_resolution_clock::now();
 
