@@ -31,7 +31,8 @@ namespace ft
     {
     private:
         typedef hash_node<Key> *hash_node_ptr;
-        typedef hash_table<Key, Hash, Pred, Alloc> *hash_table_ptr;
+        typedef hash_table<Key, Hash, Pred, Alloc> hash_table_self;
+        typedef hash_table_self *hash_table_ptr;
 
     private:
         template <class T>
@@ -211,6 +212,7 @@ namespace ft
                         prev->next = ptr->next;
                     else
                         table[hsh] = ptr->next;
+                    --sz;
                     break;
                 }
                 prev = ptr;
@@ -345,7 +347,7 @@ namespace ft
 
         std::pair<iterator, bool> insert(value_type &&value)
         {
-            return _insert(value); 
+            return _insert(value);
         }
 
         iterator insert(const_iterator hint, const value_type &value)
@@ -353,7 +355,8 @@ namespace ft
             return _insert(value).first;
         }
 
-        iterator insert(const_iterator hint, value_type &&value){
+        iterator insert(const_iterator hint, value_type &&value)
+        {
             return _insert(value).first;
         }
 
@@ -366,6 +369,62 @@ namespace ft
                 first++;
             }
         }
+
+
+
+        iterator erase(const_iterator pos, const_iterator last)
+        {
+
+            size_t hsh = hasher()(pos.node->key) % table.size();
+
+            hash_node_ptr ptr = table[hsh];
+
+            hash_node_ptr prev = nullptr;
+            while (ptr != last.node)
+            {
+                if (ptr == nullptr)
+                {
+                    prev = nullptr;
+                    while (!table[hsh]) // default let it crash
+                        hsh++;
+                    ptr = table[hsh];
+                    if (ptr == last.node)
+                        return last;
+                }
+
+                if (prev)
+                    prev->next = ptr->next;
+                else
+                    table[hsh] = ptr->next;
+                --sz;
+
+                prev = ptr;
+                ptr = ptr->next;
+            }
+            if (ptr)
+                delete ptr;
+            return last;
+        }
+
+        iterator erase(iterator pos)
+        {
+           iterator _str = pos++;
+            return erase(_str, pos);
+        }
+
+        iterator erase(const_iterator pos )
+        {
+            iterator _str = pos++;
+            return erase(_str, pos);
+        }
+
+        size_type erase( const Key& key )
+        {
+            return _erase(key);
+        }
+
+
+
     };
 
 }
