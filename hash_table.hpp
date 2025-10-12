@@ -39,17 +39,20 @@ namespace ft
         template <class T>
         class _iterator
         {
-            hash_table_ptr ht;
+            const hash_table *ht;
             hash_node_ptr node;
 
         public:
+
+            friend class hash_table;
+
             typedef std::forward_iterator_tag iterator_category;
             typedef T value_type;
             typedef long long difference_type;
             typedef T *pointer;
             typedef T &reference;
 
-            _iterator(hash_node_ptr node, hash_table_ptr ht) : ht(ht), node(node)
+            _iterator(const hash_node_ptr &node, const hash_table *ht) : ht(ht), node(node)
             {
             }
             _iterator() : ht(nullptr), node(nullptr)
@@ -230,7 +233,7 @@ namespace ft
             return ft::make_pair(iterator(node, this), true);
         }
 
-        hash_node_ptr _find(const key_type &k)
+        hash_node_ptr _find(const key_type &k) const
         {
             if (table.empty())
                 return nullptr;
@@ -258,7 +261,7 @@ namespace ft
             hash_node_ptr prev = nullptr;
             while (ptr)
             {
-                if (*ptr == k)
+                if (cmp(ptr->key, k))
                 {
                     if (prev)
                         prev->next = ptr->next;
@@ -323,7 +326,6 @@ namespace ft
                 }
             }
             return *this;
-
         }
 
         ~hash_table()
@@ -335,7 +337,7 @@ namespace ft
                             const Hash &hash = Hash(),
                             const key_equal &equal = key_equal(),
                             const allocator_type &alloc = allocator_type()) : hash(hash), cmp(equal),
-                                                                    alloc(alloc)
+                                                                              alloc(alloc)
 
         {
             table.resize(bucket_count, nullptr);
@@ -347,7 +349,7 @@ namespace ft
                    const Hash &hash = Hash(),
                    const key_equal &equal = key_equal(),
                    const allocator_type &alloc = allocator_type()) : hash(hash), cmp(equal),
-                                                           alloc(alloc)
+                                                                     alloc(alloc)
 
         {
             table.resize(bucket_count, nullptr);
@@ -510,38 +512,65 @@ namespace ft
             size_t hsh = hasher()(pos.node->key) % table.size();
 
             hash_node_ptr ptr = table[hsh];
-
             hash_node_ptr prev = nullptr;
-            while (ptr != last.node)
+            bool found = false;
+
+            while (ptr != pos.node)
             {
-                if (ptr == nullptr)
-                {
-                    prev = nullptr;
-                    while (!table[hsh]) // default let it crash
-                        hsh++;
-                    ptr = table[hsh];
-                    if (ptr == last.node)
-                        return last;
-                }
-
-                if (prev)
-                    prev->next = ptr->next;
-                else
-                    table[hsh] = ptr->next;
-                --sz;
-
                 prev = ptr;
                 ptr = ptr->next;
             }
-            if (ptr)
+
+            while (ptr && ptr != last.node) // first bucket have pos
+            {
+                hash_node_ptr next = ptr->next;
+                if (prev)
+                    prev->next = next;
+                else
+                    table[hsh] = next;
                 delete_node(ptr);
+                sz--;
+                ptr = next;
+            }
+            
+            hsh++;
+            if (last == end()){
+                while (hsh < table.size()){
+                    ptr = table[hsh];
+                    table[hsh] = nullptr;
+                    while (ptr)
+                    {
+                        hash_node_ptr next = ptr->next;
+                        delete_node(ptr);
+                        sz--;
+                        ptr = next;
+                    }
+                    ++hsh;
+                }
+            }
+            else // even if i am using more code i understand nice in this way
+            {
+                while (hsh < table.size()){
+                    ptr = table[hsh];
+                    while (ptr && ptr != last.node)
+                    {
+                        table[hsh] = ptr->next;
+                        delete_node(ptr);
+                        sz--;
+                        ptr = table[hsh];
+                    }
+                    ++hsh;
+                }
+            }
             return last;
         }
 
         iterator erase(iterator pos)
         {
-            iterator _str = pos++;
-            return erase(_str, pos);
+            iterator _start = pos++;
+            iterator ans = erase(_start, pos);
+            std::cout << "here\n";
+            return ans;
         }
 
         size_type erase(const Key &key)
@@ -570,7 +599,7 @@ namespace ft
         {
             return cbegin();
         }
-        const_iterator cbegin()
+        const_iterator cbegin() const
         {
             for (size_t i = 0; i < table.size(); ++i)
                 if (table[i])
@@ -646,7 +675,45 @@ namespace ft
         {
             return const_local_iterator(nullptr);
         }
+
+        allocator_type get_allocator() const noexcept
+        {
+            return allocator_type(); // or return alloc;
+        }
+
+        hasher hash_function() const
+        {
+            return Hash();
+        }
+
+        key_equal key_eq() const
+        {
+            return Pred();
+        }
     };
+
+    template <class Key, class Hash, class KeyEqual, class Alloc>
+    bool operator==(const hash_table<Key, Hash, KeyEqual, Alloc> &lhs,
+                    const hash_table<Key, Hash, KeyEqual, Alloc> &rhs)
+    {
+        if (lhs.size() != rhs.size())
+            return false;
+
+        for (typename hash_table<Key, Hash, KeyEqual, Alloc>::iterator it = lhs.begin();
+             it != lhs.end(); ++it)
+        {
+            if (rhs.find(*it) == rhs.end())
+                return false;
+        }
+        return true;
+    }
+
+    template <class Key, class Hash, class KeyEqual, class Alloc>
+    bool operator!=(const hash_table<Key, Hash, KeyEqual, Alloc> &lhs,
+                    const hash_table<Key, Hash, KeyEqual, Alloc> &rhs)
+    {
+        return !(lhs == rhs);
+    }
 
 }
 
