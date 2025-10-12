@@ -52,6 +52,9 @@ namespace ft
             _iterator(hash_node_ptr node, hash_table_ptr ht) : ht(ht), node(node)
             {
             }
+            _iterator() : ht(nullptr), node(nullptr)
+            {
+            }
 
             reference operator*() const
             {
@@ -95,6 +98,10 @@ namespace ft
             bool operator==(const _iterator<T> &oth) const
             {
                 return this->node == oth.node;
+            }
+            bool operator!=(const _iterator<T> &oth) const
+            {
+                return this->node != oth.node;
             }
         };
 
@@ -155,15 +162,17 @@ namespace ft
         typedef typename allocator_type::pointer pointer;
         typedef typename allocator_type::const_pointer const_pointer;
         typedef _iterator<Key> iterator;
-        typedef _iterator<const Key> const_iterator;
+        typedef _iterator<Key> const_iterator;
         typedef _local_iterator<const Key> local_iterator;
         typedef _local_iterator<Key> const_local_iterator;
 
-    public:
+    private:
         std::vector<hash_node_ptr> table;
         size_t sz = 0;
-        Pred cmp;
+        key_equal cmp;
         float _max_load_factor = 1.0;
+        hasher hash;
+        typename allocator_type::template rebind<ft::hash_node<value_type>>::other alloc;
 
         size_t next_prime(size_t p)
         {
@@ -213,7 +222,7 @@ namespace ft
                 rehash(table.size());
 
             size_t hsh = hasher()(k) % table.size();
-            hash_node_ptr node = new hash_node<Key>(k);
+            hash_node_ptr node = create_node(k);
             node->next = table[hsh];
             table[hsh] = node;
             ++sz;
@@ -262,11 +271,99 @@ namespace ft
                 ptr = ptr->next;
             }
             if (ptr)
-                delete ptr;
+                delete_node(ptr);
             return true;
         }
 
+    private:
+        hash_node_ptr create_node(const Key &k)
+        {
+            hash_node_ptr node = alloc.allocate(1);
+            alloc.construct(node, k);
+            return node;
+        }
+
+        void delete_node(hash_node_ptr node)
+        {
+            alloc.destroy(node);
+            alloc.deallocate(node, 1);
+        }
+
     public:
+        void clear()
+        {
+            for (size_t i = 0; i < table.size(); ++i)
+            {
+                hash_node_ptr cur = table[i];
+                hash_node_ptr next = nullptr;
+                while (cur)
+                {
+                    next = cur->next;
+                    delete_node(cur);
+                    cur = next;
+                }
+            }
+            _max_load_factor = 1.0;
+            sz = 0;
+        }
+
+        hash_table_self &operator=(const hash_table_self &oth)
+        {
+            if (&oth == this)
+                return *this;
+            clear();
+            for (size_t i = 0; i < oth.table.size(); ++i)
+            {
+                hash_node_ptr cur = oth.table[i];
+                hash_node_ptr next = nullptr;
+                while (cur)
+                {
+                    _insert(cur->key);
+                    cur = cur->next;
+                }
+            }
+            return *this;
+
+        }
+
+        ~hash_table()
+        {
+            clear();
+        }
+
+        explicit hash_table(size_type bucket_count = 13,
+                            const Hash &hash = Hash(),
+                            const key_equal &equal = key_equal(),
+                            const allocator_type &alloc = allocator_type()) : hash(hash), cmp(equal),
+                                                                    alloc(alloc)
+
+        {
+            table.resize(bucket_count, nullptr);
+        }
+
+        template <class InputIt>
+        hash_table(InputIt first, InputIt last,
+                   size_type bucket_count = 13,
+                   const Hash &hash = Hash(),
+                   const key_equal &equal = key_equal(),
+                   const allocator_type &alloc = allocator_type()) : hash(hash), cmp(equal),
+                                                           alloc(alloc)
+
+        {
+            table.resize(bucket_count, nullptr);
+            insert(first, last);
+        }
+
+        hash_table(const hash_table &other)
+        {
+            *this = other;
+        }
+
+        hash_table(const hash_table &other, const allocator_type &alloc) : alloc(alloc)
+        {
+            *this = other;
+        }
+
         // Capacity
         bool empty() const noexcept
         {
@@ -377,12 +474,12 @@ namespace ft
 
         // modifiers
 
-        std::pair<iterator, bool> insert(const value_type &value)
+        ft::pair<iterator, bool> insert(const value_type &value)
         {
             return _insert(value);
         }
 
-        std::pair<iterator, bool> insert(value_type &&value)
+        ft::pair<iterator, bool> insert(value_type &&value)
         {
             return _insert(value);
         }
@@ -437,17 +534,11 @@ namespace ft
                 ptr = ptr->next;
             }
             if (ptr)
-                delete ptr;
+                delete_node(ptr);
             return last;
         }
 
         iterator erase(iterator pos)
-        {
-            iterator _str = pos++;
-            return erase(_str, pos);
-        }
-
-        iterator erase(const_iterator pos)
         {
             iterator _str = pos++;
             return erase(_str, pos);
@@ -463,7 +554,7 @@ namespace ft
             table.swap(other);
             ft::swap(sz, other.sz);
             ft::swap(cmp, other.cmp);
-            // swap allocator too;
+            // swap allocator_type too;
         }
 
         // Iterators
@@ -513,7 +604,7 @@ namespace ft
         }
         size_type max_bucket_count() const
         {
-            return 0; //todo
+            return 0; // todo
         }
         size_type bucket_size(size_type n) const
         {

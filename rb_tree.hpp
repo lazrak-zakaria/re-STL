@@ -79,7 +79,7 @@ namespace ft
         rb_tree()
         {
             // alloc = alloc();
-            nil = new rb_node<T>();
+            // nil = new rb_node<T>();
             nil = alloc.allocate(1);
             alloc.construct(nil, value_type());
             nil->parent = nil;
