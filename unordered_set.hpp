@@ -20,7 +20,7 @@ namespace ft
               class Pred = std::equal_to<Key>,  // unordered_set::key_equal
               class Alloc = std::allocator<Key> // unordered_set::allocator_type
               >
-    class unordered_set : public hash_table<const Key, SetKeyOfT<Key>, const Key, Hash, Pred, Alloc, true >
+    class unordered_set : public hash_table<const Key, const Key, SetKeyOfT<Key>, Hash, Pred, Alloc, true >
     {
     };
 
