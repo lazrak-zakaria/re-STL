@@ -513,9 +513,9 @@ namespace ft
 
             hash_node_ptr ptr = table[hsh];
             hash_node_ptr prev = nullptr;
-            bool found = false;
 
-            while (ptr != pos.node)
+
+            while (ptr && ptr != pos.node)
             {
                 prev = ptr;
                 ptr = ptr->next;
@@ -523,6 +523,7 @@ namespace ft
 
             while (ptr && ptr != last.node) // first bucket have pos
             {
+
                 hash_node_ptr next = ptr->next;
                 if (prev)
                     prev->next = next;
@@ -541,6 +542,8 @@ namespace ft
                     while (ptr)
                     {
                         hash_node_ptr next = ptr->next;
+
+
                         delete_node(ptr);
                         sz--;
                         ptr = next;
@@ -555,10 +558,14 @@ namespace ft
                     while (ptr && ptr != last.node)
                     {
                         table[hsh] = ptr->next;
+
+
                         delete_node(ptr);
                         sz--;
                         ptr = table[hsh];
                     }
+                    if (ptr == last.node)
+                        break;
                     ++hsh;
                 }
             }
@@ -568,9 +575,7 @@ namespace ft
         iterator erase(iterator pos)
         {
             iterator _start = pos++;
-            iterator ans = erase(_start, pos);
-            std::cout << "here\n";
-            return ans;
+            return erase(_start, pos);
         }
 
         size_type erase(const Key &key)
