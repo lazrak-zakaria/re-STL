@@ -1,59 +1,77 @@
 #include <iostream>
-#include "../../vector.hpp"
-
 #include <vector>
-#include <queue>
-#include <set>
-#include <unordered_set>
-class m
-{
-public:
-    // Default constructor
-
-    int data;
-    m() {
-        std::cout << "Default constructor called" << std::endl;
-    }
-
-    
-    // Copy constructor
-    m(const m& other) {
-        std::cout << "Copy constructor called" << std::endl;
-    }
-
-    // Destructor
-    ~m() {
-        std::cout << "Destructor called" << std::endl;
-    }
-};
-
-
-
-int k();
-
-
+#include <string>
 #include <utility>
-#include <set>
+#include <ctime>
+#include "../../vector.hpp" // your ft::vector
+
+template <typename T>
+bool compare_vectors(const ft::vector<T>& ft_vec, const std::vector<T>& std_vec)
+{
+    if (ft_vec.size() != std_vec.size())
+        return false;
+    for (size_t i = 0; i < ft_vec.size(); ++i)
+        if (ft_vec[i] != std_vec[i])
+            return false;
+    return true;
+}
+
+template <typename T>
+void test_vector_type(const std::string& type_name, const std::vector<T>& sample)
+{
+    const int N = 500000; // 500k elements
+    std::cout << "\n=== Testing type: " << type_name << " (" << N << " elements) ===\n";
+
+    ft::vector<T> ft_vec;
+    std::vector<T> std_vec;
+
+    // ---------------- ft::vector ----------------
+    clock_t ft_start = clock();
+    for (int i = 0; i < N; ++i)
+        ft_vec.push_back(sample[i % sample.size()]);
+    clock_t ft_end = clock();
+
+    // ---------------- std::vector ----------------
+    clock_t std_start = clock();
+    for (int i = 0; i < N; ++i)
+        std_vec.push_back(sample[i % sample.size()]);
+    clock_t std_end = clock();
+
+    double ft_time = double(ft_end - ft_start) / CLOCKS_PER_SEC;
+    double std_time = double(std_end - std_start) / CLOCKS_PER_SEC;
+
+    std::cout << "ft::vector time  : " << ft_time << " s\n";
+    std::cout << "std::vector time : " << std_time << " s\n";
+    std::cout << "Speed ratio      : " << (ft_time / std_time) << "x\n";
+
+    // Integrity
+    std::cout << "[Data integrity] "
+              << (compare_vectors(ft_vec, std_vec) ? "PASS" : "FAIL") << "\n";
+}
 
 int main()
 {
+    // -------- int test --------
+    {
+        std::vector<int> sample;
+        for (int i = 0; i < 10; ++i) sample.push_back(i);
+        test_vector_type("int", sample);
+    }
 
+    // -------- std::string test --------
+    {
+        std::vector<std::string> sample = {
+            "hello", "vector", "performance", "test", "ft", "std", "compare"};
+        test_vector_type("std::string", sample);
+    }
 
-    ft::vector<int> a;
-    for (int i = 0 ; i < 10; ++i)
-        a.push_back(i);
-    std::set<int> v;
-    v.insert(4);
-    ft::vector<int>::iterator it = a.begin();
-
-    *it = 4;
-    // *it = 3;
-    // it[4];
-    // std::cout << it[4] << "\n";
-    for (int i = 0 ; i < a.size(); ++i)
-        std::cout << a[i] << "\n";
-    
-    
+    // -------- std::pair<int, double> test --------
+    {
+        std::vector<std::pair<int, double>> sample;
+        for (int i = 0; i < 10; ++i)
+            sample.push_back(std::make_pair(i, i * 0.5));
+        test_vector_type("std::pair<int,double>", sample);
+    }
 
     return 0;
 }

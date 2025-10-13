@@ -34,15 +34,35 @@ namespace ft
         typedef std::ptrdiff_t difference_type;
 
     private:
-        value_type *_ptr;
-        size_type _size;
-        size_type _capacity;
+        value_type *_ptr = NULL;
+        size_type _size = 0;
+        size_type _capacity = 0;
         allocator_type _allocator;
 
     public:
-        explicit vector(const allocator_type &alloc = allocator_type()) : _ptr(NULL), _size(0), _capacity(0), _allocator(alloc)
+        explicit vector(const allocator_type &alloc = allocator_type())
+            : _ptr(NULL), _size(0), _capacity(0), _allocator(alloc)
         {
         }
+
+        explicit vector(size_type n, const value_type &val = value_type(),
+                        const allocator_type &alloc = allocator_type()) : _allocator(alloc)
+        {
+            resize(n, val);
+        }
+
+        template <class InputIterator>
+        vector(InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type(),
+               typename ft::enable_if<has_iterator_category<InputIterator>::value>::type * = 0) : _allocator(alloc)
+        {
+            insert(end(), first, last);
+        }
+
+        vector (const vector& x)
+        {
+            *this = x;
+        }
+
 
         size_type size() const
         {
@@ -104,7 +124,9 @@ namespace ft
                 _allocator.construct(_ptr + i, *(temp_ptr + i));
                 _allocator.destroy(temp_ptr + i);
             }
-            _allocator.deallocate(temp_ptr, old_capacity);
+            
+            if (old_capacity)
+                _allocator.deallocate(temp_ptr, old_capacity);
         }
 
         void resize(size_type n, value_type val = value_type())
@@ -155,25 +177,27 @@ namespace ft
 
             if (n > available)
             {
-                value_type *temp_ptr = _ptr;
+                 value_type *temp_ptr = _ptr;
                 size_type old_capacity = _capacity;
                 _ptr = _allocator.allocate(_capacity * __RATIO__FT__VECTOR__ + n);
                 _capacity = _capacity * __RATIO__FT__VECTOR__ + n;
 
-                size_type offset = 0;
-
-                for (int i = 0; i < _size; ++i)
-                {
-                    if (i == pos)
-                    {
-                        for (int j = 0; j < n; ++j)
-                            _allocator.construct(_ptr + i + j, val);
-                        offset = n;
-                    }
-                    _allocator.construct(_ptr + i + offset, *(temp_ptr + i));
+                size_type i = 0;
+                for ( ; i < pos; ++i){
+                    _allocator.construct(_ptr + i, *(temp_ptr + i));
                     _allocator.destroy(temp_ptr + i);
                 }
-                _allocator.deallocate(temp_ptr, old_capacity);
+
+                for (size_type j = 0 ; j < n; ++j )
+                    _allocator.construct(_ptr + i + j, val);
+
+                size_type offset = n;
+                for (; i < _size; ++i)
+                    _allocator.construct(_ptr + i + offset, *(temp_ptr + i));
+                    _allocator.destroy(temp_ptr + i);
+
+                if (temp_ptr)
+                    _allocator.deallocate(temp_ptr, old_capacity);
                 _size += n;
             }
             else
@@ -194,10 +218,51 @@ namespace ft
         template <class InputIterator>
         void insert(iterator position, InputIterator first, InputIterator last, typename ft::enable_if<has_iterator_category<InputIterator>::value>::type * = 0)
         {
-            std::cout << "yoyoy\n";
-            for (; first != last; first++)
-                insert(position, *first);
+            // later i should i should implement func that gives the difference of two iters
+            difference_type n = last - first;
+            size_type available = _capacity - _size;
+            difference_type pos = position - begin();
+
+            if (n > available)
+            {
+                value_type *temp_ptr = _ptr;
+                size_type old_capacity = _capacity;
+                _ptr = _allocator.allocate(_capacity * __RATIO__FT__VECTOR__ + n);
+                _capacity = _capacity * __RATIO__FT__VECTOR__ + n;
+
+                difference_type i = 0;
+                for ( ; i < pos; ++i){
+                    _allocator.construct(_ptr + i, *(temp_ptr + i));
+                    _allocator.destroy(temp_ptr + i);
+                }
+
+                for (difference_type j = 0 ; first != last; ++j, ++first )
+                    _allocator.construct(_ptr + i + j, *first);
+
+                difference_type offset = n;
+                for (; i < _size; ++i)
+                    _allocator.construct(_ptr + i + offset, *(temp_ptr + i));
+                    _allocator.destroy(temp_ptr + i);
+
+                if (temp_ptr)
+                    _allocator.deallocate(temp_ptr, old_capacity);
+                _size += n;
+            }
+            else
+            {
+                size_type ending_pos = _size + n - 1;
+                while (ending_pos != pos + n - 1)
+                {
+                    _allocator.construct(_ptr + ending_pos, *(_ptr + (ending_pos - n)));
+                    _allocator.destroy(_ptr + (ending_pos - n));
+                    ending_pos--;
+                }
+                for (int i = 0; i < n && first != last; ++i, ++first)
+                    _allocator.construct(_ptr + pos + i, *first);
+                _size += n;
+            }
         }
+
 
         iterator erase(iterator position)
         {
@@ -267,7 +332,6 @@ namespace ft
         const_reverse_iterator rend() const
         {
             return (const_reverse_iterator(--begin()));
-
         }
 
         reference operator[](size_type n)
@@ -284,16 +348,15 @@ namespace ft
 
             if (&x == this)
                 return *this;
-
-            clear();
+                clear();
             reserve(x.size());
             for (int i = 0; i < x.size(); i++)
                 _allocator.construct(_ptr + i, *(x._ptr + i));
+            _size = x.size();
 
             return *this;
         }
     };
-
 }
 
 #endif

@@ -1,0 +1,5 @@
+https://stackoverflow.com/questions/121162/what-does-the-explicit-keyword-mean
+ft::vector<int>::reverse_iterator it1 = a.begin(); this was accepted by the compiler before i did add explicit
+
+
+

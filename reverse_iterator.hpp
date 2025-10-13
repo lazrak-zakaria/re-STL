@@ -17,7 +17,7 @@ namespace ft
         typedef typename _iterator::pointer pointer;
         typedef typename _iterator::reference reference;
 
-        reverse_iterator_(_iterator iter) : iter(iter)
+        explicit reverse_iterator_(_iterator iter) : iter(iter)
         {
         }
 
@@ -91,12 +91,12 @@ namespace ft
 
         bool operator==(const reverse_iterator_ &other) const
         {
-            return iter == other;
+            return iter == other.base();
         }
 
         bool operator!=(const reverse_iterator_ &other) const
         {
-            return iter != other;
+            return iter != other.base();
         }
 
         reference operator[](difference_type n) const
