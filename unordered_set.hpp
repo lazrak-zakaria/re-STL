@@ -67,14 +67,53 @@ namespace ft
         }
     };
 
-    // template <class Key,                        // unordered_multiset::key_type/value_type
-    //           class Hash = std::hash<Key>,      // unordered_multiset::hasher
-    //           class Pred = std::equal_to<Key>,  // unordered_multiset::key_equal
-    //           class Alloc = std::allocator<Key> // unordered_multiset::allocator_type
-    //           >
-    // class unordered_multiset : public hash_table<const Key, Hash, Pred, Alloc, false>
-    // {
-    // };
+    template <class Key,                        // unordered_multiset::key_type/value_type
+              class Hash = std::hash<Key>,      // unordered_multiset::hasher
+              class Pred = std::equal_to<Key>,  // unordered_multiset::key_equal
+              class Alloc = std::allocator<Key> // unordered_multiset::allocator_type
+              >
+    class unordered_multiset : public hash_table<const Key, const Key, SetKeyOfT<Key>, Hash, Pred, Alloc, true>
+    {
+    private:
+        typedef hash_table<const Key, const Key, SetKeyOfT<Key>, Hash, Pred, Alloc, true> hash_table_type;
+
+    public:
+        explicit unordered_multiset(size_t bucket_count = 13,
+                                    const Hash &hash = Hash(),
+                                    const Pred &equal = Pred(),
+                                    const Alloc &alloc = Alloc()) : hash_table_type(bucket_count,
+                                                                                    hash,
+                                                                                    equal,
+                                                                                    alloc)
+        {
+        }
+
+        template <class InputIt>
+        unordered_multiset(InputIt first, InputIt last,
+                           size_t bucket_count = 13,
+                           const Hash &hash = Hash(),
+                           const Pred &equal = Pred(),
+                           const Alloc &alloc = Alloc()) : hash_table_type(first,
+                                                                           last,
+                                                                           bucket_count,
+                                                                           hash,
+                                                                           equal,
+                                                                           alloc)
+        {
+        }
+
+        unordered_multiset(const unordered_multiset &other) : hash_table_type(other)
+        {
+        }
+
+        unordered_multiset(const unordered_multiset &other, const Alloc &alloc) : hash_table_type(other)
+        {
+        }
+
+        ~unordered_multiset()
+        {
+        }
+    };
 
 }
 

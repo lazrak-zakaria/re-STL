@@ -1,108 +1,67 @@
 #include <iostream>
-#include <unordered_set>    // for std::unordered_set
-#include <ctime>            // for std::clock()
-#include <cstdlib>          // for std::rand()
-#include "../../unordered_set.hpp"  // Include your custom ft::unordered_set
+#include <unordered_map>
+#include <string>
+#include <ctime>
+#include "../../unordered_map.hpp" // your ft::unordered_map
 
-bool compare_sets(ft::unordered_set<int>& ft_set, std::unordered_set<int>& std_set)
-{
-    if (ft_set.size() != std_set.size())
-        return false;
+int main() {
+    const int N = 100000; // number of elements
+    ft::unordered_map<int, std::string> ft_map;
+    std::unordered_map<int, std::string> std_map;
 
-    for (std::unordered_set<int>::iterator it = std_set.begin(); it != std_set.end(); ++it)
-        if (ft_set.count(*it) != std_set.count(*it))  // Compare counts for duplicates
-            return false;
+    // Fill maps
+    for (int i = 0; i < N; ++i) {
+        ft_map.insert(std::make_pair(i, "value" + std::to_string(i)));
+        std_map.insert(std::make_pair(i, "value" + std::to_string(i)));
+    }
 
-    return true;
-}
-
-int main()
-{
-    const int N = 2000000; // 2 million elements
-    std::cout << "=== Timing Test: ft::unordered_set vs std::unordered_set ===\n";
-    std::cout << "Inserting " << N << " integers...\n\n";
-
-    ft::unordered_set<int> ft_set;
-    std::unordered_set<int> std_set;
-
-    // ------------------ INSERT TEST ------------------
-    std::clock_t start, end;
-    double ft_time, std_time;
-
-    start = std::clock();
-    for (int i = 0; i < N; ++i)
-        ft_set.insert(i);  // Insert in custom unordered set
-    end = std::clock();
-    ft_time = double(end - start) / CLOCKS_PER_SEC;
-
-    start = std::clock();
-    for (int i = 0; i < N; ++i)
-        std_set.insert(i); // Insert in standard unordered set
-    end = std::clock();
-    std_time = double(end - start) / CLOCKS_PER_SEC;
-
-    std::cout << "Insertion time:\n";
-    std::cout << "  ft::unordered_set   = " << ft_time << " sec\n";
-    std::cout << "  std::unordered_set  = " << std_time << " sec\n";
-
-    if (compare_sets(ft_set, std_set))
-        std::cout << "✅ Data check after insertion: OK\n\n";
+    // 1. Test size
+    if (ft_map.size() == std_map.size())
+        std::cout << "Size test: PASS\n";
     else
-        std::cout << "❌ Data mismatch after insertion!\n\n";
+        std::cout << "Size test: FAIL\n";
 
-    // ------------------ FIND TEST ------------------
-    std::cout << "Testing find() for all elements...\n";
+    // 2. Test count / existence
+    bool count_ok = true;
+    for (int i = 0; i < N; ++i) {
+        if (ft_map.count(i) != std_map.count(i)) {
+            count_ok = false;
+            break;
+        }
+    }
+    std::cout << "Count test: " << (count_ok ? "PASS" : "FAIL") << "\n";
 
-    start = std::clock();
-    for (int i = 0; i < N; ++i)
-        ft_set.find(i);  // Find in custom unordered set
-    end = std::clock();
-    ft_time = double(end - start) / CLOCKS_PER_SEC;
+    // 3. Test erase
+    ft_map.erase(N/2);
+    std_map.erase(N/2);
+    bool erase_ok = (ft_map.count(N/2) == std_map.count(N/2));
+    std::cout << "Erase test: " << (erase_ok ? "PASS" : "FAIL") << "\n";
 
-    start = std::clock();
-    for (int i = 0; i < N; ++i)
-        std_set.find(i); // Find in standard unordered set
-    end = std::clock();
-    std_time = double(end - start) / CLOCKS_PER_SEC;
+    // 4. Test clear
+    ft_map.clear();
+    std_map.clear();
+    std::cout << "Clear test: " 
+              << ((ft_map.empty() && std_map.empty()) ? "PASS" : "FAIL") 
+              << "\n";
 
-    std::cout << "Find time:\n";
-    std::cout << "  ft::unordered_set   = " << ft_time << " sec\n";
-    std::cout << "  std::unordered_set  = " << std_time << " sec\n\n";
+    // 5. Test re-insert after clear
+    ft_map.insert(std::make_pair(1, "new_value"));
+    std_map.insert(std::make_pair(1, "new_value"));
+    bool reinsertion_ok = (ft_map.find(1)->second == std_map.find(1)->second);
+    std::cout << "Re-insertion test: " << (reinsertion_ok ? "PASS" : "FAIL") << "\n";
 
+    // 6. Test iteration values
+    ft_map.insert(std::make_pair(2, "two"));
+    std_map.insert(std::make_pair(2, "two"));
+    bool iteration_ok = true;
+    for (auto it = ft_map.begin(); it != ft_map.end(); ++it) {
+        auto std_it = std_map.find(it->first);
+        if (std_it == std_map.end() || std_it->second != it->second) {
+            iteration_ok = false;
+            break;
+        }
+    }
+    std::cout << "Iteration values test: " << (iteration_ok ? "PASS" : "FAIL") << "\n";
 
-
-
-// ------------------ EQUAL_RANGE TEST ------------------
-std::cout << "Testing equal_range() for all elements...\n";
-
-start = std::clock();
-for (int i = 0; i < N; ++i) {
-    ft::unordered_set<int>::iterator it_pair[2];
-    it_pair[0] = ft_set.equal_range(i).first;
-    it_pair[1] = ft_set.equal_range(i).second;
-    // optional: access value to prevent compiler optimizing away
-    if (it_pair[0] != it_pair[1])
-        volatile int x = *it_pair[0]; 
-}
-end = std::clock();
-ft_time = double(end - start) / CLOCKS_PER_SEC;
-
-start = std::clock();
-for (int i = 0; i < N; ++i) {
-    std::pair<std::unordered_set<int>::iterator,
-              std::unordered_set<int>::iterator> it_pair;
-    it_pair = std_set.equal_range(i);
-    if (it_pair.first != it_pair.second)
-        volatile int x = *it_pair.first;
-}
-end = std::clock();
-std_time = double(end - start) / CLOCKS_PER_SEC;
-
-std::cout << "Equal_range time:\n";
-std::cout << "  ft::unordered_set   = " << ft_time << " sec\n";
-std::cout << "  std::unordered_set  = " << std_time << " sec\n\n";
-
-
-    std::cout << "\n=== Done ===\n";
     return 0;
 }

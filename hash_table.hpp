@@ -24,13 +24,12 @@ namespace ft
     };
 
     template <class Key,
-    class Ky,
-    class KeyType,
+              class Ky,
+              class KeyType,
               class Hash = std::hash<Key>,
               class Pred = std::equal_to<Key>,
               class Alloc = std::allocator<Key>,
-              bool Unique = true
-              >
+              bool Unique = true>
     class hash_table
     {
     private:
@@ -39,7 +38,11 @@ namespace ft
         typedef hash_table_self *hash_table_ptr;
 
         typedef KeyType key_of_type;
+
     private:
+
+        
+
         template <class T>
         class _iterator
         {
@@ -47,7 +50,6 @@ namespace ft
             hash_node_ptr node;
 
         public:
-
             friend class hash_table;
 
             typedef std::forward_iterator_tag iterator_category;
@@ -56,8 +58,6 @@ namespace ft
             typedef T *pointer;
             typedef T &reference;
 
-
-    
             _iterator(const hash_node_ptr &node, const hash_table *ht) : ht(ht), node(node)
             {
             }
@@ -82,7 +82,7 @@ namespace ft
                 else
                 {
 
-                    size_t hsh = hasher()(ht->key_of_type()(node->key)) % ht->table.size(); // curently i suppose the node->key is just one elmnt not a pair later add keyoftype
+                    size_t hsh = hasher()(key_of_type()(node->key)) % ht->table.size(); // curently i suppose the node->key is just one elmnt not a pair later add keyoftype
                     hsh++;
                     while (hsh < ht->table.size())
                     {
@@ -175,8 +175,6 @@ namespace ft
         typedef _local_iterator<const Key> local_iterator;
         typedef _local_iterator<Key> const_local_iterator;
 
-
-
     private:
         std::vector<hash_node_ptr> table;
         size_t sz = 0;
@@ -184,9 +182,6 @@ namespace ft
         float _max_load_factor = 1.0;
         hasher hash;
         typename allocator_type::template rebind<ft::hash_node<value_type>>::other alloc;
-
-
-        
 
         size_t next_prime(size_t p)
         {
@@ -254,7 +249,7 @@ namespace ft
 
             while (ptr)
             {
-                if (cmp(k, key_of_type() (ptr->key)))
+                if (cmp(k, key_of_type()(ptr->key)))
                     break;
                 ptr = ptr->next;
             }
@@ -316,6 +311,7 @@ namespace ft
                     delete_node(cur);
                     cur = next;
                 }
+                table[i] = nullptr;
             }
             _max_load_factor = 1.0;
             sz = 0;
@@ -429,34 +425,18 @@ namespace ft
             hash_node_ptr start = _find(key);
 
             if (!start)
-            return ft::make_pair(start, start);
+                return ft::make_pair(start, start);
             // std::cout << "o\n";
 
             if (Unique)
             {
                 return ft::make_pair(start, start->next);
             }
-            
+
             hash_node_ptr end = start;
-            size_t hsh = hasher()(key) % table.size();
-            bool stop = false;
-            while (hsh < table.size() && !stop) // ithink i wont need to loop on table size too ! because they will be on the same bucket
-            {
-                while (end)
-                {
-                    if (!cmp(key_of_type()(end->key), key))
-                    {
-                        stop = 1;
-                        break;
-                    }
-                    end = end->next;
-                }
-                hsh++;
-                if (!stop && hsh)
-                {
-                    end = table[hsh];
-                }
-            }
+
+            while (end && cmp(key_of_type()(end->key), key))
+                end = end->next;
 
             return ft::make_pair(start, end);
         }
@@ -545,7 +525,6 @@ namespace ft
             hash_node_ptr ptr = table[hsh];
             hash_node_ptr prev = nullptr;
 
-
             while (ptr && ptr != pos.node)
             {
                 prev = ptr;
@@ -564,10 +543,12 @@ namespace ft
                 sz--;
                 ptr = next;
             }
-            
+
             hsh++;
-            if (last == end()){
-                while (hsh < table.size()){
+            if (last == end())
+            {
+                while (hsh < table.size())
+                {
                     ptr = table[hsh];
                     table[hsh] = nullptr;
                     while (ptr)
@@ -582,12 +563,12 @@ namespace ft
             }
             else // even if i am using more code i understand nice in this way
             {
-                while (hsh < table.size()){
+                while (hsh < table.size())
+                {
                     ptr = table[hsh];
                     while (ptr && ptr != last.node)
                     {
                         table[hsh] = ptr->next;
-
 
                         delete_node(ptr);
                         sz--;
