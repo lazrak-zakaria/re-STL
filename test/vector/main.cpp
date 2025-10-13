@@ -33,48 +33,27 @@ int k();
 
 
 #include <utility>
+#include <set>
 
 int main()
 {
-    // std::cout << "Before vector creation\n";
-    // ft::vector<int> v;
-    // for (int i = 0; i < 10; ++i)
-    // {
-    //     v.insert(v.begin()+i, i);
-    //     v[i] = i;
-    // }
-    // v.erase(v.begin()+3);
-    // for (int i = 0 ;  i < v.size() ; ++i)
-    //     std::cout << v[i] << "\n";
 
 
-    // std::cout << "After vector creation\n";
+    ft::vector<int> a;
+    for (int i = 0 ; i < 10; ++i)
+        a.push_back(i);
+    std::set<int> v;
+    v.insert(4);
+    ft::vector<int>::iterator it = a.begin();
+
+    *it = 4;
+    // *it = 3;
+    // it[4];
+    // std::cout << it[4] << "\n";
+    for (int i = 0 ; i < a.size(); ++i)
+        std::cout << a[i] << "\n";
     
-
-    std::vector<float> a;
-    float h = 50;
-    a.push_back(h);
-    a.push_back(h);
-    a.push_back(h);
-    a.push_back(h);
-    a.push_back(h);
-    std::cout << a[0] << "\n";
-    std::cout << sizeof(k()) << "\n";
-
-    int b[] = {1,2,3,4,5,6,7,8};
-    a.insert(a.begin()+3,2,  2);
-    std::vector<float>::iterator it = a.begin();
-    // ft::vector<int>::iterator i2 = a.end();
-    while (it != a.end())
-    {
-        std::cout << *it << " ";
-        it++;
-        /* code */
-    }
     
-    std::cout <<  "\n";
-    std::pair< const int , int> vv = {1,2};
-    vv.second = 7;
 
     return 0;
 }

@@ -4,6 +4,8 @@
 #include <memory>
 #include "vector_iterator.hpp"
 #include "iterator_traits.hpp"
+#include "reverse_iterator.hpp"
+
 #define __RATIO__FT__VECTOR__ 2
 #define __MAX_SIZE_FT_VECTOR__ 1073741823
 
@@ -25,6 +27,8 @@ namespace ft
 
         typedef vector_iterator<T> iterator;
         typedef vector_iterator<const T> const_iterator;
+        typedef reverse_iterator_<iterator> reverse_iterator;
+        typedef reverse_iterator_<const_iterator> const_reverse_iterator;
 
         typedef unsigned long long size_type;
         typedef std::ptrdiff_t difference_type;
@@ -111,6 +115,7 @@ namespace ft
                 {
                     _allocator.destroy(_ptr + i);
                 }
+                _allocator.deallocate(_ptr, _size);
                 _size = n;
             }
             else if (n > _size)
@@ -243,6 +248,26 @@ namespace ft
         const_iterator end() const
         {
             return const_iterator(_ptr + _size);
+        }
+
+        reverse_iterator rbegin()
+        {
+            return (reverse_iterator(--end()));
+        }
+        const_reverse_iterator rbegin() const
+        {
+            return (const_reverse_iterator(--end()));
+        }
+
+        reverse_iterator rend()
+        {
+            return (reverse_iterator(--begin()));
+        }
+
+        const_reverse_iterator rend() const
+        {
+            return (const_reverse_iterator(--begin()));
+
         }
 
         reference operator[](size_type n)

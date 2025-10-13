@@ -26,7 +26,17 @@ namespace ft
         ~vector_iterator()
         {
         }
+        template<class U>
+        vector_iterator(const vector_iterator<U>& other)
+                    // typename std::enable_if<std::is_convertible<U*, T*>::value>::type* = 0)
+            : _ptr(other.base())
+        {
+        }
 
+        pointer base() const
+        {
+            return _ptr;
+        }
         reference operator*()
         {
             return *_ptr;
@@ -85,13 +95,14 @@ namespace ft
             return vector_iterator(_ptr - n);
         }
 
-        vector_iterator &operator-=(difference_type n) const
+
+
+
+
+        bool operator==( const vector_iterator &other) const
         {
-            _ptr -= n;
-            return *this;
+            return _ptr == other._ptr;
         }
-
-
 
         bool operator!=( const vector_iterator &other) const
         {
