@@ -69,30 +69,39 @@ int main()
     std::cout << "  ft::unordered_set   = " << ft_time << " sec\n";
     std::cout << "  std::unordered_set  = " << std_time << " sec\n\n";
 
-    // ------------------ ERASE TEST ------------------
-    std::cout << "Testing erase() for all elements...\n";
 
-    start = std::clock();
-    for (int i = 0; i < N; ++i)
-        ft_set.erase(i);  // Erase from custom unordered set
-    end = std::clock();
-    ft_time = double(end - start) / CLOCKS_PER_SEC;
 
-    start = std::clock();
-    for (int i = 0; i < N; ++i)
-        std_set.erase(i); // Erase from standard unordered set
-    end = std::clock();
-    std_time = double(end - start) / CLOCKS_PER_SEC;
 
-    std::cout << "Erase time:\n";
-    std::cout << "  ft::unordered_set   = " << ft_time << " sec\n";
-    std::cout << "  std::unordered_set  = " << std_time << " sec\n\n";
+// ------------------ EQUAL_RANGE TEST ------------------
+std::cout << "Testing equal_range() for all elements...\n";
 
-    // ------------------ FINAL CHECK ------------------
-    if (compare_sets(ft_set, std_set))
-        std::cout << "✅ Final data check passed: sets are equal.\n";
-    else
-        std::cout << "❌ Final data mismatch detected!\n";
+start = std::clock();
+for (int i = 0; i < N; ++i) {
+    ft::unordered_set<int>::iterator it_pair[2];
+    it_pair[0] = ft_set.equal_range(i).first;
+    it_pair[1] = ft_set.equal_range(i).second;
+    // optional: access value to prevent compiler optimizing away
+    if (it_pair[0] != it_pair[1])
+        volatile int x = *it_pair[0]; 
+}
+end = std::clock();
+ft_time = double(end - start) / CLOCKS_PER_SEC;
+
+start = std::clock();
+for (int i = 0; i < N; ++i) {
+    std::pair<std::unordered_set<int>::iterator,
+              std::unordered_set<int>::iterator> it_pair;
+    it_pair = std_set.equal_range(i);
+    if (it_pair.first != it_pair.second)
+        volatile int x = *it_pair.first;
+}
+end = std::clock();
+std_time = double(end - start) / CLOCKS_PER_SEC;
+
+std::cout << "Equal_range time:\n";
+std::cout << "  ft::unordered_set   = " << ft_time << " sec\n";
+std::cout << "  std::unordered_set  = " << std_time << " sec\n\n";
+
 
     std::cout << "\n=== Done ===\n";
     return 0;

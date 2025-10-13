@@ -426,18 +426,38 @@ namespace ft
         ft::pair<hash_node_ptr, hash_node_ptr>
         _equal_range(const Ky &key)
         {
-            hash_node_ptr start = find(key);
+            hash_node_ptr start = _find(key);
 
             if (!start)
-                return ft::make_pair(start, start);
+            return ft::make_pair(start, start);
+            // std::cout << "o\n";
 
             if (Unique)
             {
                 return ft::make_pair(start, start->next);
             }
+            
             hash_node_ptr end = start;
-            while (end && cmp(end->key, key))
-                end = end->next;
+            size_t hsh = hasher()(key) % table.size();
+            bool stop = false;
+            while (hsh < table.size() && !stop) // ithink i wont need to loop on table size too ! because they will be on the same bucket
+            {
+                while (end)
+                {
+                    if (!cmp(key_of_type()(end->key), key))
+                    {
+                        stop = 1;
+                        break;
+                    }
+                    end = end->next;
+                }
+                hsh++;
+                if (!stop && hsh)
+                {
+                    end = table[hsh];
+                }
+            }
+
             return ft::make_pair(start, end);
         }
 
@@ -553,8 +573,6 @@ namespace ft
                     while (ptr)
                     {
                         hash_node_ptr next = ptr->next;
-
-
                         delete_node(ptr);
                         sz--;
                         ptr = next;
