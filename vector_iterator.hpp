@@ -1,6 +1,6 @@
 
 #include<memory>
-#define NULL 0
+// #define NULL 0
 namespace ft
 {
     template <class T>

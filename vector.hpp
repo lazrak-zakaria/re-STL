@@ -51,13 +51,22 @@ namespace ft
             resize(n, val);
         }
 
-        template <class InputIterator>
-        vector(InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type(),
-               typename ft::enable_if<has_iterator_category<InputIterator>::value>::type * = 0) : _ptr(NULL), _size(0), _capacity(0), _allocator(alloc)
-        {
-            insert(end(), first, last);
-        }
+        // template <class InputIterator>
+        // vector(InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type(),
+        //        typename ft::enable_if<has_iterator_category<InputIterator>::value>::type * = 0) : _ptr(NULL), _size(0), _capacity(0), _allocator(alloc)
+        // {
+        //     insert(end(), first, last);
+        // }
 
+        // Use in constructor:
+template <class InputIterator>
+vector(InputIterator first, InputIterator last, 
+       const allocator_type &alloc = allocator_type(),
+       typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0) 
+    : _ptr(NULL), _size(0), _capacity(0), _allocator(alloc)
+{
+    insert(end(), first, last);
+}
         vector(const vector &x) : _ptr(NULL), _size(0), _capacity(0)
         {
             *this = x;
@@ -286,7 +295,7 @@ namespace ft
             }
         }
         template <class InputIterator>
-        void insert(iterator position, InputIterator first, InputIterator last, typename ft::enable_if<has_iterator_category<InputIterator>::value>::type * = 0)
+        void insert(iterator position, InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
         {
             // later i should i should implement func that gives the difference of two iters
             difference_type n = ft::distance(first, last);
