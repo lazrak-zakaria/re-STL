@@ -32,11 +32,11 @@ namespace ft
 
     protected:
         container_type c;
-        value_compare cmp;
+        value_compare comp;
 
     private:
     public:
-        explicit priority_queue(const Compare &comp = Compare(), const Container &ctnr = Container()) : cmp(comp), c(ctnr)
+        explicit priority_queue(const Compare &comp = Compare(), const Container &ctnr = Container()) : comp(comp), c(ctnr)
         {
 
             ft::make_heap(c.begin(), c.end());
@@ -44,7 +44,7 @@ namespace ft
 
         template <class InputIterator>
         priority_queue(InputIterator first, InputIterator last, const Compare &comp = Compare(),
-                       const Container &ctnr = Container()) : cmp(comp), c(ctnr)
+                       const Container &ctnr = Container()) : comp(comp), c(ctnr)
         {
             while (first != last)
             {
@@ -61,15 +61,15 @@ namespace ft
         void push(const value_type &val)
         {
             c.push_back(val);
-            ft::push_heap(c.begin(), c.end(), cmp);
+            ft::push_heap(c.begin(), c.end(), comp);
         }
 
         void pop()
         {
-            ft::pop_heap(c.begin(), c.end(), cmp);
+            ft::pop_heap(c.begin(), c.end(), comp);
             c.pop_back();
         }
-        bool empty()
+        bool empty() const
         {
             return !c.size();
         }
@@ -133,7 +133,7 @@ namespace ft
         {
             c.push_back(value);
         }
-        bool empty()
+        bool empty() const
         {
             return !c.size();
         }
