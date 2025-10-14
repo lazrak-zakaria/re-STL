@@ -7,6 +7,10 @@
 #include "utility.hpp"
 #include "iterator_traits.hpp"
 #include "algorithm.hpp"
+#include <cmath>
+using namespace std;
+
+
 
 namespace ft
 {
@@ -34,7 +38,7 @@ namespace ft
     {
     private:
         typedef hash_node<Key> *hash_node_ptr;
-        typedef hash_table<Key, Hash, Pred, Alloc> hash_table_self;
+        typedef hash_table<Key, Ky, KeyType,Hash, Pred, Alloc> hash_table_self;
         typedef hash_table_self *hash_table_ptr;
 
         typedef KeyType key_of_type;
@@ -313,15 +317,20 @@ namespace ft
                 }
                 table[i] = nullptr;
             }
+            
             _max_load_factor = 1.0;
             sz = 0;
+
         }
 
         hash_table_self &operator=(const hash_table_self &oth)
         {
+
             if (&oth == this)
                 return *this;
+
             clear();
+
             for (size_t i = 0; i < oth.table.size(); ++i)
             {
                 hash_node_ptr cur = oth.table[i];
@@ -337,7 +346,10 @@ namespace ft
 
         ~hash_table()
         {
+
             clear();
+
+
         }
 
         explicit hash_table(size_type bucket_count = 13,
@@ -385,6 +397,11 @@ namespace ft
         }
 
         // Lookup
+
+
+ 
+
+
         size_type count(const Ky &key) const
         {
             size_t ans = 0;
@@ -483,7 +500,10 @@ namespace ft
             return _max_load_factor;
         }
 
-        // void reserve()// calls ceil rehash;
+        void reserve(size_type count)// calls ceil rehash;
+        {
+            rehash(ceil(count / max_load_factor()));
+        }
 
         // modifiers
 
@@ -595,7 +615,7 @@ namespace ft
 
         void swap(hash_table &other)
         {
-            table.swap(other);
+            table.swap(other.table);
             ft::swap(sz, other.sz);
             ft::swap(cmp, other.cmp);
             // swap allocator_type too;
@@ -648,7 +668,7 @@ namespace ft
         }
         size_type max_bucket_count() const
         {
-            return 0; // todo
+            return 4294967291; // todo
         }
         size_type bucket_size(size_type n) const
         {
