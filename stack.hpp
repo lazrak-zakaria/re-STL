@@ -42,7 +42,7 @@ namespace ft
         {
             c.push_back(value);
         }
-        bool empty()
+        bool empty() const
         {
             return !c.size();
         }
