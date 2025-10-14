@@ -1,0 +1,8 @@
+https://stackoverflow.com/questions/121162/what-does-the-explicit-keyword-mean
+ft::vector<int>::reverse_iterator it1 = a.begin(); this was accepted by the compiler before i did add explicit
+
+
+i ve got problems when i left comparison operators inside iter that why i put them outside
+
+main.cpp:27:23: error: invalid operands to binary expression ('ft::vector<int>::iterator' (aka 'vector_iterator<int>') and 'ft::vector<int>::const_iterator' (aka 'vector_iterator<const int>'))
+    std::cout << (it2 < it) << "\n";
