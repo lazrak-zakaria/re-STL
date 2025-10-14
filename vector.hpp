@@ -59,14 +59,14 @@ namespace ft
         // }
 
         // Use in constructor:
-template <class InputIterator>
-vector(InputIterator first, InputIterator last, 
-       const allocator_type &alloc = allocator_type(),
-       typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0) 
-    : _ptr(NULL), _size(0), _capacity(0), _allocator(alloc)
-{
-    insert(end(), first, last);
-}
+        template <class InputIterator>
+        vector(InputIterator first, InputIterator last,
+               const allocator_type &alloc = allocator_type(),
+               typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
+            : _ptr(NULL), _size(0), _capacity(0), _allocator(alloc)
+        {
+            insert(end(), first, last);
+        }
         vector(const vector &x) : _ptr(NULL), _size(0), _capacity(0)
         {
             *this = x;
@@ -87,7 +87,7 @@ vector(InputIterator first, InputIterator last,
         }
 
         template <class InputIterator>
-        void assign(InputIterator first, InputIterator last, typename ft::enable_if<has_iterator_category<InputIterator>::value>::type * = 0)
+        void assign(InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
         {
             difference_type n = ft::distance(first, last);
             difference_type pos = 0;
@@ -210,7 +210,14 @@ vector(InputIterator first, InputIterator last,
 
         void clear()
         {
-            resize(0);
+
+            for (int i = 0; i < _size; ++i)
+                _allocator.destroy(_ptr + i);
+            if (_capacity)
+                _allocator.deallocate(_ptr, _capacity);
+            _size = 0;
+            _ptr = 0;
+            _capacity = 0;
         }
 
         bool empty() const
@@ -239,7 +246,7 @@ vector(InputIterator first, InputIterator last,
             if (n > _capacity - _size)
             {
 
-                size_type new_capacity = _capacity * __RATIO__FT__VECTOR__ * 20 + n;
+                size_type new_capacity = _capacity * __RATIO__FT__VECTOR__ + n;
                 value_type *new_ptr = _allocator.allocate(new_capacity);
 
                 for (size_type i = 0; i < pos; ++i)
@@ -266,29 +273,17 @@ vector(InputIterator first, InputIterator last,
                 for (size_type i = _size; i > pos; --i)
                 {
                     if (i + n - 1 >= _size)
-                    {
-
                         _allocator.construct(_ptr + i + n - 1, _ptr[i - 1]);
-                    }
                     else
-                    {
-
                         _ptr[i + n - 1] = _ptr[i - 1];
-                    }
                 }
 
                 for (size_type i = 0; i < n; ++i)
                 {
                     if (pos + i < _size)
-                    {
-
                         _ptr[pos + i] = val;
-                    }
                     else
-                    {
-
                         _allocator.construct(_ptr + pos + i, val);
-                    }
                 }
 
                 _size += n;
@@ -297,51 +292,53 @@ vector(InputIterator first, InputIterator last,
         template <class InputIterator>
         void insert(iterator position, InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
         {
-            // later i should i should implement func that gives the difference of two iters
+
             difference_type n = ft::distance(first, last);
-            size_type available = _capacity - _size;
             difference_type pos = ft::distance(begin(), position);
 
-            if (n > available)
+            if (n > _capacity - _size)
             {
 
-                value_type *temp_ptr = _ptr;
-                size_type old_capacity = _capacity;
-                _ptr = _allocator.allocate(_capacity * __RATIO__FT__VECTOR__ + n);
-                _capacity = _capacity * __RATIO__FT__VECTOR__ + n;
+                size_type new_capacity = _capacity * __RATIO__FT__VECTOR__ + n;
+                value_type *new_ptr = _allocator.allocate(new_capacity);
 
-                difference_type i = 0;
-                for (; i < pos; ++i)
-                {
-                    _allocator.construct(_ptr + i, *(temp_ptr + i));
-                    _allocator.destroy(temp_ptr + i);
-                }
+                for (size_type i = 0; i < pos; ++i)
+                    _allocator.construct(new_ptr + i, _ptr[i]);
 
-                for (difference_type j = 0; first != last; ++j, ++first)
-                    _allocator.construct(_ptr + i + j, *first);
+                for (size_type i = 0; first != last; ++i, ++first)
+                    _allocator.construct(new_ptr + pos + i, *first);
 
-                difference_type offset = n;
-                for (; i < _size; ++i)
-                {
-                    _allocator.construct(_ptr + i + offset, *(temp_ptr + i));
-                    _allocator.destroy(temp_ptr + i);
-                }
+                for (size_type i = pos; i < _size; ++i)
+                    _allocator.construct(new_ptr + n + i, _ptr[i]);
 
-                if (temp_ptr)
-                    _allocator.deallocate(temp_ptr, old_capacity);
+                for (size_type i = 0; i < _size; ++i)
+                    _allocator.destroy(_ptr + i);
+                if (_ptr)
+                    _allocator.deallocate(_ptr, _capacity);
+
+                _ptr = new_ptr;
+                _capacity = new_capacity;
                 _size += n;
             }
             else
             {
-                size_type ending_pos = _size + n - 1;
-                while (ending_pos != pos + n - 1)
+
+                for (size_type i = _size; i > pos; --i)
                 {
-                    _allocator.construct(_ptr + ending_pos, *(_ptr + (ending_pos - n)));
-                    _allocator.destroy(_ptr + (ending_pos - n));
-                    ending_pos--;
+                    if (i + n - 1 >= _size)
+                        _allocator.construct(_ptr + i + n - 1, _ptr[i - 1]);
+                    else
+                        _ptr[i + n - 1] = _ptr[i - 1];
                 }
-                for (int i = 0; i < n && first != last; ++i, ++first)
-                    _allocator.construct(_ptr + pos + i, *first);
+
+                for (size_type i = 0; first != last; ++i, ++first)
+                {
+                    if (pos + i < _size)
+                        _ptr[pos + i] = *first;
+                    else
+                        _allocator.construct(_ptr + pos + i, *first);
+                }
+
                 _size += n;
             }
         }
@@ -426,15 +423,36 @@ vector(InputIterator first, InputIterator last,
 
         vector &operator=(const vector &x)
         {
-
             if (&x == this)
                 return *this;
-            clear();
-            reserve(x.size());
-            for (int i = 0; i < x.size(); i++)
-                _allocator.construct(_ptr + i, *(x._ptr + i));
-            _size = x.size();
-
+            // reserve(x.size());
+            if (x.size() > _size)
+            {
+                if (x.size() > _capacity)
+                {
+                    clear();
+                    _ptr = _allocator.allocate(x.size());
+                    for (int i = 0; i < x.size(); i++)
+                        _allocator.construct(_ptr + i, *(x._ptr + i));
+                    _size = x.size();
+                    _capacity = _size;
+                }
+                else
+                {
+                    int i = 0;
+                    for (; i < _size; i++)
+                        _ptr[i] = x._ptr[i];
+                    for (; i < x.size(); i++)
+                        _allocator.construct(_ptr + i, *(x._ptr + i));
+                    _size = x.size();
+                }
+            }
+            else
+            {
+                for (int i = 0; i < x.size(); i++)
+                    _ptr[i] = x._ptr[i];
+                _size = x.size();
+            }
             return *this;
         }
 

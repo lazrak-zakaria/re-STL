@@ -37,13 +37,18 @@ using namespace std::chrono;
 #include <ctime>
 #include <vector>
 
-#include "../../set.hpp"
+// #include "../../set.hpp"
 
 int main()
 {
 
-    // ft::set<int> r;
-    // r.insert(3);
+    std::set<int> r;
+    r.insert(3);
+
+    std::set<int> :: reverse_iterator it = r.rbegin();
+    std::set<int> :: reverse_iterator itr = r.rend();
+    std::cout << (it < itr) << "\n";
+
     // r.print();
     ft::rb_tree<int> rb;
     rb.insert(44);

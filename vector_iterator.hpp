@@ -18,7 +18,7 @@ namespace ft
         pointer _ptr;
 
     public:
-        vector_iterator() : _ptr(NULL)
+        vector_iterator() : _ptr(0)
         {
         }
         vector_iterator(pointer _ptr) : _ptr(_ptr)
