@@ -36,7 +36,7 @@ namespace ft
             if (node->right != nil)
             {
                 rb_node_ptr cur = node->right;
-                while (cur != nil)
+                while (cur->left != nil)
                     cur = cur->left;
                 node = cur;
             }
@@ -44,14 +44,21 @@ namespace ft
             {
                 rb_node_ptr cur = node;
                 rb_node_ptr parent = cur->parent;
-                while (parent != nil && parent->right == cur)
+                if (cur == nil)
+                    node = parent;
+                else
                 {
-                    cur = parent;
-                    parent = parent->parent;
+                    while (parent != nil && parent->right == cur)
+                    {
+                        cur = parent;
+                        parent = parent->parent;
+                    }
+                    node = parent;
                 }
-
-                node = parent;
             }
+            
+            // if (node->parent == nil)
+            // std::cout << ")))))))" << node->key << "\n";
             return *this;
         }
 
@@ -60,7 +67,7 @@ namespace ft
             if (node->left != nil)
             {
                 rb_node_ptr cur = node->left;
-                while (cur != nil)
+                while (cur->right != nil)
                     cur = cur->right;
                 node = cur;
             }
@@ -68,12 +75,17 @@ namespace ft
             {
                 rb_node_ptr cur = node;
                 rb_node_ptr parent = cur->parent;
-                while (parent != nil && parent->left == cur)
+                if (cur == nil)
+                    node = parent; // i added this for rev iter bcz parent->left == cur alwys true if cur is nil;
+                else
                 {
-                    cur = parent;
-                    parent = parent->parent;
+                    while (parent != nil && parent->left == cur)
+                    {
+                        cur = parent;
+                        parent = parent->parent;
+                    }
+                    node = parent;
                 }
-                node = parent;
             }
             return *this;
         }
@@ -109,7 +121,7 @@ namespace ft
 
         bool operator!=(const rb_iterator &it) const
         {
-            return it->node != node;
+            return it.node != node;
         }
     };
 

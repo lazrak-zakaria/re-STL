@@ -10,24 +10,25 @@
 typedef bool Color;
 
 #include <memory>
+#include "iterator_traits.hpp"
 #include "functional.hpp"
-
+#include "algorithm.hpp"
 #include "utility.hpp"
-
+#include "reverse_iterator.hpp"
 namespace ft
 {
 
-    template <class T>
+    template <class Key>
     class rb_node
     {
     public:
         rb_node *parent;
         rb_node *left;
         rb_node *right;
-        T key;
+        Key key;
         Color color;
 
-        rb_node(const T &key)
+        rb_node(const Key &key)
             : key(key), left(nullptr), right(nullptr), parent(nullptr), color(RED)
         {
         }
@@ -42,16 +43,18 @@ namespace ft
 
 namespace ft
 {
-    template <class T,
-              class Compare = ft::less<T>, // set::key_compare/value_compare  // later i should implement my own comparison object
-              class Alloc = std::allocator<T>,
+    template <class Key,
+              class Ky,
+              class KeyType,
+              class Compare = ft::less<Key>, // set::key_compare/value_compare  // later i should implement my own comparison object
+              class Alloc = std::allocator<Key>,
               bool Unique = true>
     class rb_tree
     {
 
     public:
-        typedef T key_type;
-        typedef T value_type;
+        typedef Key key_type;
+        typedef Key value_type;
         typedef size_t size_type;
         typedef ptrdiff_t difference_type;
         typedef Alloc allocator_type;
@@ -61,25 +64,26 @@ namespace ft
         typedef typename Alloc::const_pointer const_pointer;
         typedef Compare key_compare;
 
-        typedef ft::rb_iterator<T> iterator;
+        typedef ft::rb_iterator<Key> iterator;
+        typedef ft::rb_iterator<Key> const_iterator;
+        typedef ft::reverse_iterator_<iterator> reverse_iterator;
+        typedef ft::reverse_iterator_<const_iterator> const_reverse_iterator;
 
     private:
-    public:
-        typedef rb_node<T> *rb_node_ptr;
+        typedef KeyType key_of_type;
+        typedef rb_node<Key> *rb_node_ptr;
 
         rb_node_ptr root;
         rb_node_ptr nil;
 
         key_compare cmp;
         bool unique = Unique;
-        size_type size_;
-
+        size_type _size;
         typename allocator_type::template rebind<ft::rb_node<value_type>>::other alloc;
 
+    public:
         rb_tree()
         {
-            // alloc = alloc();
-            // nil = new rb_node<T>();
             nil = alloc.allocate(1);
             alloc.construct(nil, value_type());
             nil->parent = nil;
@@ -88,27 +92,33 @@ namespace ft
             nil->color = BLACK;
             root = nil;
             cmp = key_compare();
-            size_ = 0;
+            _size = 0;
         }
 
-        explicit rb_tree(const key_compare &comp, const allocator_type &alloc = allocator_type())
+        explicit rb_tree(const key_compare &comp, const allocator_type &alloc = allocator_type()) : alloc(alloc)
         {
             rb_tree();
             cmp = comp;
-            this.alloc = alloc;
+
         }
 
-        rb_node_ptr create_node(T key)
+    private:
+        rb_node_ptr create_node(Key key)
         {
             rb_node_ptr node = alloc.allocate(1);
             alloc.construct(node, key);
-            node->key = key;
             node->color = RED;
             node->left = nil;
             node->right = nil;
             node->parent = nil;
 
             return node;
+        }
+
+        void deallocate_node(rb_node_ptr node)
+        {
+            alloc.destroy(node);
+            alloc.deallocate(node, 1);
         }
 
         void rotate_left(rb_node_ptr x)
@@ -155,30 +165,11 @@ namespace ft
             y->parent = x;
         }
 
-        pair<iterator, bool> insert(const value_type &val)
-        {
-            rb_node_ptr new_node = create_node(val);
 
-            ft::pair<rb_node_ptr, bool> is_inserted = insert_node(new_node);
-            size_ += is_inserted.second;
-            pair<iterator, bool> ans = ft::make_pair(iterator(is_inserted.first, nil), is_inserted.second);
-            return ans;
-        }
 
-        iterator insert(iterator position, const value_type &val)
+        const Ky &get_kot(rb_node_ptr node) const
         {
-            pair<iterator, bool> ans = insert(val);
-            return ans.first;
-        }
-
-        template <class InputIterator>
-        void insert(InputIterator first, InputIterator last)
-        {
-            while (first != last)
-            {
-                insert(*first);
-                first++;
-            }
+            return key_of_type()(node->key);
         }
 
         ft::pair<rb_node_ptr, bool> insert_node(rb_node_ptr node)
@@ -188,6 +179,7 @@ namespace ft
             while (cur != nil)
             {
                 parent = cur;
+                // cmpare here i think its ok as compare pair with pair; wont need kot
                 if (!cmp(node->key, cur->key) && !cmp(cur->key, node->key) && unique)
                     return ft::make_pair(cur, false);
 
@@ -218,11 +210,10 @@ namespace ft
             while (cur->parent->color == RED)
             {
 
-
                 rb_node_ptr parent = cur->parent;
                 rb_node_ptr g_parent = parent->parent;
 
-                std::cout << nil << "   " << cur->color << "\n";
+                // std::cout << nil << "   " << cur->color << "\n";
                 if (parent == g_parent->left)
                 {
                     rb_node_ptr uncle = g_parent->right;
@@ -283,21 +274,28 @@ namespace ft
             this->root->color = BLACK;
         }
 
-        rb_node_ptr rb_minimum(rb_node_ptr node)
+        rb_node_ptr rb_minimum(rb_node_ptr node) const
         {
             while (node->left != nil)
                 node = node->left;
             return node;
         }
+        rb_node_ptr rb_maximum(rb_node_ptr node) const
+        {
+            while (node->right != nil)
+                node = node->right;
+            nil->parent = node;
+            return node;
+        }
 
-        rb_node_ptr find(const value_type &key) const
+        rb_node_ptr find_(const Ky &key) const
         {
             rb_node_ptr cur = root;
             while (cur != nil)
             {
-                if (!cmp(key, cur->key) && !cmp(cur->key, key))
+                if (!cmp(key, get_kot(cur)) && !cmp(get_kot(cur), key))
                     return cur;
-                else if (cmp(key, cur->key))
+                else if (cmp(key, get_kot(cur)))
                     cur = cur->left;
                 else
                     cur = cur->right;
@@ -315,18 +313,6 @@ namespace ft
                 first->parent->right = second;
 
             second->parent = first->parent;
-        }
-
-        void erase(iterator position)
-        {
-            size_ -= delete_node(position.node); // how can i make rb_tree access to node ? the node gonna be privatre in iter
-        }
-
-        size_type erase(const value_type &val)
-        {
-            rb_node_ptr to_delete = find(val);
-            size_ -= delete_node(to_delete);
-            return size_;
         }
 
         bool delete_node(rb_node_ptr to_delete)
@@ -451,9 +437,9 @@ namespace ft
             clear(node->left);
             clear(node->right);
 
-            delete node;
+            deallocate_node(node);
         }
-
+        public:
         void print()
         {
             // std::cout << "print\n";
@@ -466,20 +452,20 @@ namespace ft
                 return;
 
             p(ptr->left);
-            std::cout << ptr->key << "\n";
+            std::cout << ptr->key << "--\n";
             p(ptr->right);
         }
 
     public:
-        iterator lower_bound(const value_type &val) const
+        iterator lower_bound(const Ky &val) const
         {
             rb_node_ptr cur = root;
             rb_node_ptr ans = nil;
             while (cur != nil)
             {
-                if (!cmp(val, cur->key) && !cmp(cur->key, val))
+                if (!cmp(val, get_kot(cur)) && !cmp(get_kot(cur), val))
                     return iterator(cur, nil);
-                else if (cmp(val, cur->key))
+                else if (cmp(val, get_kot(cur)))
                 {
                     ans = cur;
                     cur = cur->left;
@@ -490,13 +476,13 @@ namespace ft
             return iterator(ans, nil);
         }
 
-        iterator upper_bound(const value_type &val) const
+        iterator upper_bound(const Ky &val) const
         {
             rb_node_ptr cur = root;
             rb_node_ptr ans = nil;
             while (cur != nil)
             {
-                if (cmp(val, cur->key))
+                if (cmp(val, get_kot(cur)))
                 {
                     ans = cur;
                     cur = cur->left;
@@ -508,36 +494,36 @@ namespace ft
         }
 
     private:
-        size_type count(const value_type &val, rb_node_ptr node) const
+        size_type count(const Ky &val, rb_node_ptr node) const
         {
             if (node == nil)
                 return 0;
 
-            if (!cmp(val, node->key) && !cmp(node->key, val))
+            if (!cmp(val, get_kot(node)) && !cmp(get_kot(node), val))
             {
                 if (unique)
                     return 1;
                 return 1 + count(val, node->left) + count(val, node->right);
             }
 
-            if (cmp(val, node->key))
+            if (cmp(val, get_kot(node)))
                 return count(val, node->left);
             else
                 return count(val, node->right);
         }
 
     public:
-        size_type count(const value_type &val)
+        size_type count(const Ky &val)
         {
             return count(val, root);
         }
 
-        iterator find_(const value_type &val) const
+        iterator find(const Ky &val) const
         {
-            return iterator(find(val), nil);
+            return iterator(find_(val), nil);
         }
 
-        pair<iterator, iterator> equal_range(const value_type &val) const
+        pair<iterator, iterator> equal_range(const Ky &val) const
         {
             return ft::make_pair(lower_bound(val), upper_bound(val));
         }
@@ -549,17 +535,120 @@ namespace ft
         }
         iterator end()
         {
+            rb_maximum(root);
             return iterator(nil, nil);
         }
 
-        size_type size()
+        const_iterator begin() const
         {
-            return size_;
+            rb_node_ptr b = rb_minimum(root);
+            return const_iterator(b, nil);
+        }
+        const_iterator end() const
+        {
+            rb_maximum(root);
+            return const_iterator(nil, nil);
         }
 
-        bool empty()
+        
+        reverse_iterator rbegin ()
         {
-            return !size_;
+            return reverse_iterator(end());
+        }
+
+        reverse_iterator rend()
+        {
+            return reverse_iterator(begin());
+        }
+
+        const_reverse_iterator rbegin() const
+        {
+            return const_reverse_iterator(end());
+        }
+        const_reverse_iterator rend()const
+        {
+            return const_reverse_iterator(begin());
+        }
+
+
+
+
+
+
+
+
+        size_type size() const
+        {
+            return _size;
+        }
+
+        bool empty() const
+        {
+            return !_size;
+        }
+
+        // Modifier:
+        ft::pair<iterator, bool> insert(const value_type &val)
+        {
+            rb_node_ptr new_node = create_node(val);
+
+            ft::pair<rb_node_ptr, bool> is_inserted = insert_node(new_node);
+            _size += is_inserted.second;
+            ft::pair<iterator, bool> ans = ft::make_pair(iterator(is_inserted.first, nil), is_inserted.second);
+            return ans;
+        }
+
+        iterator insert(iterator position, const value_type &val)
+        {
+            ft::pair<iterator, bool> ans = insert(val);
+            return ans.first;
+        }
+
+        template <class InputIterator>
+        void insert(InputIterator first, InputIterator last)
+        {
+            while (first != last)
+            {
+                insert(*first);
+                first++;
+            }
+        }
+
+        void erase(iterator position)
+        {
+            _size -= delete_node(position.node); // i need to make rb_tree friend to iter
+        }
+
+        size_type erase(const Ky &val)
+        {
+            rb_node_ptr to_delete = find_(val);
+            _size -= delete_node(to_delete);
+            return _size;
+        }
+
+        void erase(iterator first, iterator last)
+        {
+            while (first != last)
+            {
+                iterator it = first;
+                ++first;
+                _size -= delete_node(it.node);
+            }
+        }
+
+        void clear()
+        {
+            clear(root);
+            _size = 0;
+            root = nil;
+        }
+
+        void swap(rb_tree &other)
+        {
+            ft::swap(root, other.root);
+            ft::swap(nil, other.nil);
+            ft::swap(cmp, other.cmp);
+            ft::swap(_size, other._size);
         }
     };
 

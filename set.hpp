@@ -8,20 +8,24 @@
 
 namespace ft
 {
+
+   template <class K>
+    struct SetKeyOfTT
+    {
+        const K &operator()(const K &key) const
+        {
+            return key;
+        }
+    };
+
     template <class T,                      // set::key_type/value_type
               class Compare = ft::less<T>, // set::key_compare/value_compare  // later i should implement my own comparison object
               class Alloc = std::allocator<T>>
-    class set : public rb_tree<T, Compare, Alloc>
+    class set : public rb_tree<const T, const T, SetKeyOfTT<T> ,Compare, Alloc>
     {
 
     public:
-    set ()
-    {
-    }
-    explicit set(const Compare& comp,  const Alloc& alloc = Alloc())
-        {
-            rb_tree(comp,  alloc);
-        }
+
     
     };
 

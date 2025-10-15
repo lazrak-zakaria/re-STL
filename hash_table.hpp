@@ -176,7 +176,7 @@ namespace ft
         typedef typename allocator_type::const_pointer const_pointer;
         typedef _iterator<Key> iterator;
         typedef _iterator<Key> const_iterator;
-        typedef _local_iterator<const Key> local_iterator;
+        typedef _local_iterator<Key> local_iterator;
         typedef _local_iterator<Key> const_local_iterator;
 
     private:

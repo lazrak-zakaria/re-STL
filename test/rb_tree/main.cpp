@@ -1,70 +1,84 @@
 #include <iostream>
-#include "../../rb_tree.hpp"
 #include <set>
-
-#include <vector>
-using namespace std;
-class m
-{
-public:
-    // Default constructor
-
-    int data;
-    m()
-    {
-        std::cout << "Default constructor called" << std::endl;
-    }
-
-    // Copy constructor
-    m(const m &other)
-    {
-        std::cout << "Copy constructor called" << std::endl;
-    }
-
-    // Destructor
-    ~m()
-    {
-        std::cout << "Destructor called" << std::endl;
-    }
-};
-
-#include <iostream>
-#include <chrono>
-using namespace std;
-using namespace std::chrono;
-#include <map>
+#include <string>
 #include <cstdlib>
 #include <ctime>
-#include <vector>
+#include "./../../set.hpp" // your ft::set header
 
-// #include "../../set.hpp"
+#include <iostream>
+#include <set>
+#include <string>
+#include <cstdlib>
+#include <ctime>
+// #include "set.hpp" // your ft::set header
 
-int main()
-{
+// helper to generate random strings
+std::string random_string(size_t len) {
+    static const char charset[] =
+        "abcdefghijklmnopqrstuvwxyz"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    std::string s;
+    s.reserve(len);
+    for (size_t i = 0; i < len; ++i)
+        s.push_back(charset[std::rand() % (sizeof(charset) - 1)]);
+    return s;
+}
 
-    std::set<int> r;
-    r.insert(3);
+int main() {
+    std::srand(std::time(NULL));
 
-    std::set<int> :: reverse_iterator it = r.rbegin();
-    std::set<int> :: reverse_iterator itr = r.rend();
-    std::cout << (it < itr) << "\n";
+    ft::set<std::string> ft_s;
+    std::set<std::string> std_s;
 
-    // r.print();
-    ft::rb_tree<int> rb;
-    rb.insert(44);
-    rb.insert(445234);
-    rb.insert(4);
-    rb.insert(-453424);
-    rb.insert(4455);
+    const int N = 1000;
+    std::string values[N];
 
-    rb.print();
-    // vector<int> a = {3,4,5,6,7,8,10};
+    // Fill sets with random strings
+    for (int i = 0; i < N; ++i) {
+        values[i] = random_string(5 + std::rand() % 5);
+        ft_s.insert(values[i]);
+        std_s.insert(values[i]);
+    }
 
-    // rb.insert(a.begin(), a.end());
+    bool pass = true;
 
-    // cout << (rb.find_(445234) == rb.end()) << "-------\n";
-    // rb.print();
-    // cout << rb.size() << "-------\n";
-    
+    // ✅ 1. Test existing keys
+    for (int i = 0; i < 100; ++i) {
+        int idx = std::rand() % N;
+        const std::string &key = values[idx];
+
+        if (ft_s.count(key) != std_s.count(key)) {
+            std::cout << "❌ count mismatch for existing key: " << key << "\n";
+            pass = false;
+            break;
+        }
+    }
+
+    // ✅ 2. Test non-existing keys
+    for (int i = 0; i < 100; ++i) {
+        std::string key = random_string(6) + "_missing";
+
+        if (ft_s.count(key) != std_s.count(key)) {
+            std::cout << "❌ count mismatch for missing key: " << key << "\n";
+            pass = false;
+            break;
+        }
+    }
+
+    // ✅ 3. Boundary keys
+    if (ft_s.count(*std_s.begin()) != 1) {
+        std::cout << "❌ count mismatch for smallest element\n";
+        pass = false;
+    }
+    if (ft_s.count(*std_s.rbegin()) != 1) {
+        std::cout << "❌ count mismatch for largest element\n";
+        pass = false;
+    }
+
+    if (pass)
+        std::cout << "✅ ft::set::count() matches std::set for all tests.\n";
+    else
+        std::cout << "❌ Some count() tests failed.\n";
+
     return 0;
 }
