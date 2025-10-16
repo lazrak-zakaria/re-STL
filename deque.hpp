@@ -39,12 +39,11 @@ namespace ft
         size_type _buffer_size = 4096;
 
         allocator_type deque_allocator;
-        std::allocator<value_type *> map_allocator ;
-        // typename allocator_type::template rebind<>::other map_allocator;
+        // std::allocator<value_type *> map_allocator ;
+        typename allocator_type::template rebind<pointer>::other map_allocator;
 
     public:
-
-        deque() : start(), finish(), map(0), map_size(0) {create_map_and_nodes(0); }
+        deque() : start(), finish(), map(0), map_size(0) { create_map_and_nodes(0); }
         iterator begin() { return start; }
         iterator end() { return finish; }
 
@@ -92,21 +91,21 @@ namespace ft
             map_size = std::max(map_size, num_of_nodes + 2);
             h;
             std::cout << map_size << "\n";
-            map_pointer map = map_allocator.allocate(map_size); //
+            map = map_allocator.allocate(map_size); //
             // i want my starting point to be in the middle
             map_pointer new_start = map + (map_size - num_of_nodes) / 2;
             map_pointer new_finish = new_start + num_of_nodes - 1;
-            
+
             map_pointer cur = new_start;
             while (cur <= new_finish)
             {
                 *cur = allocate_node();
                 cur++;
             }
-            
+
             start.set_node(new_start);
             finish.set_node(new_finish);
-            
+
             start.cur = start.first;
             finish.cur = finish.first + num_elements % buffer_size();
             // finish.cur = new int(3);
@@ -165,6 +164,7 @@ namespace ft
     public: // push_* and pop_*
         void push_back(const value_type &t)
         {
+
             if (finish.cur != finish.last - 1)
             {
                 deque_allocator.construct(finish.cur, t);
@@ -178,8 +178,9 @@ namespace ft
         }
 
     private:
-        void move_back(const value_type &val)
+        void move_back(const value_type &t)
         {
+            value_type val = t;
             reserve_map_back();
             *(finish.node + 1) = allocate_node();
             deque_allocator.construct(finish.cur, val);
@@ -189,8 +190,9 @@ namespace ft
         }
 
     public:
-        void push_front(const value_type &val)
+        void push_front(const value_type &x)
         {
+            value_type val = x;
             if (!size())
             {
                 push_back(val);
@@ -251,7 +253,7 @@ namespace ft
         {
             if (start.cur != start.last - 1)
             {
-                destroy(start.cur);
+                deque_allocator.destroy(start.cur);
                 ++start.cur;
             }
             else
@@ -291,7 +293,7 @@ namespace ft
             for (map_pointer node = start.node + 1; node < finish.node; ++node)
             {
 
-                destroy(*node, *node + buffer_size());
+                destroy_buffer(*node, *node + buffer_size());
 
                 deallocate_node(*node);
             }
@@ -315,7 +317,7 @@ namespace ft
             {
                 e--;
                 ns--;
-                *ns.cur = *s.cur;
+                *ns = *e;
             }
         }
 
@@ -323,12 +325,14 @@ namespace ft
         {
             while (s != e)
             {
-                *ns.cur = *s.cur;
+                // *ns.cur = *s.cur;
+                *ns = *s;
                 s++;
                 ns++;
             }
         }
 
+    public:
         iterator erase(iterator pos)
         {
             iterator next = pos;
@@ -337,6 +341,7 @@ namespace ft
 
             if (i < (size() >> 1))
             {
+                g(55);
                 copy_backward(start, pos, next);
                 pop_front();
             }
@@ -384,6 +389,7 @@ namespace ft
             }
         }
 
+    public:
         iterator insert(iterator position, const value_type &x)
         {
             if (position.cur == start.cur)
@@ -406,10 +412,12 @@ namespace ft
         {
             difference_type index = pos - start;
             value_type x_copy = x;
+            std::cout<< *begin() << "++\n";
 
             if (index < size() / 2)
             {
-                push_front(front());
+                value_type xx = front();
+                push_front(xx);
                 iterator front1 = start;
                 ++front1;
                 iterator front2 = front1;
@@ -417,7 +425,10 @@ namespace ft
                 pos = start + index;
                 iterator pos1 = pos;
                 ++pos1;
+                g(6);
                 copy(front2, pos1, front1);
+                g(6);
+
             }
             else
             {
@@ -427,9 +438,11 @@ namespace ft
                 iterator back2 = back1;
                 --back2;
                 pos = start + index;
+
                 copy_backward(pos, back2, back1);
             }
             *pos = x_copy;
+            std::cout<< *begin() << "++\n";
             return pos;
         }
 
