@@ -1,6 +1,6 @@
 #include <iostream>
 
-
+#include <iomanip> 
 using namespace std;
 class m
 {
@@ -25,7 +25,7 @@ public:
         std::cout << "Destructor called" << std::endl;
     }
 };
-
+#include <ctime>     // for clock()
 #include <iostream>
 #include <chrono>
 using namespace std;
@@ -39,56 +39,100 @@ using namespace std::chrono;
 #include <deque>
 int main()
 {
-ft::deque<int> ft_t;
+
+
+
+
+
+
+
+
+
+
+
+ std::cout << "===== TEST: insert(range) — no operator= used =====\n";
+
+    // 1️⃣ Build base deques
+    ft::deque<int> ft_t;
     std::deque<int> std_t;
-
-    // Fill deques with initial data
-    for (int i = 0; i < 323232; ++i) {
-        ft_t.push_front(i);
-        std_t.push_front(i);
+    for (int i = 0; i < 100000; ++i) {
+        ft_t.push_back(i);
+        std_t.push_back(i);
     }
 
-    // Single-element insert at position 5
-    ft::deque<int>::iterator ft_it = ft_t.insert(ft_t.begin() + 5, 100);
-    std::deque<int>::iterator std_it = std_t.insert(std_t.begin() + 5, 100);
+    // 2️⃣ Build source range
+    ft::deque<int> ft_src;
+    std::deque<int> std_src;
+    for (int i = 0; i < 200; ++i) {
+        ft_src.push_back(777 + i);
+        std_src.push_back(777 + i);
+    }
 
-    // Compare resulting iterators
-    if (*ft_it == *std_it)
-        std::cout << "✅ iterator points to inserted element correctly\n";
-    else
-        std::cout << "❌ iterator mismatch\n";
+    // 3️⃣ Define positions to test
+    int positions[] = {0, 50, 50000, (int)ft_t.size()};
+    size_t n_positions = sizeof(positions) / sizeof(int);
 
-    // Compare sizes
-    if (ft_t.size() == std_t.size())
-        std::cout << "✅ size matches\n";
-    else
-        std::cout << "❌ size mismatch: ft=" << ft_t.size() << ", std=" << std_t.size() << "\n";
+    for (size_t p = 0; p < n_positions; ++p) {
+        int pos = positions[p];
+        std::cout << "\n👉 Inserting range at position " << pos << "...\n";
 
-    // Compare full contents
-    bool ok = true;
-    ft::deque<int>::iterator it1 = ft_t.begin();
-    std::deque<int>::iterator it2 = std_t.begin();
-    size_t idx = 0;
-
-    while (it1 != ft_t.end() ) {
-        if (*it1 != *it2) {
-            std::cout << "Mismatch at index " << idx << ": ft=" << *it1 << ", std=" << *it2 << "\n";
-            ok = false;
+        // --- Build manually (no operator=) ---
+        ft::deque<int> ft_temp;
+        std::deque<int> std_temp;
+        for (size_t i = 0; i < ft_t.size(); ++i) {
+            ft_temp.push_back(ft_t[i]);
+            std_temp.push_back(std_t[i]);
         }
-        ++it1; ++it2; ++idx;
-        if (it1 == ft_t.end() ) std::cout << "HHH\n";
+
+        // --- Perform insert(range) ---
+        clock_t start = clock();
+        ft_temp.insert(ft_temp.begin() + pos, ft_src.begin(), ft_src.end());
+        clock_t end = clock();
+        double ft_time = double(end - start) / CLOCKS_PER_SEC;
+
+        start = clock();
+        std_temp.insert(std_temp.begin() + pos, std_src.begin(), std_src.end());
+        end = clock();
+        double std_time = double(end - start) / CLOCKS_PER_SEC;
+
+        // --- Validate ---
+        bool ok = true;
+        if (ft_temp.size() != std_temp.size()) {
+            std::cout << "❌ size mismatch: ft=" << ft_temp.size()
+                      << ", std=" << std_temp.size() << "\n";
+            ok = false;
+        } else {
+            for (size_t i = 0; i < ft_temp.size(); ++i) {
+                if (ft_temp[i] != std_temp[i]) {
+                    std::cout << "❌ mismatch at index " << i 
+                              << ": ft=" << ft_temp[i] 
+                              << ", std=" << std_temp[i] << "\n";
+                    ok = false;
+                    break;
+                }
+            }
+        }
+
+        if (ok)
+            std::cout << "✅ insert(range) identical to std::deque\n";
+        else
+            std::cout << "❌ insert(range) content differs\n";
+
+        // --- Print nicely formatted time ---
+        std::cout << std::fixed << std::setprecision(6);
+        std::cout << "⏱ ft_time=" << ft_time << " s | std_time=" << std_time << " s\n";
     }
 
-    if (ok)
-        std::cout << "✅ insert(begin+5, value) works correctly\n";
-    else
-        std::cout << "❌ content mismatch found\n";
+    std::cout << "\n===== insert(range) test completed =====\n";
 
-    // Print resulting deque
-    // std::cout << "\nft::deque content:\n";
-    // for (auto &v : ft_t) std::cout << v << " ";
-    // std::cout << "\nstd::deque content:\n";
-    // for (auto &v : std_t) std::cout << v << " ";
-    std::cout << std::endl;
+
+
+
+
+
+
+
+
+
     return 0;
 }

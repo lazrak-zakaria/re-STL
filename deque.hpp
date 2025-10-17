@@ -2,7 +2,11 @@
 
 #include <memory>
 #include "deque_iterator.hpp"
-
+#include "reverse_iterator.hpp"
+#include "iterator_traits.hpp"
+#include "algorithm.hpp"
+#include <algorithm>
+#include <exception>
 #define h std::cout << "here\n"
 #define g(x) std::cout << "here: " << x << "\n"
 
@@ -25,7 +29,10 @@ namespace ft
 
         typedef unsigned long size_type;
         typedef long difference_type;
-        typedef deque_iterator<T, T &, T *> iterator;
+        typedef deque_iterator<T> iterator;
+        typedef deque_iterator<const T> const_iterator;
+        typedef ft::reverse_iterator_<iterator> reverse_iterator;
+        typedef ft::reverse_iterator_<const_iterator> const_reverse_iterator;
 
     protected:
         typedef pointer *map_pointer;
@@ -43,10 +50,107 @@ namespace ft
         typename allocator_type::template rebind<pointer>::other map_allocator;
 
     public:
-        deque() : start(), finish(), map(0), map_size(0) { create_map_and_nodes(0); }
+        deque()
+            : map(0), map_size(0)
+        {
+            create_map_and_nodes(0);
+        }
+
+        explicit deque(size_type n, const value_type &val = value_type(), const allocator_type &alloc = allocator_type())
+            : deque(alloc)
+        {
+            fill_initialize(n, val);
+        }
+
+        template <class InputIterator>
+        deque(InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type(),
+              typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0) : deque(alloc)
+        {
+            insert(start, first, last);
+        }
+        
+        deque(const deque &x) : map(0), map_size(0)
+        {
+
+            create_map_and_nodes(x.size());
+            for (const_iterator it = x.begin(); it != x.end(); ++it)
+                push_back(*it);
+            // insert(begin(), x.begin(), x.end());
+            // *this = x;
+        }
+
+        deque &operator=(const deque &x)
+        {
+            if (&x == this)
+                return *this;
+
+            clear();
+            if (map)
+            {
+                for (map_pointer node = start.node; node <= finish.node; ++node)
+                {
+                    if (*node)
+                        deallocate_node(*node);
+                }
+                map_allocator.deallocate(map, map_size);
+            }
+
+            // Reset to fresh state
+            map = 0;
+            map_size = 0;
+
+            // Reinitialize with empty map
+            create_map_and_nodes(0);
+
+            // Copy elements
+            for (const_iterator it = x.begin(); it != x.end(); ++it)
+                push_back(*it);
+
+            return *this;
+            return *this;
+        }
+
+        template <class InputIterator>
+        void assign(InputIterator first, InputIterator last,
+                    typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
+        {
+            clear();
+            insert(begin(), first, last);
+        }
+
+        void assign(size_type n, const value_type &val)
+        {
+            clear();
+            insert(begin(), n, val);
+        }
+
+        void fill_initialize(size_t n, const value_type &value)
+        {
+            create_map_and_nodes(n);
+
+            for (map_pointer cur = start.node; cur < finish.node; ++cur)
+                initialized_fill_node(*cur, *cur + buffer_size(), value);
+
+            initialized_fill_node(finish.first, finish.cur, value);
+        }
+
+        void initialized_fill_node(pointer first, pointer end, value_type &value)
+        {
+            while (first != end)
+            {
+                *first = value;
+                ++first;
+            }
+        }
+
         iterator begin() { return start; }
         iterator end() { return finish; }
-
+        const_iterator begin() const { return start; }
+        const_iterator end() const { return finish; }
+        reverse_iterator rbegin() { return reverse_iterator(end()); }
+        reverse_iterator rend() { return reverse_iterator(begin()); }
+        const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
+        const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
         size_t deque_buf_size(size_t sz)
         {
             // i return how many elements can be stored
@@ -88,9 +192,9 @@ namespace ft
         {
             size_type num_of_nodes = num_elements / buffer_size() + 1;
 
-            map_size = std::max(map_size, num_of_nodes + 2);
-            h;
-            std::cout << map_size << "\n";
+            map_size = num_of_nodes + 2;
+            // h;
+            std::cout << map_size << "==\n";
             map = map_allocator.allocate(map_size); //
             // i want my starting point to be in the middle
             map_pointer new_start = map + (map_size - num_of_nodes) / 2;
@@ -110,7 +214,7 @@ namespace ft
             finish.cur = finish.first + num_elements % buffer_size();
             // finish.cur = new int(3);
             // std::cout << * finish.cur << "--\n";
-            h;
+            // h;
         }
 
         void copy(map_pointer s, map_pointer e, map_pointer ns)
@@ -155,20 +259,20 @@ namespace ft
                 copy(start.node, finish.node + 1, new_nstart);
                 map_allocator.deallocate(map, map_size);
                 map = new_map;
+                std::cout << new_map_size << ":;;;;;;;;;;;;;;;;;;\n";
                 map_size = new_map_size;
             }
             start.set_node(new_nstart);
             finish.set_node(new_nstart + num_old_nodes - 1);
         }
 
-    public: // push_* and pop_*
+    public:
         void push_back(const value_type &t)
         {
 
             if (finish.cur != finish.last - 1)
             {
                 deque_allocator.construct(finish.cur, t);
-                h;
                 ++finish.cur;
             }
             else
@@ -182,6 +286,7 @@ namespace ft
         {
             value_type val = t;
             reserve_map_back();
+
             *(finish.node + 1) = allocate_node();
             deque_allocator.construct(finish.cur, val);
 
@@ -193,9 +298,11 @@ namespace ft
         void push_front(const value_type &x)
         {
             value_type val = x;
+
             if (!size())
             {
                 push_back(val);
+
                 return;
             }
             if (start.cur != start.first)
@@ -204,7 +311,10 @@ namespace ft
                 --start.cur;
             }
             else
+            {
+
                 move_front(val);
+            }
         }
 
     private:
@@ -220,8 +330,10 @@ namespace ft
 
         void reserve_map_back(size_type nodes_to_add = 1)
         {
+            std::cout << "**||@@@@@@@@@@@@@@@@@@*" << map_size << "\n";
             if (nodes_to_add + 1 > map_size - (finish.node - map))
                 reallocate_map(nodes_to_add);
+            std::cout << "**||@@@@@@@@@@@@@@@@@@^^^^^^^^^^^^^^*" << map_size << "\n";
         }
 
         void reserve_map_front(size_type nodes_to_add = 1)
@@ -287,27 +399,28 @@ namespace ft
             }
         }
 
+    public:
         void clear()
         {
+            std::cout << map_size << "--@\n";
 
             for (map_pointer node = start.node + 1; node < finish.node; ++node)
             {
 
                 destroy_buffer(*node, *node + buffer_size());
-
-                deallocate_node(*node);
+                deallocate_node(*node); //
             }
-
             if (start.node != finish.node)
             {
+                std::cout << "FFF\n";
                 destroy_buffer(start.cur, start.last);
                 destroy_buffer(finish.first, finish.cur);
 
-                deque_allocator.deallocate(finish.first, buffer_size());
+                deallocate_node(finish.first);
             }
             else
                 destroy_buffer(start.cur, finish.cur);
-
+            std::cout << map_size << "@\n";
             finish = start;
         }
 
@@ -325,7 +438,6 @@ namespace ft
         {
             while (s != e)
             {
-                // *ns.cur = *s.cur;
                 *ns = *s;
                 s++;
                 ns++;
@@ -333,6 +445,19 @@ namespace ft
         }
 
     public:
+        reference at(size_type pos)
+        {
+            if (pos >= size())
+                throw std::out_of_range("ddas");
+            return operator[](pos);
+        }
+
+        const_reference at(size_type pos) const
+        {
+            if (pos >= size())
+                throw std::out_of_range("ddas");
+            return operator[](pos);
+        }
         iterator erase(iterator pos)
         {
             iterator next = pos;
@@ -412,7 +537,7 @@ namespace ft
         {
             difference_type index = pos - start;
             value_type x_copy = x;
-            std::cout<< *begin() << "++\n";
+            std::cout << *begin() << "++\n";
 
             if (index < size() / 2)
             {
@@ -428,7 +553,6 @@ namespace ft
                 g(6);
                 copy(front2, pos1, front1);
                 g(6);
-
             }
             else
             {
@@ -442,13 +566,192 @@ namespace ft
                 copy_backward(pos, back2, back1);
             }
             *pos = x_copy;
-            std::cout<< *begin() << "++\n";
+            std::cout << *begin() << "++\n";
             return pos;
         }
 
         reference operator[](size_type n)
         {
             return start[n];
+        }
+
+        template <class InputIt>
+        iterator insert(iterator pos, InputIt first, InputIt last,
+                        typename ft::enable_if<!ft::is_integral<InputIt>::value>::type * = 0)
+        {
+            g(5);
+            difference_type offset = pos - start;
+            difference_type n = ft::distance(first, last);
+
+            if (n == 0)
+                return start + offset;
+
+            if (pos.cur == start.cur)
+            {
+                iterator old_start = start;
+                for (InputIt it = first; it != last; ++it)
+                {
+                    push_front(*it);
+                }
+
+                std::reverse(start, old_start);
+                return start;
+            }
+
+            else if (pos.cur == finish.cur)
+            {
+                iterator result = finish;
+                for (InputIt it = first; it != last; ++it)
+                {
+                    push_back(*it);
+                }
+                return result;
+            }
+
+            else
+            {
+
+                if (offset < size() / 2)
+                {
+
+                    for (difference_type i = 0; i < n; ++i)
+                    {
+                        push_front(front());
+                    }
+
+                    pos = start + offset + n;
+                    iterator old_start = start + n;
+                    iterator mid = old_start + offset;
+
+                    copy(old_start, mid, start);
+
+                    InputIt it = first;
+                    for (iterator insert_pos = start + offset; insert_pos != pos && it != last; ++insert_pos, ++it)
+                    {
+                        *insert_pos = *it;
+                    }
+                }
+                else
+                {
+
+                    iterator old_finish = finish;
+                    for (difference_type i = 0; i < n; ++i)
+                    {
+                        push_back(back());
+                    }
+
+                    pos = start + offset;
+                    iterator mid = pos;
+
+                    copy_backward(mid, old_finish, finish);
+
+                    InputIt it = first;
+                    for (iterator insert_pos = pos; it != last; ++insert_pos, ++it)
+                    {
+                        *insert_pos = *it;
+                    }
+                }
+
+                return start + offset;
+            }
+        }
+
+        iterator insert(iterator pos, size_type n, const value_type &val)
+        {
+            difference_type offset = pos - start;
+
+            if (n == 0)
+                return start;
+
+            if (pos.cur == start.cur)
+            {
+                iterator old_start = start;
+                for (size_t i = 0; i < n; ++i)
+                {
+                    push_front(val);
+                }
+
+                std::reverse(start, old_start);
+                return start;
+            }
+
+            else if (pos.cur == finish.cur)
+            {
+                iterator result = finish;
+                for (size_t i = 0; i < n; ++i)
+                {
+                    push_back(val);
+                }
+                return result;
+            }
+
+            else
+            {
+
+                if (offset < size() / 2)
+                {
+
+                    for (difference_type i = 0; i < n; ++i)
+                    {
+                        push_front(front());
+                    }
+
+                    pos = start + offset + n;
+                    iterator old_start = start + n;
+                    iterator mid = old_start + offset;
+
+                    copy(old_start, mid, start);
+
+                    size_t it = 0;
+                    for (iterator insert_pos = start + offset; insert_pos != pos && it < n; ++insert_pos, ++it)
+                    {
+                        *insert_pos = val;
+                    }
+                }
+                else
+                {
+
+                    iterator old_finish = finish;
+                    for (difference_type i = 0; i < n; ++i)
+                    {
+                        push_back(back());
+                    }
+
+                    pos = start + offset;
+                    iterator mid = pos;
+
+                    copy_backward(mid, old_finish, finish);
+
+                    size_t it = 0;
+
+                    for (iterator insert_pos = pos; it < n; ++insert_pos, ++it)
+                    {
+                        *insert_pos = val;
+                    }
+                }
+
+                return start + offset;
+            }
+        }
+
+        void resize(size_type n, value_type val = value_type())
+        {
+            size_type sz = size();
+            if (n > sz)
+            {
+                while (sz < n)
+                {
+                    push_back(val);
+                    sz++;
+                }
+            }
+            else if (n < sz)
+                erase(start + n, finish);
+        }
+
+        bool empty()
+        {
+            return !size();
         }
     };
 

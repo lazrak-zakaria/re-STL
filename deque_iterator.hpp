@@ -3,14 +3,14 @@
 
 namespace ft
 {
-    template <class T, class Ref, class Ptr>
+    template <class T>
     struct deque_iterator
     {
 
         typedef std::random_access_iterator_tag iterator_category;
         typedef T value_type;
-        typedef Ptr pointer;
-        typedef Ref reference;
+        typedef T *pointer;
+        typedef T &reference;
         typedef unsigned long long size_type;
         typedef long difference_type;
         typedef T **map_pointer;
@@ -21,6 +21,9 @@ namespace ft
         T *last;
         map_pointer node;
 
+        deque_iterator() : cur(0), first(0), last(0), node(0)
+        {
+        }
         // how many byte in each node;
         size_type _buffer_size = 4096;
 
@@ -52,7 +55,14 @@ namespace ft
         difference_type operator-(const deque_iterator &other) const
         {
             return difference_type(buffer_size()) * (node - other.node - 1) + (cur - first) + (other.last - other.cur);
+        // return difference_type(buffer_size()) * (node - other.node) 
+        //        + (cur - first) 
+        //        - (other.cur - other.first);
         }
+
+
+
+
 
         deque_iterator &operator++()
         {
@@ -146,10 +156,23 @@ namespace ft
             return cur != rhs.cur;
         }
 
-
         bool operator<(const self &rhs) const
         {
             return (node == rhs.node) ? (cur < rhs.cur) : (node < rhs.node);
+        }
+        bool operator>(const self &rhs) const
+        {
+            return !(*this < rhs) && !(*this == rhs);
+        }
+
+        template <typename U>
+        deque_iterator (deque_iterator<U> const &other)
+            : node((map_pointer)other.node),
+
+              cur((pointer)other.cur),
+              first((pointer)other.first),
+              last((pointer)other.last)
+        {
         }
     };
 
