@@ -46,51 +46,60 @@ namespace ft
         size_type _buffer_size = 4096;
 
         allocator_type deque_allocator;
-        // std::allocator<value_type *> map_allocator ;
         typename allocator_type::template rebind<pointer>::other map_allocator;
 
     public:
-        deque()
-            : map(0), map_size(0)
+        deque(const allocator_type &alloc = allocator_type())
+            : map(0), map_size(0), deque_allocator(alloc)
         {
             create_map_and_nodes(0);
         }
 
         explicit deque(size_type n, const value_type &val = value_type(), const allocator_type &alloc = allocator_type())
-            : deque(alloc)
+            : map(0), map_size(0), deque_allocator(alloc)
         {
             fill_initialize(n, val);
         }
 
         template <class InputIterator>
         deque(InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type(),
-              typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0) : deque(alloc)
+              typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
+            : map(0), map_size(0), deque_allocator(alloc)
         {
-            insert(start, first, last);
+            create_map_and_nodes(last - first);
+            iterator st = start;
+            while (st != finish)
+            {
+                deque_allocator.construct(st.cur, *first);
+                // deque_allocator.construct(first, value);
+                ++st;
+                ++first;
+            }
         }
 
-        deque(const deque &x) : map(0), map_size(0)
+        deque(const deque &x) : deque(x.begin(), x.end(), x.deque_allocator)
         {
+        }
 
-            create_map_and_nodes(x.size());
-            for (const_iterator it = x.begin(); it != x.end(); ++it)
-                push_back(*it);
-            // insert(begin(), x.begin(), x.end());
-            // *this = x;
+        void swap(deque &x)
+        {
+            ft::swap(x.start, start);
+            ft::swap(x.finish, finish);
+            ft::swap(x.deque_allocator, deque_allocator);
+            ft::swap(x.map_allocator, map_allocator);
+            ft::swap(x.map, map);
+            ft::swap(x.map_size, map_size);
+            ft::swap(x._buffer_size, _buffer_size);
         }
 
         deque &operator=(const deque &x)
         {
             if (&x == this)
                 return *this;
+            deque d(x);
+            this->swap(d);
 
-            clear();
-
-            // Copy elements using existing structure
-            for (const_iterator it = x.begin(); it != x.end(); ++it)
-                push_back(*it);
-
-            return *this; // Remove the duplicate return statement
+            return *this;
         }
 
         void fill_initialize(size_t n, const value_type &value)
@@ -103,11 +112,11 @@ namespace ft
             initialized_fill_node(finish.first, finish.cur, value);
         }
 
-        void initialized_fill_node(pointer first, pointer end, value_type &value)
+        void initialized_fill_node(pointer first, pointer end, const value_type &value)
         {
             while (first != end)
             {
-                *first = value;
+                deque_allocator.construct(first, value);
                 ++first;
             }
         }
@@ -268,12 +277,6 @@ namespace ft
         {
             value_type val = x;
 
-            // if (!size())
-            // {
-            //     push_back(val);
-
-            //     return;
-            // }
             if (start.cur != start.first)
             {
                 deque_allocator.construct(start.cur - 1, val);
@@ -299,10 +302,8 @@ namespace ft
 
         void reserve_map_back(size_type nodes_to_add = 1)
         {
-            // std::cout << "**||@@@@@@@@@@@@@@@@@@*" << map_size << "\n";
             if (nodes_to_add + 1 > map_size - (finish.node - map))
                 reallocate_map(nodes_to_add);
-            // std::cout << "**||@@@@@@@@@@@@@@@@@@^^^^^^^^^^^^^^*" << map_size << "\n";
         }
 
         void reserve_map_front(size_type nodes_to_add = 1)
@@ -311,7 +312,7 @@ namespace ft
                 reallocate_map(nodes_to_add, true);
         }
 
-        public:
+    public:
         void pop_back()
         {
             if (finish.cur != finish.first)
@@ -544,7 +545,6 @@ namespace ft
             return start[n];
         }
 
-
         void resize(size_type n, value_type val = value_type())
         {
             size_type sz = size();
@@ -563,6 +563,79 @@ namespace ft
         bool empty()
         {
             return !size();
+        }
+
+        template <class InputIt>
+        iterator insert(iterator pos, InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value>::type * = 0)
+        {
+            difference_type offset = pos - start;
+            difference_type n = std::distance(first, last);
+
+            if (n == 0)
+                return pos;
+
+            // If inserting at the beginning
+            if (pos.cur == start.cur)
+            {
+
+                for (InputIt it = first; it != last; ++it)
+                    push_front(*it);
+
+                iterator old_start = start + n;
+                std::reverse(start, old_start);
+                return start;
+            }
+
+            else if (pos.cur == finish.cur)
+            {
+                iterator result = finish;
+                for (InputIt it = first; it != last; ++it)
+                    push_back(*it);
+
+                return result;
+            }
+
+            else
+            {
+
+                if (offset < size() / 2)
+                {
+
+                    for (difference_type i = 0; i < n; ++i)
+                        push_front(front());
+
+                    pos = start + offset + n;
+                    iterator old_start = start + n;
+                    iterator mid = old_start + offset;
+
+                    copy(old_start, mid, start);
+
+                    InputIt it = first;
+                    for (iterator insert_pos = start + offset; insert_pos != pos && it != last; ++insert_pos, ++it)
+                    {
+                        *insert_pos = *it;
+                    }
+                }
+                else
+                {
+
+                    for (difference_type i = 0; i < n; ++i)
+                        push_back(back());
+
+                    iterator old_finish = finish - n;
+                    pos = start + offset;
+                    iterator mid = pos;
+
+                    copy_backward(mid, old_finish, finish);
+                    InputIt it = first;
+                    for (iterator insert_pos = pos; it != last; ++insert_pos, ++it)
+                    {
+                        *insert_pos = *it;
+                    }
+                }
+
+                return start + offset;
+            }
         }
     };
 
