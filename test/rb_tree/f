@@ -1,0 +1,43 @@
+TESTING FT::SET RANGE OPERATIONS (LARGE SCALE)
+================================================
+Testing with up to 1,000,000 elements...
+
+=== TEST RANGE INSERT (LARGE SCALE) ===
+
+[Test 1] Inserting 1,000,000 sequential elements...
+After range insert [size: 1000000]
+  First 5: 0 1 2 3 4 
+  Last 5: 999995 999996 999997 999998 999999 
+Time: 0.462936 seconds
+
+[Test 2] Inserting 1,000,000 random elements...
+After range insert (with duplicates) [size: 906366]
+  First 5: 2 3 11 12 18 
+  Last 5: 4999947 4999963 4999973 4999982 4999988 
+Time: 0.821344 seconds
+Note: Size < 1M due to duplicate random values
+
+[Test 3] Inserting 500,000 elements in multiple ranges...
+After chunked insert [size: 500000]
+  First 5: 0 1 2 3 4 
+  Last 5: 499995 499996 499997 499998 499999 
+Time: 0.212674 seconds
+
+=== TEST RANGE ERASE (LARGE SCALE) ===
+
+[Test 1] Erasing middle 500,000 elements from 1M set...
+Before erase [size: 1000000]
+  First 5: 0 1 2 3 4 
+  Last 5: 999995 999996 999997 999998 999999 
+After erase [250k, 750k) [size: 500000]
+  First 5: 0 1 2 3 4 
+  Last 5: 999995 999996 999997 999998 999999 
+Time: 0.097135 seconds
+
+[Test 2] Erasing first 300,000 elements...
+After erase [begin, 300k) [size: 700000]
+  First 5: 300000 300001 300002 300003 300004 
+  Last 5: 999995 999996 999997 999998 999999 
+Time: 0.011505 seconds
+
+[Test 3] Erasing last 700,000 elements...
