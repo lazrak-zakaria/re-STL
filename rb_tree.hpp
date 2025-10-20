@@ -63,7 +63,7 @@ namespace ft
         typedef typename Alloc::pointer pointer;
         typedef typename Alloc::const_pointer const_pointer;
         typedef Compare key_compare;
-
+        typedef Compare value_compare;
         typedef ft::rb_iterator<Key> iterator;
         typedef ft::rb_iterator<Key> const_iterator;
         typedef ft::reverse_iterator_<iterator> reverse_iterator;
@@ -82,8 +82,10 @@ namespace ft
         typename allocator_type::template rebind<ft::rb_node<value_type>>::other alloc;
 
     public:
-        rb_tree()
+
+        explicit rb_tree(const key_compare &comp = key_compare(), const allocator_type &a = allocator_type()) : cmp(comp), alloc(a)
         {
+
             nil = alloc.allocate(1);
             alloc.construct(nil, value_type());
             nil->parent = nil;
@@ -91,16 +93,36 @@ namespace ft
             nil->right = nil;
             nil->color = BLACK;
             root = nil;
-            cmp = key_compare();
             _size = 0;
+
         }
 
-        explicit rb_tree(const key_compare &comp, const allocator_type &alloc = allocator_type()) : alloc(alloc)
+
+
+
+
+
+        template <class InputIterator>
+        rb_tree(InputIterator first, InputIterator last, const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type()) : alloc(alloc), cmp(comp)
         {
-            rb_tree();
-            cmp = comp;
-
+            while (first!= last)
+            {
+                insert(*first);
+                ++first;
+            }
         }
+        
+        rb_tree(const rb_tree &x) : rb_tree()
+        {
+            *this = x;
+        }
+
+
+
+
+
+
+
 
     private:
         rb_node_ptr create_node(Key key)
@@ -180,10 +202,10 @@ namespace ft
             {
                 parent = cur;
                 // cmpare here i think its ok as compare pair with pair; wont need kot
-                if (!cmp(node->key, cur->key) && !cmp(cur->key, node->key) && unique)
+                if (!cmp(get_kot(node), get_kot(cur)) && !cmp(get_kot(cur), get_kot(node)) && unique)
                     return ft::make_pair(cur, false);
 
-                if (cmp(node->key, cur->key))
+                if (cmp(get_kot(node), get_kot(cur)))
                     cur = cur->left;
                 else
                     cur = cur->right;
@@ -195,7 +217,7 @@ namespace ft
             {
                 root = node;
             }
-            else if (cmp(node->key, parent->key))
+            else if (cmp(get_kot(node), get_kot(parent)))
                 parent->left = node;
             else
                 parent->right = node;
@@ -605,7 +627,7 @@ namespace ft
         }
 
         template <class InputIterator>
-        void insert(InputIterator first, InputIterator last)
+        void insert(InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
         {
             while (first != last)
             {
@@ -650,7 +672,46 @@ namespace ft
             ft::swap(cmp, other.cmp);
             ft::swap(_size, other._size);
         }
+
+
+        allocator_type get_allocator() const
+        {
+            return allocator_type();
+        }
+
+        key_compare key_comp() const
+        {
+            return key_compare();
+        }
+
+        size_type max_size() const
+        {
+            return 22222222;
+        }
+
+        value_compare value_comp() const
+        {
+            return value_compare();
+        }
+
+        rb_tree& operator=(const rb_tree& x)
+        {
+            if (this == &x){
+                return *this;
+            }
+
+            clear();
+            iterator it = x.begin();
+            iterator it_end = x.end(); 
+            while (it != it_end)
+            {    insert(*it); ++it;}
+            return *this;
+        }
     };
+
+
+
+
 
 }
 
