@@ -54,10 +54,15 @@ namespace ft
         }
         difference_type operator-(const deque_iterator &other) const
         {
-            return difference_type(buffer_size()) * (node - other.node - 1) + (cur - first) + (other.last - other.cur);
+            // return difference_type(buffer_size()) * (node - other.node - 1) + (cur - first) + (other.last - other.cur);
         // return difference_type(buffer_size()) * (node - other.node) 
         //        + (cur - first) 
         //        - (other.cur - other.first);
+
+
+        return difference_type(buffer_size()) * (node - other.node) 
+       + (cur - first) 
+       - (other.cur - other.first);
         }
 
 
