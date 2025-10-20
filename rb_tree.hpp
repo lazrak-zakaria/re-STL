@@ -63,7 +63,6 @@ namespace ft
         typedef typename Alloc::pointer pointer;
         typedef typename Alloc::const_pointer const_pointer;
         typedef Compare key_compare;
-        typedef Compare value_compare;
         typedef ft::rb_iterator<Key> iterator;
         typedef ft::rb_iterator<Key> const_iterator;
         typedef ft::reverse_iterator_<iterator> reverse_iterator;
@@ -474,7 +473,7 @@ namespace ft
                 return;
 
             p(ptr->left);
-            std::cout << ptr->key << "--\n";
+            std::cout << get_kot(ptr) << " " << ptr->key.second<< "--\n";
             p(ptr->right);
         }
 
@@ -486,7 +485,15 @@ namespace ft
             while (cur != nil)
             {
                 if (!cmp(val, get_kot(cur)) && !cmp(get_kot(cur), val))
-                    return iterator(cur, nil);
+                {
+                    if (unique)
+                        return iterator(cur, nil);
+                    else
+                    {
+                        ans = cur;
+                        cur = cur->left;
+                    }
+                }    
                 else if (cmp(val, get_kot(cur)))
                 {
                     ans = cur;
@@ -643,9 +650,14 @@ namespace ft
 
         size_type erase(const Ky &val)
         {
-            rb_node_ptr to_delete = find_(val);
-            _size -= delete_node(to_delete);
-            return _size;
+            size_type old_size = _size;
+            while (true)
+            {
+                rb_node_ptr to_delete = find_(val);
+                _size -= delete_node(to_delete);
+                if (to_delete == nil) break;
+            }
+            return old_size - _size;
         }
 
         void erase(iterator first, iterator last)
@@ -689,10 +701,7 @@ namespace ft
             return 22222222;
         }
 
-        value_compare value_comp() const
-        {
-            return value_compare();
-        }
+
 
         rb_tree& operator=(const rb_tree& x)
         {
