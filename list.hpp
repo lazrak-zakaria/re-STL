@@ -113,6 +113,19 @@ namespace ft
             insert(begin(), x.begin(), x.end());
         }
 
+        template <class InputIterator>
+        void assign(InputIterator first, InputIterator last)
+        {
+            clear();
+            insert(begin(), first, last);
+        }
+
+        void assign(size_type n, const value_type &val)
+        {
+            clear();
+            insert(begin(), n, val);
+        }
+
         iterator begin()
         {
             return iterator(head->next);
@@ -184,8 +197,6 @@ namespace ft
         }
 
     public:
-
-
         iterator insert(iterator position, const value_type &val)
         {
             lst_node_ptr tmp = create_lst_node(val);
@@ -291,7 +302,7 @@ namespace ft
 
         void unique()
         {
-            unique(std::equal_to < value_type>());
+            unique(std::equal_to<value_type>());
         }
         template <class BinaryPredicate>
         void unique(BinaryPredicate binary_pred)
@@ -324,7 +335,6 @@ namespace ft
                 last.node->prev = first.node->prev;
                 first.node->prev = tmp;
             }
-            
         }
 
     public:
@@ -385,7 +395,8 @@ namespace ft
         {
             sort(std::less<value_type>());
         }
-        template <class Compare>  void sort (Compare comp)
+        template <class Compare>
+        void sort(Compare comp)
         {
             if (_size < 2)
                 return;
@@ -410,8 +421,6 @@ namespace ft
                 counter[i].merge(counter[i - 1], comp);
             swap(counter[fill - 1]);
         }
-
-
 
         void reverse()
         {

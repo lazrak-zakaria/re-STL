@@ -1,0 +1,22 @@
+name: abstract_data test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install compiler
+        run: sudo apt-get update && sudo apt-get install -y g++
+
+      - name: Build tests
+        run: g++ -std=c++11 test/list/main.cpp -o list_out
+
+      - name: Run tests
+        run: ./list_out

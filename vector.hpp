@@ -299,7 +299,7 @@ namespace ft
             if (n > _capacity - _size)
             {
 
-                size_type new_capacity = _capacity * __RATIO__FT__VECTOR__ + n;
+                size_type new_capacity = _capacity * __RATIO__FT__VECTOR__ * 2 + n;
                 value_type *new_ptr = _allocator.allocate(new_capacity);
 
                 for (size_type i = 0; i < pos; ++i)
