@@ -16,7 +16,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y g++
 
       - name: Build tests
-        run: g++ -std=c++11 test/list/main.cpp -o test
+        run: g++ -std=c++11 test/list/main.cpp -o list_out
 
       - name: Run tests
-        run: ./test
+        run: ./list_out
