@@ -866,6 +866,7 @@ void printSummary() {
         std::cout << GREEN << "\n✓ All tests passed!\n" << RESET;
     } else {
         std::cout << RED << "\n✗ Some tests failed!\n" << RESET;
+        std::exit(1);
     }
 }
 
@@ -896,5 +897,12 @@ int main() {
     
     printSummary();
     
+
+    ft::list<int> st;
+    st.push_back(22);
+    ft::list<int>::const_reverse_iterator it = st.rbegin();
+
+
+
     return 0;
 }
