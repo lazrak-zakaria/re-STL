@@ -26,6 +26,26 @@ namespace ft
         typedef ft::rb_tree<std::pair<const Key, T>, const Key, MapKeyOfT<std::pair<const Key, T>>, Compare, Alloc> rb_tree;
 
     public:
+        typedef T mapped_type; //            = T;
+
+        explicit map(const Compare &comp = Compare(), const Alloc &a = Alloc()) : rb_tree(comp, a)
+        {
+        }
+
+        template <class InputIt>
+        map(InputIt first, InputIt last,
+            const Compare &comp = Compare(), const Alloc &alloc = Alloc(),
+            typename ft::enable_if<!ft::is_integral<InputIt>::value>::type * = 0) : rb_tree(first,
+                                                                                            last,
+                                                                                            comp,
+                                                                                            alloc)
+        {
+        }
+
+        map(const map &other) : rb_tree(other)
+        {
+        }
+
         class value_compare
         {
         protected:
@@ -36,7 +56,7 @@ namespace ft
             }
 
         public:
-            bool operator()(const typename rb_tree::value_type &x, const  typename rb_tree::value_type &y) const
+            bool operator()(const typename rb_tree::value_type &x, const typename rb_tree::value_type &y) const
             {
                 return comp(x.first, y.first);
             }
@@ -91,7 +111,7 @@ namespace ft
             }
 
         public:
-            bool operator()(const typename rb_tree::value_type &x, const  typename rb_tree::value_type &y) const
+            bool operator()(const typename rb_tree::value_type &x, const typename rb_tree::value_type &y) const
             {
                 return comp(x.first, y.first);
             }
@@ -121,13 +141,96 @@ namespace ft
             return it->second;
         }
 
-
         value_compare value_comp() const
         {
             return value_compare();
         }
     };
 
+    template <class T, class Compare, class Allocator>
+    bool operator==(const map<T, Compare, Allocator> &lhs, const map<T, Compare, Allocator> &rhs)
+    {
+        return ft::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+    }
+
+    template <class T, class Compare, class Allocator>
+    bool operator!=(const map<T, Compare, Allocator> &lhs, const map<T, Compare, Allocator> &rhs)
+    {
+        return !(lhs == rhs);
+    }
+
+    template <class T, class Compare, class Allocator>
+    bool operator<(const map<T, Compare, Allocator> &lhs, const map<T, Compare, Allocator> &rhs)
+    {
+        return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+    }
+
+    template <class T, class Compare, class Allocator>
+    bool operator>(const map<T, Compare, Allocator> &lhs, const map<T, Compare, Allocator> &rhs)
+    {
+        return (rhs < lhs);
+    }
+
+    template <class T, class Compare, class Allocator>
+    bool operator<=(const map<T, Compare, Allocator> &lhs, const map<T, Compare, Allocator> &rhs)
+    {
+        return !(lhs > rhs);
+    }
+
+    template <class T, class Compare, class Allocator>
+    bool operator>=(const map<T, Compare, Allocator> &lhs, const map<T, Compare, Allocator> &rhs)
+    {
+        return !(lhs < rhs);
+    }
+
+    template <class T, class Compare, class Allocator>
+    bool operator==(const multimap<T, Compare, Allocator> &lhs, const multimap<T, Compare, Allocator> &rhs)
+    {
+        return ft::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+    }
+
+    template <class T, class Compare, class Allocator>
+    bool operator!=(const multimap<T, Compare, Allocator> &lhs, const multimap<T, Compare, Allocator> &rhs)
+    {
+        return !(lhs == rhs);
+    }
+
+    template <class T, class Compare, class Allocator>
+    bool operator<(const multimap<T, Compare, Allocator> &lhs, const multimap<T, Compare, Allocator> &rhs)
+    {
+        return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+    }
+
+    template <class T, class Compare, class Allocator>
+    bool operator>(const multimap<T, Compare, Allocator> &lhs, const multimap<T, Compare, Allocator> &rhs)
+    {
+        return (rhs < lhs);
+    }
+
+    template <class T, class Compare, class Allocator>
+    bool operator<=(const multimap<T, Compare, Allocator> &lhs, const multimap<T, Compare, Allocator> &rhs)
+    {
+        return !(lhs > rhs);
+    }
+
+    template <class T, class Compare, class Allocator>
+    bool operator>=(const multimap<T, Compare, Allocator> &lhs, const multimap<T, Compare, Allocator> &rhs)
+    {
+        return !(lhs < rhs);
+    }
+
+    template <class Key, class T, class Compare, class Alloc>
+    void swap(std::map<Key, T, Compare, Alloc> &lhs,
+              std::map<Key, T, Compare, Alloc> &rhs)
+    {
+        lhs.swap(rhs);
+    }
+    template <class Key, class T, class Compare, class Alloc>
+    void swap(std::multimap<Key, T, Compare, Alloc> &lhs,
+              std::multimap<Key, T, Compare, Alloc> &rhs)
+    {
+        lhs.swap(rhs);
+    }
 }
 
 #endif

@@ -36,7 +36,6 @@ namespace ft
     public:
     };
 
-
     template <class T, class Compare, class Allocator>
     bool operator==(const set<T, Compare, Allocator> &lhs, const set<T, Compare, Allocator> &rhs)
     {
@@ -46,7 +45,7 @@ namespace ft
     template <class T, class Compare, class Allocator>
     bool operator!=(const set<T, Compare, Allocator> &lhs, const set<T, Compare, Allocator> &rhs)
     {
-        return !(lhs==rhs);
+        return !(lhs == rhs);
     }
 
     template <class T, class Compare, class Allocator>
@@ -71,6 +70,55 @@ namespace ft
     bool operator>=(const set<T, Compare, Allocator> &lhs, const set<T, Compare, Allocator> &rhs)
     {
         return !(lhs < rhs);
+    }
+
+    template <class T, class Compare, class Allocator>
+    bool operator==(const multiset<T, Compare, Allocator> &lhs, const multiset<T, Compare, Allocator> &rhs)
+    {
+        return ft::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+    }
+
+    template <class T, class Compare, class Allocator>
+    bool operator!=(const multiset<T, Compare, Allocator> &lhs, const multiset<T, Compare, Allocator> &rhs)
+    {
+        return !(lhs == rhs);
+    }
+
+    template <class T, class Compare, class Allocator>
+    bool operator<(const multiset<T, Compare, Allocator> &lhs, const multiset<T, Compare, Allocator> &rhs)
+    {
+        return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+    }
+
+    template <class T, class Compare, class Allocator>
+    bool operator>(const multiset<T, Compare, Allocator> &lhs, const multiset<T, Compare, Allocator> &rhs)
+    {
+        return (rhs < lhs);
+    }
+
+    template <class T, class Compare, class Allocator>
+    bool operator<=(const multiset<T, Compare, Allocator> &lhs, const multiset<T, Compare, Allocator> &rhs)
+    {
+        return !(lhs > rhs);
+    }
+
+    template <class T, class Compare, class Allocator>
+    bool operator>=(const multiset<T, Compare, Allocator> &lhs, const multiset<T, Compare, Allocator> &rhs)
+    {
+        return !(lhs < rhs);
+    }
+
+    template <class Key, class T, class Compare, class Alloc>
+    void swap(std::set<Key, T, Compare, Alloc> &lhs,
+              std::set<Key, T, Compare, Alloc> &rhs)
+    {
+        lhs.swap(rhs);
+    }
+    template <class Key, class T, class Compare, class Alloc>
+    void swap(std::multiset<Key, T, Compare, Alloc> &lhs,
+              std::multiset<Key, T, Compare, Alloc> &rhs)
+    {
+        lhs.swap(rhs);
     }
 
 }

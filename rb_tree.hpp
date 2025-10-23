@@ -84,7 +84,6 @@ namespace ft
 
         explicit rb_tree(const key_compare &comp = key_compare(), const allocator_type &a = allocator_type()) : cmp(comp), alloc(a)
         {
-
             nil = alloc.allocate(1);
             alloc.construct(nil, value_type());
             nil->parent = nil;
@@ -93,7 +92,6 @@ namespace ft
             nil->color = BLACK;
             root = nil;
             _size = 0;
-
         }
 
 
@@ -102,7 +100,8 @@ namespace ft
 
 
         template <class InputIterator>
-        rb_tree(InputIterator first, InputIterator last, const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type()) : alloc(alloc), cmp(comp)
+        rb_tree(InputIterator first, InputIterator last, const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type(),
+        typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0) : rb_tree(comp, alloc)
         {
             while (first!= last)
             {
@@ -203,13 +202,14 @@ namespace ft
                 // cmpare here i think its ok as compare pair with pair; wont need kot
                 if (!cmp(get_kot(node), get_kot(cur)) && !cmp(get_kot(cur), get_kot(node)) && unique)
                     return ft::make_pair(cur, false);
+            
+                
 
                 if (cmp(get_kot(node), get_kot(cur)))
                     cur = cur->left;
                 else
                     cur = cur->right;
             }
-
             node->parent = parent;
 
             if (parent == nil)
@@ -620,8 +620,8 @@ namespace ft
         ft::pair<iterator, bool> insert(const value_type &val)
         {
             rb_node_ptr new_node = create_node(val);
-
             ft::pair<rb_node_ptr, bool> is_inserted = insert_node(new_node);
+
             _size += is_inserted.second;
             ft::pair<iterator, bool> ans = ft::make_pair(iterator(is_inserted.first, nil), is_inserted.second);
             return ans;
