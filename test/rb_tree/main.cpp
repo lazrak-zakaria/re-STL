@@ -33,19 +33,22 @@ void test_construction() {
     ft::map<int, std::string> ft_map;
     
     // Range construction
-
-    std::pair<int, std::string> pairs[] = {
+    std::pair<int, std::string> std_pairs[] = {
         std::make_pair(1, "one"),
         std::make_pair(2, "two"),
         std::make_pair(3, "three")
     };
     
-    int ch[] = {1,2,3,4,5,6,7,8};
-    std::map<int, std::string> std_map_range(pairs, pairs + 3);
-
-    ft::map<int, std::string> ft_map_range(pairs, pairs + 3);
-    // ft::set<int> s(ch, ch + 3);
-      std::cout << "   Range construction: ✓" << std::endl;
+    ft::pair<int, std::string> ft_pairs[] = {
+        ft::make_pair(1, "one"),
+        ft::make_pair(2, "two"),
+        ft::make_pair(3, "three")
+    };
+    
+    std::map<int, std::string> std_map_range(std_pairs, std_pairs + 3);
+    ft::map<int, std::string> ft_map_range(ft_pairs, ft_pairs + 3);
+    
+    std::cout << "   Range construction: ✓" << std::endl;
     
     // Copy construction
     std::map<int, std::string> std_map_copy(std_map_range);
@@ -57,7 +60,6 @@ void test_construction() {
     std::cout << "   PASSED" << std::endl << std::endl;
 }
 
-
 void test_insertion() {
     std::cout << "2. INSERTION TESTS" << std::endl;
     
@@ -66,21 +68,27 @@ void test_insertion() {
     
     // Single element insertion
     std_map.insert(std::make_pair(1, "one"));
-    ft_map.insert(std::make_pair(1, "one"));
+    ft_map.insert(ft::make_pair(1, "one"));
     
     // Insert with hint
     std_map.insert(std_map.begin(), std::make_pair(2, "two"));
-    ft_map.insert(ft_map.begin(), std::make_pair(2, "two"));
+    ft_map.insert(ft_map.begin(), ft::make_pair(2, "two"));
     
     // Range insertion
-    std::pair<int, std::string> more_pairs[] = {
+    std::pair<int, std::string> std_more_pairs[] = {
         std::make_pair(3, "three"),
         std::make_pair(4, "four"),
         std::make_pair(5, "five")
     };
     
-    std_map.insert(more_pairs, more_pairs + 3);
-    ft_map.insert(more_pairs, more_pairs + 3);
+    ft::pair<int, std::string> ft_more_pairs[] = {
+        ft::make_pair(3, "three"),
+        ft::make_pair(4, "four"),
+        ft::make_pair(5, "five")
+    };
+    
+    std_map.insert(std_more_pairs, std_more_pairs + 3);
+    ft_map.insert(ft_more_pairs, ft_more_pairs + 3);
     
     // Operator[] insertion
     std_map[6] = "six";
@@ -96,8 +104,6 @@ void test_insertion() {
     std::cout << "   Empty match: " << (empty_match ? "✓" : "✗") << std::endl;
     std::cout << "   " << (sizes_match && empty_match ? "PASSED" : "FAILED") << std::endl << std::endl;
 }
-
-
 
 void test_erase() {
     std::cout << "5. ERASE TESTS" << std::endl;
@@ -144,7 +150,6 @@ void test_erase() {
     std::cout << "   Erase range: " << (elements_match ? "✓" : "✗") << std::endl;
     std::cout << "   " << (sizes_match && erase_count_match && elements_match ? "PASSED" : "FAILED") << std::endl << std::endl;
 }
-
 
 void test_bounds() {
     std::cout << "6. BOUNDS TESTS" << std::endl;
@@ -220,7 +225,6 @@ void test_bounds() {
     std::cout << "   " << (bounds_match ? "PASSED" : "FAILED") << std::endl << std::endl;
 }
 
-
 void test_copy_swap() {
     std::cout << "7. COPY AND SWAP TESTS" << std::endl;
     
@@ -250,8 +254,6 @@ void test_copy_swap() {
     std::cout << "   Swap: " << (swap_match ? "✓" : "✗") << std::endl;
     std::cout << "   " << (copy_assign_match && swap_match ? "PASSED" : "FAILED") << std::endl << std::endl;
 }
-
-
 
 void test_performance() {
     std::cout << "8. PERFORMANCE TESTS" << std::endl;

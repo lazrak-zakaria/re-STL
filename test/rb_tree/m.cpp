@@ -425,9 +425,10 @@ int main() {
               << RESET;
     
     print_separator();
-    // ft::set<int> k;
-    // k.insert(32);
-    // *k.begin() = 34442;
-    // std::cout << *k.begin() << "\n";
+    ft::set<int> k;
+    k.insert(32);
+    ft::set<int> :: iterator it = k.begin();/// = 34442;
+    *it = 3;
+    std::cout << *k.begin() << "\n";
     return failed > 0 ? 1 : 0;
 }
