@@ -6,7 +6,7 @@
 #define RED 1
 #define BLACK 0
 #define null NULL
-
+#include <iostream>
 typedef bool Color;
 
 #include <memory>
@@ -63,8 +63,8 @@ namespace ft
         typedef typename Alloc::pointer pointer;
         typedef typename Alloc::const_pointer const_pointer;
         typedef Compare key_compare;
-        typedef ft::rb_iterator<Key> iterator;
-        typedef ft::rb_iterator<Key> const_iterator;
+        typedef ft::rb_iterator< Key> iterator;
+        typedef ft::rb_iterator< Key> const_iterator;
         typedef ft::reverse_iterator_<iterator> reverse_iterator;
         typedef ft::reverse_iterator_<const_iterator> const_reverse_iterator;
 
@@ -110,7 +110,7 @@ namespace ft
             }
         }
         
-        rb_tree(const rb_tree &x) : rb_tree()
+        rb_tree(const rb_tree &x) : rb_tree(x.cmp, x.alloc)
         {
             *this = x;
         }
@@ -119,7 +119,13 @@ namespace ft
 
 
 
-
+        void update_nil_parent()
+        {
+            if (root == nil)
+                nil->parent = nil;
+            else
+                nil->parent = rb_maximum(root);
+        }
 
 
     private:
@@ -139,6 +145,8 @@ namespace ft
         {
             alloc.destroy(node);
             alloc.deallocate(node, 1);
+            
+
         }
 
         void rotate_left(rb_node_ptr x)
@@ -222,6 +230,7 @@ namespace ft
                 parent->right = node;
 
             balance(node);
+            update_nil_parent();
             return ft::make_pair(node, true);
         }
 
@@ -305,7 +314,6 @@ namespace ft
         {
             while (node->right != nil)
                 node = node->right;
-            nil->parent = node;
             return node;
         }
 
@@ -375,6 +383,7 @@ namespace ft
             }
             if (y_color == BLACK)
                 delete_fixup(fix);
+            update_nil_parent();
             return true;
         }
 
@@ -473,7 +482,7 @@ namespace ft
                 return;
 
             p(ptr->left);
-            std::cout << get_kot(ptr) << " " << ptr->key.second<< "--\n";
+            // std::cout << get_kot(ptr) << " " << ptr->key.second<< "--\n";
             p(ptr->right);
         }
 
@@ -681,7 +690,7 @@ namespace ft
         {
             ft::swap(root, other.root);
             ft::swap(nil, other.nil);
-            ft::swap(cmp, other.cmp);
+            std::swap(cmp, other.cmp);
             ft::swap(_size, other._size);
         }
 
@@ -693,7 +702,7 @@ namespace ft
 
         key_compare key_comp() const
         {
-            return key_compare();
+            return cmp;
         }
 
         size_type max_size() const
@@ -712,6 +721,7 @@ namespace ft
             clear();
             iterator it = x.begin();
             iterator it_end = x.end(); 
+            cmp = x.cmp;
             while (it != it_end)
             {    insert(*it); ++it;}
             return *this;

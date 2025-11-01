@@ -875,34 +875,49 @@ int main() {
     std::cout << "  ft::list vs std::list Test Suite\n";
     std::cout << "========================================\n\n" << RESET;
     
-    testBasicInsertion();
-    testInsertAtPosition();
-    testSort();
-    testSpliceEntireList();
-    testSpliceSingleElement();
-    testSpliceRange();
-    testIterators();
-    testSortCustomComparator();
-    testReverseIteratorTraversal();
-    testReverseIteratorOperations();
-    testReverseIteratorModification();
-    testConstReverseIterator();
-    testReverseIteratorBase();
-    testConstIteratorTraversal();
-    testConstIteratorOperations();
-    testConstIteratorComparison();
-    testConstIteratorMixedUsage();
-    testConstIteratorArrowOperator();
-    testConstIteratorWithConstMethods();
+    // testBasicInsertion();
+    // testInsertAtPosition();
+    // testSort();
+    // testSpliceEntireList();
+    // testSpliceSingleElement();
+    // testSpliceRange();
+    // testIterators();
+    // testSortCustomComparator();
+    // testReverseIteratorTraversal();
+    // testReverseIteratorOperations();
+    // testReverseIteratorModification();
+    // testConstReverseIterator();
+    // testReverseIteratorBase();
+    // testConstIteratorTraversal();
+    // testConstIteratorOperations();
+    // testConstIteratorComparison();
+    // testConstIteratorMixedUsage();
+    // testConstIteratorArrowOperator();
+    // testConstIteratorWithConstMethods();
     
-    printSummary();
+    // printSummary();
     
 
-    ft::list<int> st;
-    st.push_back(22);
-    ft::list<int>::const_reverse_iterator it = st.rbegin();
+    ft::list<std::string> st;
+    ft::list<std::string> stt;
+    st.push_back("HOLa amigo");
+    st.push_back("HOLz amigo");
+    st.push_back("HOLd amigo");
+    // st.resize(stt, "zbi");
+    st.sort();
+    st.merge(stt);
+    // ft::list<int>::const_reverse_iterator it = st.rbegin();
+    std::cout << st.size() << "\n";
+    std::cout << "Forward iteration:\n";
+    for (ft::list<std::string>::iterator it = st.begin(); it != st.end(); ++it) {
+        std::cout << *it << "\n";
+    }
 
+    std::cout << "\nConst forward iteration:\n";
+    for (ft::list<std::string>::const_iterator it = st.begin(); it != st.end(); ++it) {
 
+        std::cout << *it << "\n";
+    }
 
     return 0;
 }

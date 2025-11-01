@@ -7,6 +7,7 @@
 #include "algorithm.hpp"
 #include <algorithm>
 #include <exception>
+#include "stdexcept.hpp"
 #define h std::cout << "here\n"
 #define g(x) std::cout << "here: " << x << "\n"
 
@@ -66,7 +67,7 @@ namespace ft
               typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
             : map(0), map_size(0), deque_allocator(alloc)
         {
-            create_map_and_nodes(last - first);
+            create_map_and_nodes(ft::distance( first, last));
             iterator st = start;
             while (st != finish)
             {
@@ -418,14 +419,14 @@ namespace ft
         reference at(size_type pos)
         {
             if (pos >= size())
-                throw std::out_of_range("ddas");
+                throw ft::out_of_range("ddas");
             return operator[](pos);
         }
 
         const_reference at(size_type pos) const
         {
             if (pos >= size())
-                throw std::out_of_range("ddas");
+                throw ft::out_of_range("ddas");
             return operator[](pos);
         }
         iterator erase(iterator pos)
@@ -637,6 +638,149 @@ namespace ft
                 return start + offset;
             }
         }
+
+
+
+
+
+
+        // template <class InputIt>
+        // iterator insert(iterator pos, InputIt first, InputIt last, typename ft::enable_if<!ft::is_integral<InputIt>::value>::type * = 0)
+        void insert (iterator position, size_type n, const value_type& val)
+        {
+            difference_type offset = position - start;
+            // difference_type n = std::distance(first, last);
+
+            if (n == 0)
+                return ;
+
+            // If inserting at the beginning
+            if (position.cur == start.cur)
+            {
+
+                for (size_t it = 0; it < n; ++it)
+                    push_front(val);
+
+                iterator old_start = start + n;
+                std::reverse(start, old_start);
+                return ;
+            }
+
+            else if (position.cur == finish.cur)
+            {
+
+                for (size_t it = 0; it < n; ++it)
+                    push_back(val);
+
+                return;
+            }
+
+            else
+            {
+
+                if (offset < size() / 2)
+                {
+
+                    for (difference_type i = 0; i < n; ++i)
+                        push_front(front());
+
+                        position = start + offset + n;
+                    iterator old_start = start + n;
+                    iterator mid = old_start + offset;
+
+                    copy(old_start, mid, start);
+
+                    size_t it = 0;
+                    for (iterator insert_pos = start + offset; insert_pos != position && it < n; ++insert_pos, ++it)
+                    {
+                        *insert_pos = val;
+                    }
+                }
+                else
+                {
+
+                    for (difference_type i = 0; i < n; ++i)
+                        push_back(back());
+
+                    iterator old_finish = finish - n;
+                    position = start + offset;
+                    iterator mid = position;
+
+                    copy_backward(mid, old_finish, finish);
+                    // InputIt it = first;
+                    size_t it = 0;
+
+                    for (iterator insert_pos = position; it < n; ++insert_pos, ++it)
+                    {
+                        *insert_pos = val;
+                    }
+                }
+
+            }
+        }
+
     };
+
+
+        template <class T, class Alloc>
+        bool operator==(const deque<T, Alloc> &lhs, const deque<T, Alloc> &rhs)
+        {
+            if (lhs.size() != rhs.size())
+                return false;
+    
+            typename deque<T, Alloc>::const_iterator it1 = lhs.begin();
+            typename deque<T, Alloc>::const_iterator it2 = rhs.begin();
+    
+            while (it1 != lhs.end())
+            {
+                if (*it1 != *it2)
+                    return false;
+                ++it1;
+                ++it2;
+            }
+            return true;
+        }
+    
+        template <class T, class Alloc>
+        bool operator!=(const deque<T, Alloc> &lhs, const deque<T, Alloc> &rhs)
+        {
+            return !(lhs == rhs);
+        }
+    
+        template <class T, class Alloc>
+        bool operator<(const deque<T, Alloc> &lhs, const deque<T, Alloc> &rhs)
+        {
+            typename deque<T, Alloc>::const_iterator it1 = lhs.begin();
+            typename deque<T, Alloc>::const_iterator it2 = rhs.begin();
+    
+            while (it1 != lhs.end())
+            {
+                if (it2 == rhs.end() || *it2 < *it1)
+                    return false;
+                if (*it1 < *it2)
+                    return true;
+                ++it1;
+                ++it2;
+            }
+            return (it2 != rhs.end());
+        }
+    
+        template <class T, class Alloc>
+        bool operator<=(const deque<T, Alloc> &lhs, const deque<T, Alloc> &rhs)
+        {
+            return !(rhs < lhs);
+        }
+    
+        template <class T, class Alloc>
+        bool operator>(const deque<T, Alloc> &lhs, const deque<T, Alloc> &rhs)
+        {
+            return rhs < lhs;
+        }
+    
+        template <class T, class Alloc>
+        bool operator>=(const deque<T, Alloc> &lhs, const deque<T, Alloc> &rhs)
+        {
+            return !(lhs < rhs);
+        }
 
 }

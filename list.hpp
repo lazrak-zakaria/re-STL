@@ -27,7 +27,7 @@ namespace ft
 {
     template <
         class T,
-        class Allocator = std::allocator<T>>
+        class Allocator = std::allocator<T> >
     class list
     {
 
@@ -50,15 +50,15 @@ namespace ft
         typedef lst_node<value_type> *lst_node_ptr;
 
         lst_node_ptr head;
-        size_t _size;
 
-        typename allocator_type::template rebind<lst_node<value_type>>::other alloc;
+
+        typename allocator_type::template rebind<lst_node<value_type> >::other alloc;
 
         lst_node_ptr create_lst_node(const value_type &val)
         {
             lst_node_ptr n = alloc.allocate(1);
             alloc.construct(n, val);
-            ++_size;
+
             return n;
         }
 
@@ -66,16 +66,16 @@ namespace ft
         {
             alloc.destroy(n);
             alloc.deallocate(n, 1);
-            --_size;
+
         }
 
         void initialize()
         {
             head = create_lst_node(value_type());
-            --_size;
+
             head->next = head;
             head->prev = head;
-            _size = 0;
+
         }
 
     public:
@@ -111,6 +111,7 @@ namespace ft
                 return *this;
             clear();
             insert(begin(), x.begin(), x.end());
+            return *this;
         }
 
         template <class InputIterator>
@@ -209,8 +210,8 @@ namespace ft
         template <class InputIterator>
         void insert(iterator position, InputIterator first, InputIterator last)
         {
-            while (first != last)
-                insert(position, *(first++));
+            for (; first != last; ++first)
+            insert(position, *first);
         }
         void insert(iterator position, size_type n, const value_type &val)
         {
@@ -239,6 +240,7 @@ namespace ft
         {
             while (first != last)
                 erase(first++);
+            return last;
         }
 
         void pop_front()
@@ -364,12 +366,13 @@ namespace ft
             }
             if (first2 != last2)
                 transfer(last1, first2, last2);
+            // x.head->next = x.head;
+            x.head->prev = x.head;
         }
 
         void swap(list &x)
         {
             ft::swap(x.head, head);
-            ft::swap(x._size, _size);
         }
 
         void splice(iterator position, list &x)
@@ -398,7 +401,7 @@ namespace ft
         template <class Compare>
         void sort(Compare comp)
         {
-            if (_size < 2)
+            if (size() < 2)
                 return;
             list<T, Allocator> carry;
             list<T, Allocator> counter[64];
@@ -424,7 +427,7 @@ namespace ft
 
         void reverse()
         {
-            if (_size < 2)
+            if (size() < 2)
                 return;
             iterator first = begin();
             ++first;
@@ -438,7 +441,7 @@ namespace ft
 
         void resize(size_type n, value_type val = value_type())
         {
-            size_type sz = _size;
+            size_type sz = size();
 
             if (n < sz)
             {
@@ -454,5 +457,56 @@ namespace ft
             }
         }
     };
+
+
+
+
+
+
+
+
+    template <class T, class Allocator>
+    bool operator==(const list<T,  Allocator> &lhs, const list<T,  Allocator> &rhs)
+    {
+        return ft::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+    }
+
+    template <class T, class Allocator>
+    bool operator!=(const list<T,  Allocator> &lhs, const list<T,  Allocator> &rhs)
+    {
+        return !(lhs == rhs);
+    }
+
+    template <class T, class Allocator>
+    bool operator<(const list<T,  Allocator> &lhs, const list<T,  Allocator> &rhs)
+    {
+        return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+    }
+
+    template <class T, class Allocator>
+    bool operator>(const list<T,  Allocator> &lhs, const list<T,  Allocator> &rhs)
+    {
+        return (rhs < lhs);
+    }
+
+    template <class T, class Allocator>
+    bool operator<=(const list<T,  Allocator> &lhs, const list<T,  Allocator> &rhs)
+    {
+        return !(lhs > rhs);
+    }
+
+    template <class T, class Allocator>
+    bool operator>=(const list<T,  Allocator> &lhs, const list<T,  Allocator> &rhs)
+    {
+        return !(lhs < rhs);
+    }
+
+
+
+
+
+
+
+
 }
 #endif

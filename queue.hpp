@@ -18,7 +18,7 @@ its parent =floor ((i-1/2))
 #include "vector.hpp"
 namespace ft
 {
-    template <class T, class Container = ft::vector<T>, class Compare = std::less<typename Container::value_type>>
+    template <class T, class Container = std::vector<T>, class Compare = std::less<typename Container::value_type> >
     class priority_queue
     {
     private:
@@ -90,7 +90,7 @@ namespace ft
 
     template <
         class T,
-        class Container = std::deque<T>>
+        class Container = std::deque<T> >
     class queue
     {
 
