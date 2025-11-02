@@ -16,7 +16,7 @@ namespace ft
         typedef std::bidirectional_iterator_tag iterator_category;
         typedef const T value_type;
         typedef long long difference_type;
-        typedef const T *pointer;
+        typedef  T *pointer;
         typedef const T &reference;
 
         typedef ft::rb_node<T> *rb_node_ptr;
@@ -90,12 +90,12 @@ namespace ft
             return *this;
         }
 
-         pointer operator->()
+        pointer operator->()
         {
             return &node->key;
         }
 
-         reference operator*()
+        reference operator*()
         {
             return (const reference)node->key;
         }

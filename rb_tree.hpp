@@ -53,7 +53,7 @@ namespace ft
     {
 
     public:
-        typedef Key key_type;
+        typedef Ky key_type;
         typedef Key value_type;
         typedef size_t size_type;
         typedef ptrdiff_t difference_type;
@@ -84,14 +84,22 @@ namespace ft
 
         explicit rb_tree(const key_compare &comp = key_compare(), const allocator_type &a = allocator_type()) : cmp(comp), alloc(a)
         {
+            // try {
             nil = alloc.allocate(1);
             alloc.construct(nil, value_type());
+            // std::cerr <<"HHHHHHHHHHHHHHHHHHHHHHHHHHHHH++++++++\n";
             nil->parent = nil;
             nil->left = nil;
             nil->right = nil;
             nil->color = BLACK;
             root = nil;
             _size = 0;
+            // }
+            // catch (const std::bad_alloc& e) {
+            //     std::cerr << "Memory HHHHHHHHHHHHHHHHHHHHHHHHHHHHH failed: " << e.what() << std::endl;
+            //     // Handle the error gracefully
+                
+            // }
         }
 
 
@@ -131,22 +139,39 @@ namespace ft
     private:
         rb_node_ptr create_node(Key key)
         {
+            // try
+            // {
+
+            
             rb_node_ptr node = alloc.allocate(1);
             alloc.construct(node, key);
             node->color = RED;
             node->left = nil;
             node->right = nil;
             node->parent = nil;
-
             return node;
+            // }
+            // catch (const std::bad_alloc& e) {
+            //     std::cerr << "Memory HHHHHHHHHHHHHHHHHHHHHHHHHHHHH failed: \n" << e.what() << std::endl;
+            //     // Handle the error gracefully
+                
+            // }
+            // return NULL;
         }
 
         void deallocate_node(rb_node_ptr node)
         {
+            // try
+            // {
+
+            
             alloc.destroy(node);
             alloc.deallocate(node, 1);
-            
-
+            // catch (const std::bad_alloc& e) {
+            //     std::cerr << "Memory HHHHHHHHHHHHHHHHHHHHHHHHHHHHH failed: \n" << e.what() << std::endl;
+            //     // Handle the error gracefully
+                
+            // }
         }
 
         void rotate_left(rb_node_ptr x)
@@ -202,6 +227,7 @@ namespace ft
 
         ft::pair<rb_node_ptr, bool> insert_node(rb_node_ptr node)
         {
+            // std::cerr << node->key << "<%%%%%%%%%\n";
             rb_node_ptr parent = nil;
             rb_node_ptr cur = root;
             while (cur != nil)
@@ -211,7 +237,8 @@ namespace ft
                 if (!cmp(get_kot(node), get_kot(cur)) && !cmp(get_kot(cur), get_kot(node)) && unique)
                     return ft::make_pair(cur, false);
             
-                
+
+            
 
                 if (cmp(get_kot(node), get_kot(cur)))
                     cur = cur->left;
@@ -487,30 +514,49 @@ namespace ft
         }
 
     public:
+
+     ~rb_tree()
+     {
+
+        clear();
+        deallocate_node(root);
+
+
+     }
         iterator lower_bound(const Ky &val) const
         {
-            rb_node_ptr cur = root;
-            rb_node_ptr ans = nil;
-            while (cur != nil)
-            {
-                if (!cmp(val, get_kot(cur)) && !cmp(get_kot(cur), val))
+            
+                            rb_node_ptr cur = root;
+                            rb_node_ptr ans = nil;
+            // try
+            // {
+                while (cur != nil)
                 {
-                    if (unique)
-                        return iterator(cur, nil);
-                    else
+                    if (!cmp(val, get_kot(cur)) && !cmp(get_kot(cur), val))
+                    {
+                        if (unique)
+                        {
+                            
+                            return iterator(cur, nil);
+                            
+                        }else
+                        {
+                            ans = cur;
+                            cur = cur->left;
+                        }
+                    }    
+                    else if (cmp(val, get_kot(cur)))
                     {
                         ans = cur;
                         cur = cur->left;
                     }
-                }    
-                else if (cmp(val, get_kot(cur)))
-                {
-                    ans = cur;
-                    cur = cur->left;
-                }
-                else
+                    else
                     cur = cur->right;
-            }
+                }
+            // }
+            // catch (std::exception& e){
+            //     std::cerr << "KKKKKKKKKKKKKKK\n";
+            // }
             return iterator(ans, nil);
         }
 
@@ -630,9 +676,13 @@ namespace ft
         {
             rb_node_ptr new_node = create_node(val);
             ft::pair<rb_node_ptr, bool> is_inserted = insert_node(new_node);
-
+            
             _size += is_inserted.second;
             ft::pair<iterator, bool> ans = ft::make_pair(iterator(is_inserted.first, nil), is_inserted.second);
+            // if (is_inserted.second)
+            // {
+            //     std::cerr << *ans.first << "###" << val << "----\n";
+            // }
             return ans;
         }
 
@@ -685,13 +735,15 @@ namespace ft
             _size = 0;
             root = nil;
         }
-
+        int valara = 78;
         void swap(rb_tree &other)
         {
             ft::swap(root, other.root);
             ft::swap(nil, other.nil);
             std::swap(cmp, other.cmp);
             ft::swap(_size, other._size);
+            ft::swap(alloc, other.alloc);  //
+            ft::swap(unique, other.unique);  //
         }
 
 
@@ -722,6 +774,7 @@ namespace ft
             iterator it = x.begin();
             iterator it_end = x.end(); 
             cmp = x.cmp;
+            alloc = x.alloc;
             while (it != it_end)
             {    insert(*it); ++it;}
             return *this;

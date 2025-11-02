@@ -4,7 +4,7 @@
 #define FT_MAP_hpp__
 #include <memory>
 #include "rb_tree.hpp"
-
+#include "stdexcept.hpp"
 namespace ft
 {
 
@@ -20,10 +20,10 @@ namespace ft
     template <class Key, // map::key_type
               class T,
               class Compare = std::less<Key>,
-              class Alloc = std::allocator<std::pair<const Key, T>>>
-    class map : public ft::rb_tree<std::pair<const Key, T>, const Key, MapKeyOfT<std::pair<const Key, T>>, Compare, Alloc>
+              class Alloc = std::allocator<ft::pair< Key, T> > >
+    class map : public ft::rb_tree<ft::pair< const Key, T>, Key, MapKeyOfT<ft::pair< const Key, T> >, Compare, Alloc>
     {
-        typedef ft::rb_tree<std::pair<const Key, T>, const Key, MapKeyOfT<std::pair<const Key, T>>, Compare, Alloc> rb_tree;
+        typedef ft::rb_tree<ft::pair< const Key, T>, Key, MapKeyOfT<ft::pair< const Key, T> >, Compare, Alloc> rb_tree;
 
     public:
         typedef T mapped_type; //            = T;
@@ -45,7 +45,10 @@ namespace ft
         map(const map &other) : rb_tree(other)
         {
         }
+        ~map()
+        {
 
+        }
         class value_compare
         {
         protected:
@@ -66,7 +69,7 @@ namespace ft
         {
             typename rb_tree::iterator it = this->find(key);
             if (it == this->end())
-                throw std::out_of_range("not found");
+                throw ft::out_of_range("not found");
             return it->second;
         }
 
@@ -74,7 +77,7 @@ namespace ft
         {
             typename rb_tree::iterator it = this->find(key);
             if (it == this->end())
-                throw std::out_of_range("pos is out of range");
+                throw ft::out_of_range("pos is out of range");
             return it->second;
         }
 
@@ -82,7 +85,7 @@ namespace ft
         {
             typename rb_tree::iterator it = this->find(key);
             if (it == this->end())
-                it = this->insert(std::make_pair(key, T())).first;
+                it = this->insert(ft::make_pair(key, T())).first;
             return it->second;
         }
 
@@ -95,10 +98,10 @@ namespace ft
     template <class Key, // map::key_type
               class T,
               class Compare = std::less<Key>,
-              class Alloc = std::allocator<std::pair<const Key, T>>>
-    class multimap : public ft::rb_tree<std::pair<const Key, T>, const Key, MapKeyOfT<std::pair<const Key, T>>, Compare, Alloc, false>
+              class Alloc = std::allocator<std::pair< Key, T>>>
+    class multimap : public ft::rb_tree<ft::pair< const Key, T>, Key, MapKeyOfT<ft::pair< const Key, T> >, Compare, Alloc, false>
     {
-        typedef ft::rb_tree<std::pair<const Key, T>, const Key, MapKeyOfT<std::pair<const Key, T>>, Compare, Alloc, false> rb_tree;
+        typedef ft::rb_tree<ft::pair< const Key, T>, Key, MapKeyOfT<ft::pair< const Key, T> >, Compare, Alloc, false> rb_tree;
 
     public:
         class value_compare
@@ -121,7 +124,7 @@ namespace ft
         {
             typename rb_tree::iterator it = this->find(key);
             if (it == this->end())
-                throw std::out_of_range("not found");
+                throw ft::out_of_range("not found");
             return it->second;
         }
 
@@ -129,7 +132,7 @@ namespace ft
         {
             typename rb_tree::iterator it = this->find(key);
             if (it == this->end())
-                throw std::out_of_range("pos is out of range");
+                throw ft::out_of_range("pos is out of range");
             return it->second;
         }
 
@@ -220,14 +223,14 @@ namespace ft
     }
 
     template <class Key, class T, class Compare, class Alloc>
-    void swap(std::map<Key, T, Compare, Alloc> &lhs,
-              std::map<Key, T, Compare, Alloc> &rhs)
+    void swap(ft::map<Key, T, Compare, Alloc> &lhs,
+              ft::map<Key, T, Compare, Alloc> &rhs)
     {
         lhs.swap(rhs);
     }
     template <class Key, class T, class Compare, class Alloc>
-    void swap(std::multimap<Key, T, Compare, Alloc> &lhs,
-              std::multimap<Key, T, Compare, Alloc> &rhs)
+    void swap(ft::multimap<Key, T, Compare, Alloc> &lhs,
+              ft::multimap<Key, T, Compare, Alloc> &rhs)
     {
         lhs.swap(rhs);
     }

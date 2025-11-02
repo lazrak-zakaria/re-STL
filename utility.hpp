@@ -1,7 +1,6 @@
 
 #ifndef FT_UTILITY_HPP
 #define FT_UTILITY_HPP
-
 namespace ft
 {
     template <class T1, class T2>
@@ -13,22 +12,25 @@ namespace ft
         first_type first;
         second_type second;
 
-        pair()
+        pair() : first(), second()
         {
         }
 
         template <class U, class V>
-        pair(const pair<U, V> &pr)
+        pair(const pair<U, V> &pr) : first(pr.first), second(pr.second)
         {
-            first = pr.first;
-            second = pr.second;
         }
 
-        pair(const first_type &a, const second_type &b)
+        pair(const first_type &a, const second_type &b): first(a), second(b)
         {
-            first = a;
-            second = b;
+
         }
+        pair& operator=( const pair& other )
+		{
+			this->first = other.first;
+			this->second = other.second;
+			return *this;
+		}
     };
 
     template <class T1, class T2>
@@ -36,6 +38,40 @@ namespace ft
     {
         return pair<T1, T2>(x, y);
     }
+
+
+
+
+	template< class T1, class T2 >
+	bool operator==( const pair<T1, T2>& lhs, const pair<T1, T2>& rhs )
+	{
+		return lhs.first == rhs.first && lhs.second == rhs.second;
+	}
+	template< class T1, class T2 >
+	bool operator!=( const pair<T1, T2>& lhs, const pair<T1, T2>& rhs )
+	{
+		return !(lhs == rhs);
+	}
+	template< class T1, class T2 >
+	bool operator<( const pair<T1, T2>& lhs, const pair<T1, T2>& rhs )
+	{
+		return lhs.first < rhs.first || (!(rhs.first < lhs.first) && lhs.second < rhs.second);
+	}
+	template< class T1, class T2 >
+	bool operator<=( const pair<T1, T2>& lhs, const pair<T1, T2>& rhs )
+	{
+		return !(rhs < lhs);
+	}
+	template< class T1, class T2 >
+	bool operator>( const pair<T1, T2>& lhs, const pair<T1, T2>& rhs )
+	{
+		return rhs < lhs;
+	}
+	template< class T1, class T2 >
+	bool operator>=( const pair<T1, T2>& lhs, const pair<T1, T2>& rhs )
+	{
+		return !(lhs < rhs);
+	}
 }
 
 #endif
