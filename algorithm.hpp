@@ -5,7 +5,7 @@
 
 // i suppose i get a random_access_iterator_tag
 #include "iterator_traits.hpp"
-
+#include <iostream>
 namespace ft
 {
 
@@ -19,11 +19,13 @@ namespace ft
     {
         if (first == last)
             return;
-        size_t pos = last - first - 1;
+        typename std::iterator_traits<RandomAccessIterator>::difference_type pos = std::distance(first, last);
+        // silonze_t pos = last - first - 1;
         while (pos >= 0)
         {
             heapify_down(first, last, comp, pos);
             pos -= 1;
+            std::cerr << pos << "LLOOOO{{}}\n";
         }
     }
 

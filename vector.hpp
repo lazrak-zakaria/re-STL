@@ -6,6 +6,8 @@
 #include "iterator_traits.hpp"
 #include "reverse_iterator.hpp"
 #include "algorithm.hpp"
+#include "stdexcept.hpp"
+
 #define __RATIO__FT__VECTOR__ 2
 #define __MAX_SIZE_FT_VECTOR__ 1073741823
 
@@ -122,14 +124,14 @@ namespace ft
         reference at(size_type n)
         {
             if (n < 0 || n >= _size)
-                throw std::out_of_range("pos is out of range");
+                throw ft::out_of_range("pos is out of range al9awad");
             return *(_ptr + n);
         }
 
         const_reference at(size_type n) const
         {
             if (n < 0 || n >= _size)
-                throw std::out_of_range("pos is out of range");
+                throw ft::out_of_range("pos is out of range zab");
             return *(_ptr + n);
         }
 
@@ -289,8 +291,31 @@ namespace ft
                 _size += n;
             }
         }
-        template <class InputIterator>
-        void insert(iterator position, InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
+
+        template <class InputIt>
+        void insert(iterator pos, InputIt first, InputIt last, 
+             typename ft::enable_if<!ft::is_integral<InputIt>::value>::type * = 0)
+        {
+            insert_dispatch(pos, first, last, 
+                typename ft::iterator_traits<InputIt>::iterator_category());
+        }
+
+        template <class InputIt>
+        void insert_dispatch(iterator pos, InputIt first, InputIt last, 
+                                std::input_iterator_tag)
+        {
+            // std::cerr<<"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n";
+            difference_type offset = pos - begin();
+            if (first == last) return ;
+            for (; first != last ; ++first, ++pos)
+                pos = insert(pos, *first);
+
+            // std::cerr << "SJSJKJSKJSK\n";
+            // return begin() + offset;
+        }
+        
+        template <class InputIt>
+        void insert_dispatch(iterator position, InputIt first, InputIt last, std::forward_iterator_tag )
         {
 
             difference_type n = ft::distance(first, last);

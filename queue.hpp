@@ -16,9 +16,17 @@ its parent =floor ((i-1/2))
 #include <vector>
 #include <deque>
 #include "vector.hpp"
+#include <iostream>
+#include "deque.hpp"
+#include <iostream>
 namespace ft
 {
-    template <class T, class Container = std::vector<T>, class Compare = std::less<typename Container::value_type> >
+
+
+    
+
+
+    template <class T, class Container = ft::vector<T>, class Compare = std::less<typename Container::value_type> >
     class priority_queue
     {
     private:
@@ -38,20 +46,22 @@ namespace ft
     public:
         explicit priority_queue(const Compare &comp = Compare(), const Container &ctnr = Container()) : comp(comp), c(ctnr)
         {
-
-            ft::make_heap(c.begin(), c.end());
+            for (auto v : c) std::cerr << "<<<<<" << v << "::\n";
+            ft::make_heap(c.begin(), c.end(), comp);
+            std::cerr << "******************\n";
         }
 
         template <class InputIterator>
         priority_queue(InputIterator first, InputIterator last, const Compare &comp = Compare(),
-                       const Container &ctnr = Container()) : comp(comp), c(ctnr)
+                       const Container &ctnr = Container(), typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0) : comp(comp), c(ctnr)
         {
+            std::cerr << "RRRR||\n";
             while (first != last)
             {
                 c.push_back(*first);
                 first++;
             }
-            ft::make_heap(c.begin(), c.end());
+            ft::make_heap(c.begin(), c.end(), comp);
         }
 
         ~priority_queue()
@@ -84,6 +94,11 @@ namespace ft
             return c.size();
         }
 
+        // void swap (priority_queue& x) 
+        // {
+        //     ft::swap(c, x.c);
+        //     ft::swap(comp, x.comp);
+        // }
         // priority_queue &operator=(const priority_queue &other);
         // (1)(implicitly declared)
     };
@@ -183,7 +198,17 @@ namespace ft
         {
             return lhs.c >= rhs.c;
         }
+
+
+
+        
+        
     };
+    template <class T, class Container , class Compare>
+    void swap( priority_queue<T, Container, Compare> &lhs,  priority_queue<T, Container, Compare> &rhs)
+    {
+        return lhs.swap (rhs);
+    }
 
 }
 

@@ -610,34 +610,34 @@ namespace ft
         public:
             // For input iterators (slower, must iterate to count)
             template <class InputIt>
-            iterator insert_dispatch(iterator pos, InputIt first, InputIt last, 
+            void insert_dispatch(iterator pos, InputIt first, InputIt last, 
                                     std::input_iterator_tag)
             {
-                std::cerr<<"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n";
+                // std::cerr<<"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n";
                 difference_type offset = pos - start;
-                if (first == last) return pos;
+                if (first == last) return ;
                 for (; first != last ; ++first, ++pos)
                     pos = insert(pos, *first);
 
-                std::cerr << "SJSJKJSKJSK\n";
-                return start + offset;
+                // std::cerr << "SJSJKJSKJSK\n";
+                return ;
             }
             
 
             template <class InputIt>
-            iterator insert(iterator pos, InputIt first, InputIt last, 
+            void insert(iterator pos, InputIt first, InputIt last, 
                  typename ft::enable_if<!ft::is_integral<InputIt>::value>::type * = 0)
             {
-                return insert_dispatch(pos, first, last, 
+                insert_dispatch(pos, first, last, 
                     typename ft::iterator_traits<InputIt>::iterator_category());
             }
 
         
         template <class InputIt>
-        iterator insert_dispatch(iterator pos, InputIt first, InputIt last, std::forward_iterator_tag )
+        void insert_dispatch(iterator pos, InputIt first, InputIt last, std::forward_iterator_tag )
         {
             // std::cerr << "ZABABABABABBABBBBBBBBBBBBBB\n";
-            if (first == last) return pos;
+            if (first == last) return ;
             difference_type n = std::distance(first, last);
 
             difference_type offset = pos - start;
@@ -654,7 +654,7 @@ namespace ft
                 
                 iterator old_start = start + n;
                 std::reverse(start, old_start);
-                return start;
+                return ;
             }
 
             else if (pos.cur == finish.cur)
@@ -663,7 +663,7 @@ namespace ft
                 for (InputIt it = first; it != last; ++it)
                     push_back(*it);
 
-                return result;
+                return ;
             }
 
             else
@@ -704,7 +704,7 @@ namespace ft
                     }
                 }
 
-                return start + offset;
+                return ;
             }
         }
 
