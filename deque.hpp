@@ -17,15 +17,15 @@ namespace ft
 
     template <
         class T,
-        class Allocator = std::allocator<T>>
+        class Allocator = std::allocator<T> >
     class deque
     {
 
     public:
         typedef T value_type;
         typedef Allocator allocator_type;
-        typedef typename std::allocator_traits<Allocator>::pointer pointer;
-        typedef typename std::allocator_traits<Allocator>::const_pointer const_pointer;
+        typedef typename Allocator::pointer pointer;
+        typedef typename Allocator::const_pointer const_pointer;
         typedef value_type &reference;
         typedef const value_type &const_reference;
 
@@ -40,25 +40,25 @@ namespace ft
         typedef pointer *map_pointer;
 
     protected:
-        iterator start;
-        iterator finish;
-
-        map_pointer map;
-        size_type map_size;
-        size_type _buffer_size = 4096;
-
-        allocator_type deque_allocator;
-        typename allocator_type::template rebind<pointer>::other map_allocator;
+    iterator start;
+    iterator finish;
+    
+    map_pointer map;
+    size_type map_size;
+    allocator_type deque_allocator;
+    size_type _buffer_size;
+    
+    typename allocator_type::template rebind<pointer>::other map_allocator;
 
     public:
         deque(const allocator_type &alloc = allocator_type())
-            : map(0), map_size(0), deque_allocator(alloc)
+            : map(0), map_size(0), deque_allocator(alloc), _buffer_size(4096)
         {
             create_map_and_nodes(0);
         }
 
         explicit deque(size_type n, const value_type &val = value_type(), const allocator_type &alloc = allocator_type())
-            : map(0), map_size(0), deque_allocator(alloc)
+            : map(0), map_size(0), deque_allocator(alloc),  _buffer_size(4096)
         {
             fill_initialize(n, val);
         }
@@ -66,25 +66,17 @@ namespace ft
         template <class InputIterator>
         deque(InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type(),
               typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
-            : map(0), map_size(0), deque_allocator(alloc)
+            : map(0), map_size(0), deque_allocator(alloc),  _buffer_size(4096)
         {
             create_map_and_nodes(0);
-
-            // create_map_and_nodes(ft::distance( first, last));
-            // iterator st = start;
-            // while (st != finish)
-            // {
-            //     deque_allocator.construct(st.cur, *first);
-            //     // deque_allocator.construct(first, value);
-            //     ++st;
-            //     ++first;
-            // }
             insert(begin(), first, last);
         }
 
-        deque(const deque &x) : deque(x.begin(), x.end(), x.deque_allocator)
+        deque(const deque &x) : map(0), map_size(0), deque_allocator(x.deque_allocator),  _buffer_size(4096)   //deque(x.begin(), x.end(), x.deque_allocator)
         {
             map_allocator = x.map_allocator;
+            create_map_and_nodes(0);
+            insert(begin(), x.begin(), x.end());
         }
 
         void swap(deque &x)
@@ -314,7 +306,8 @@ namespace ft
 
         void reserve_map_front(size_type nodes_to_add = 1)
         {
-            if (nodes_to_add > start.node - map)
+            size_type sz = start.node - map;
+            if (nodes_to_add > sz)
                 reallocate_map(nodes_to_add, true);
         }
 
@@ -536,10 +529,10 @@ namespace ft
 
         iterator insert_expand(iterator pos, const value_type &x)
         {
-            difference_type index = pos - start;
+            size_type index = pos - start;
             value_type x_copy = x;
             // std::cout << *begin() << "++\n";
-
+            
             if (index < size() / 2)
             {
                 value_type xx = front();
@@ -613,13 +606,9 @@ namespace ft
             void insert_dispatch(iterator pos, InputIt first, InputIt last, 
                                     std::input_iterator_tag)
             {
-                // std::cerr<<"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n";
-                difference_type offset = pos - start;
                 if (first == last) return ;
                 for (; first != last ; ++first, ++pos)
                     pos = insert(pos, *first);
-
-                // std::cerr << "SJSJKJSKJSK\n";
                 return ;
             }
             
@@ -636,7 +625,6 @@ namespace ft
         template <class InputIt>
         void insert_dispatch(iterator pos, InputIt first, InputIt last, std::forward_iterator_tag )
         {
-            // std::cerr << "ZABABABABABBABBBBBBBBBBBBBB\n";
             if (first == last) return ;
             difference_type n = std::distance(first, last);
 
@@ -659,10 +647,8 @@ namespace ft
 
             else if (pos.cur == finish.cur)
             {
-                iterator result = finish;
                 for (InputIt it = first; it != last; ++it)
                     push_back(*it);
-
                 return ;
             }
 
@@ -682,9 +668,8 @@ namespace ft
                     copy(old_start, mid, start);
                     InputIt it = first;
                     for (iterator insert_pos = start + offset; insert_pos != pos && it != last; ++insert_pos, ++it)
-                    {
                         *insert_pos = *it;
-                    }
+
                 }
                 else
                 {
@@ -699,9 +684,8 @@ namespace ft
                     copy_backward(mid, old_finish, finish);
                     InputIt it = first;
                     for (iterator insert_pos = pos; it != last; ++insert_pos, ++it)
-                    {
                         *insert_pos = *it;
-                    }
+
                 }
 
                 return ;
@@ -718,7 +702,7 @@ namespace ft
         void insert (iterator position, size_type n, const value_type& val)
         {
             difference_type offset = position - start;
-            // difference_type n = std::distance(first, last);
+
 
             if (n == 0)
                 return ;

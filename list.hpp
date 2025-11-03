@@ -84,18 +84,21 @@ namespace ft
             initialize();
         }
         explicit list(size_type n, const value_type &val = value_type(), const allocator_type &alloc = allocator_type())
-            : list(alloc)
+            :  alloc(alloc)
         {
+            initialize();
             insert(begin(), n, val);
         }
         template <class InputIterator>
-        list(InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type()) : list(alloc)
+        list(InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type()) : alloc(alloc)
         {
+            initialize();
             insert(begin(), first, last);
         }
 
-        list(const list &x) : list(x.alloc)
+        list(const list &x) : alloc(x.alloc)
         {
+            initialize();
             insert(begin(), x.begin(), x.end());
         }
 
@@ -390,6 +393,7 @@ namespace ft
         }
         void splice(iterator position, list &x, iterator first, iterator last)
         {
+            (void)x;
             if (first != last)
                 transfer(position, first, last);
         }

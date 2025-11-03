@@ -29,11 +29,11 @@ namespace ft
         Color color;
 
         rb_node(const Key &key)
-            : key(key), left(nullptr), right(nullptr), parent(nullptr), color(RED)
+            : key(key), left(NULL), right(NULL), parent(NULL), color(RED)
         {
         }
         rb_node()
-            : left(nullptr), right(nullptr), parent(nullptr), color(RED)
+            : left(NULL), right(NULL), parent(NULL), color(RED)
         {
         }
     };
@@ -76,41 +76,38 @@ namespace ft
         rb_node_ptr nil;
 
         key_compare cmp;
-        bool unique = Unique;
+        bool unique ;
         size_type _size;
-        typename allocator_type::template rebind<ft::rb_node<value_type>>::other alloc;
+        typename allocator_type::template rebind<ft::rb_node<value_type> >::other alloc;
 
     public:
 
         explicit rb_tree(const key_compare &comp = key_compare(), const allocator_type &a = allocator_type()) : cmp(comp), alloc(a)
         {
-            // try {
+            initialize();
+        }
+
+        void initialize()
+        {
+            unique = Unique;
             nil = alloc.allocate(1);
             alloc.construct(nil, value_type());
-            // std::cerr <<"HHHHHHHHHHHHHHHHHHHHHHHHHHHHH++++++++\n";
             nil->parent = nil;
             nil->left = nil;
             nil->right = nil;
             nil->color = BLACK;
             root = nil;
             _size = 0;
-            // }
-            // catch (const std::bad_alloc& e) {
-            //     std::cerr << "Memory HHHHHHHHHHHHHHHHHHHHHHHHHHHHH failed: " << e.what() << std::endl;
-            //     // Handle the error gracefully
-                
-            // }
         }
-
-
 
 
 
 
         template <class InputIterator>
         rb_tree(InputIterator first, InputIterator last, const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type(),
-        typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0) : rb_tree(comp, alloc)
+        typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0) : cmp(comp), alloc(alloc)
         {
+            initialize();
             while (first!= last)
             {
                 insert(*first);
@@ -118,8 +115,9 @@ namespace ft
             }
         }
         
-        rb_tree(const rb_tree &x) : rb_tree(x.cmp, x.alloc)
+        rb_tree(const rb_tree &x) : cmp(x.cmp), alloc(x.alloc)
         {
+            initialize();
             *this = x;
         }
 
@@ -139,8 +137,6 @@ namespace ft
     private:
         rb_node_ptr create_node(Key key)
         {
-            // try
-            // {
 
             
             rb_node_ptr node = alloc.allocate(1);
@@ -150,13 +146,6 @@ namespace ft
             node->right = nil;
             node->parent = nil;
             return node;
-            // }
-            // catch (const std::bad_alloc& e) {
-            //     std::cerr << "Memory HHHHHHHHHHHHHHHHHHHHHHHHHHHHH failed: \n" << e.what() << std::endl;
-            //     // Handle the error gracefully
-                
-            // }
-            // return NULL;
         }
 
         void deallocate_node(rb_node_ptr node)
@@ -735,7 +724,7 @@ namespace ft
             _size = 0;
             root = nil;
         }
-        int valara = 78;
+
         void swap(rb_tree &other)
         {
             ft::swap(root, other.root);

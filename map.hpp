@@ -98,7 +98,7 @@ namespace ft
     template <class Key, // map::key_type
               class T,
               class Compare = std::less<Key>,
-              class Alloc = std::allocator<std::pair< Key, T>>>
+              class Alloc = std::allocator<std::pair< Key, T> > >
     class multimap : public ft::rb_tree<ft::pair< const Key, T>, Key, MapKeyOfT<ft::pair< const Key, T> >, Compare, Alloc, false>
     {
         typedef ft::rb_tree<ft::pair< const Key, T>, Key, MapKeyOfT<ft::pair< const Key, T> >, Compare, Alloc, false> rb_tree;

@@ -22,10 +22,6 @@ its parent =floor ((i-1/2))
 namespace ft
 {
 
-
-    
-
-
     template <class T, class Container = ft::vector<T>, class Compare = std::less<typename Container::value_type> >
     class priority_queue
     {
@@ -46,16 +42,13 @@ namespace ft
     public:
         explicit priority_queue(const Compare &comp = Compare(), const Container &ctnr = Container()) : comp(comp), c(ctnr)
         {
-            for (auto v : c) std::cerr << "<<<<<" << v << "::\n";
             ft::make_heap(c.begin(), c.end(), comp);
-            std::cerr << "******************\n";
         }
 
         template <class InputIterator>
         priority_queue(InputIterator first, InputIterator last, const Compare &comp = Compare(),
                        const Container &ctnr = Container(), typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0) : comp(comp), c(ctnr)
         {
-            std::cerr << "RRRR||\n";
             while (first != last)
             {
                 c.push_back(*first);

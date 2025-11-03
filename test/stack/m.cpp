@@ -30,7 +30,7 @@ void compare_ops(const S& a, const S& b, const std::string& nameA, const std::st
 }
 
 int main() {
-    const int N = 1'000'000; // 1 million elements for stress test
+    const int N = 1000000; // 1 million elements for stress test
     std::cout << "==== STACK FUNCTIONAL & STRESS TEST ====\n";
     std::cout << "Elements: " << N << "\n\n";
 
@@ -43,6 +43,7 @@ int main() {
     clock_t ft_push_start = std::clock();
     for (int i = 0; i < N; ++i)
         ft_s.push(i);
+
     clock_t ft_push_end = std::clock();
 
     clock_t std_push_start = std::clock();
