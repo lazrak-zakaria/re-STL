@@ -4,7 +4,7 @@
 #define FT_MAP_hpp__
 #include <memory>
 #include "rb_tree.hpp"
-// #include "stdexcept.hpp"
+#include "stdexcept.hpp"
 namespace ft
 {
 

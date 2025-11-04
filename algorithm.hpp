@@ -12,6 +12,8 @@ namespace ft
     template <class RandomAccessIterator>
     void make_heap(RandomAccessIterator first, RandomAccessIterator last, typename ft::enable_if<!ft::is_integral<RandomAccessIterator>::value>::type * = 0)
     {
+        (void)last;
+        (void)first;
     }
 
     template <class RandomAccessIterator, class Compare>

@@ -115,7 +115,7 @@ namespace ft
                 else
                 {
 
-                    size_t hsh = ht->hash((key_of_type()(node->key)) % ht->table.size()); // curently i suppose the node->key is just one elmnt not a pair later add keyoftype
+                    size_t hsh = ht->hash(key_of_type()(node->key)) % ht->table.size(); // curently i suppose the node->key is just one elmnt not a pair later add keyoftype
                     hsh++;
                     while (hsh < ht->table.size())
                     {
@@ -247,7 +247,7 @@ namespace ft
                 while (cur)
                 {
                     from[i] = cur->next;
-                    size_t hsh = hash((key_of_type()(cur->key)) % to.size());
+                    size_t hsh = hash(key_of_type()(cur->key)) % to.size();
                     cur->next = to[hsh];
                     to[hsh] = cur;
 
@@ -267,7 +267,7 @@ namespace ft
             if (v > table.size())
                 rehash(table.size());
 
-            size_t hsh = hash((key_of_type()(k)) % table.size());
+            size_t hsh = hash((key_of_type()(k))) % table.size();
             hash_node_ptr node = create_node(k);
             node->next = table[hsh];
             table[hsh] = node;
@@ -280,7 +280,7 @@ namespace ft
         {
             if (table.empty())
                 return nullptr;
-            size_t hsh = hash((k) % table.size());
+            size_t hsh = hash(k) % table.size();
 
             hash_node_ptr ptr = table[hsh];
 
@@ -301,7 +301,7 @@ namespace ft
             if (!_find(k))
                 return false;
 
-            size_t hsh = hash((k) % table.size());
+            size_t hsh = hash(k) % table.size();
             hash_node_ptr ptr = table[hsh];
 
             hash_node_ptr prev = nullptr;
@@ -447,7 +447,7 @@ namespace ft
             if (empty())
                 return ans;
 
-            size_t hsh = hash(((key) % table.size()));
+            size_t hsh = hash((key) )% table.size();
             hash_node_ptr ptr = table[hsh];
             iterator it = find(key);
             while (it != end())
@@ -578,7 +578,7 @@ namespace ft
         iterator erase(const_iterator pos, const_iterator last)
         {
 
-            size_t hsh = hash((key_of_type()(pos.node->key)) % table.size());
+            size_t hsh = hash(key_of_type()(pos.node->key)) % table.size();
 
             hash_node_ptr ptr = table[hsh];
             hash_node_ptr prev = nullptr;

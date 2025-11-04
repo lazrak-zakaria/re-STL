@@ -97,7 +97,7 @@ namespace ft
 
         reference operator*()
         {
-            return (const reference)node->key;
+            return node->key;
         }
 
         rb_iterator operator--(int)
