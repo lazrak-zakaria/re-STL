@@ -19,10 +19,10 @@ namespace ft
 
     template <class Key,
               class T,
-              class Hash = std::hash<Key>,
+              class Hash = ft::HashFunc<Key>,
               class Pred = std::equal_to<Key>,
               class Alloc = std::allocator<ft::pair<const Key, T> > >
-    class unordered_map : public hash_table<ft::pair<const Key, T>,  Key, MapKeyOfT<ft::pair<const Key, T>>, Hash, Pred, Alloc, true>
+    class unordered_map : public hash_table<ft::pair<const Key, T>,  Key, MapKeyOfT<ft::pair<const Key, T> >, Hash, Pred, Alloc, true>
     {
     private:
         typedef hash_table<ft::pair<const Key, T>,  Key, MapKeyOfT<ft::pair<const Key, T> >, Hash, Pred, Alloc, true> hash_table_type;
@@ -57,7 +57,7 @@ namespace ft
         {
         }
 
-        unordered_map(const unordered_map &other, const Alloc &alloc) : hash_table_type(other)
+        unordered_map(const unordered_map &other, const Alloc &alloc) : hash_table_type(other, alloc)
         {
         }
 
@@ -97,10 +97,10 @@ namespace ft
 
         template <class Key,
               class T,
-              class Hash = std::hash<Key>,
+              class Hash = ft::HashFunc<Key>,
               class Pred = std::equal_to<Key>,
               class Alloc = std::allocator<ft::pair<const Key, T> > >
-    class unordered_multimap : public hash_table<ft::pair<const Key, T>,  Key, MapKeyOfT<ft::pair<const Key, T>>, Hash, Pred, Alloc, false>
+    class unordered_multimap : public hash_table<ft::pair<const Key, T>,  Key, MapKeyOfT<ft::pair<const Key, T> >, Hash, Pred, Alloc, false>
     {
     private:
         typedef hash_table<ft::pair<const Key, T>,  Key, MapKeyOfT<ft::pair<const Key, T> >, Hash, Pred, Alloc, false> hash_table_type;
@@ -135,7 +135,7 @@ namespace ft
         {
         }
 
-        unordered_multimap(const unordered_multimap &other, const Alloc &alloc) : hash_table_type(other)
+        unordered_multimap(const unordered_multimap &other, const Alloc &alloc) : hash_table_type(other, alloc)
         {
         }
 

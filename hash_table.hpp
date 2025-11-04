@@ -18,24 +18,27 @@ namespace ft
 
 
     template <class K>
-    struct HashFunc
+    class HashFunc
     {
-        size_t operator()(const K &key)
+        public:
+        size_t operator()(const K &key)const
         {
             return (size_t)key;
         }
     };
 
     template <>
-    struct HashFunc<string>
+    class HashFunc<string>
     {
-        size_t operator()(const string &key)
+        public:
+
+        size_t operator()(const string &key) const 
         {
             size_t val = 0;
-            for (auto ch : key)
+            for (size_t i = 0; i < key.length(); ++i)
             {
                 val *= 131;
-                val += ch;
+                val += key[i];
             }
 
             return val;
@@ -59,7 +62,7 @@ namespace ft
     template <class Key,
               class Ky,
               class KeyType,
-              class Hash = std::hash<Key>,
+              class Hash = HashFunc<Ky>,
               class Pred = std::equal_to<Key>,
               class Alloc = std::allocator<Key>,
               bool Unique = true>
@@ -94,7 +97,7 @@ namespace ft
             _iterator(const hash_node_ptr &node, const hash_table *ht) : ht(ht), node(node)
             {
             }
-            _iterator() : ht(nullptr), node(nullptr)
+            _iterator() : ht(NULL), node(NULL)
             {
             }
 
@@ -124,7 +127,7 @@ namespace ft
                         hsh++;
                     }
                     if (hsh == ht->table.size())
-                        node = nullptr;
+                        node = NULL;
                     else
                         node = ht->table[hsh];
                 }
@@ -210,11 +213,11 @@ namespace ft
 
     private:
         std::vector<hash_node_ptr> table;
-        size_t sz = 0;
+        size_t sz ;
         key_equal cmp;
-        float _max_load_factor = 1.0;
+        float _max_load_factor;
         hasher hash;
-        typename allocator_type::template rebind<ft::hash_node<value_type>>::other alloc;
+        typename allocator_type::template rebind<ft::hash_node<value_type> >::other alloc;
 
         allocator_type allocator;
 
@@ -279,7 +282,7 @@ namespace ft
         hash_node_ptr _find(const Ky &k) const
         {
             if (table.empty())
-                return nullptr;
+                return NULL;
             size_t hsh = hash(k) % table.size();
 
             hash_node_ptr ptr = table[hsh];
@@ -293,7 +296,7 @@ namespace ft
                 }
                 ptr = ptr->next;
             }
-            return nullptr;
+            return NULL;
         }
 
         bool _erase(const Ky &k)
@@ -304,7 +307,7 @@ namespace ft
             size_t hsh = hash(k) % table.size();
             hash_node_ptr ptr = table[hsh];
 
-            hash_node_ptr prev = nullptr;
+            hash_node_ptr prev = NULL;
             while (ptr)
             {
                 if (cmp(key_of_type()(ptr->key), k))
@@ -344,14 +347,14 @@ namespace ft
             for (size_t i = 0; i < table.size(); ++i)
             {
                 hash_node_ptr cur = table[i];
-                hash_node_ptr next = nullptr;
+                hash_node_ptr next = NULL;
                 while (cur)
                 {
                     next = cur->next;
                     delete_node(cur);
                     cur = next;
                 }
-                table[i] = nullptr;
+                table[i] = NULL;
             }
             
             _max_load_factor = 1.0;
@@ -370,7 +373,7 @@ namespace ft
             for (size_t i = 0; i < oth.table.size(); ++i)
             {
                 hash_node_ptr cur = oth.table[i];
-                hash_node_ptr next = nullptr;
+                // hash_node_ptr next = NULL;
                 while (cur)
                 {
                     _insert(cur->key);
@@ -391,11 +394,13 @@ namespace ft
         explicit hash_table(size_type bucket_count = 13,
                             const Hash &hash = Hash(),
                             const key_equal &equal = key_equal(),
-                            const allocator_type &alloc = allocator_type()) : hash(hash), cmp(equal),
+                            const allocator_type &alloc = allocator_type()) :  cmp(equal), hash(hash),
                                                                               alloc(alloc)
 
         {
-            table.resize(bucket_count, nullptr);
+            sz = 0;
+            _max_load_factor = 1.0;
+            table.resize(bucket_count, NULL);
         }
 
         template <class InputIt>
@@ -407,17 +412,23 @@ namespace ft
                                                                      alloc(alloc)
 
         {
-            table.resize(bucket_count, nullptr);
+            _max_load_factor = 1.0;
+            sz = 0;
+            table.resize(bucket_count, NULL);
             insert(first, last);
         }
 
         hash_table(const hash_table &other)
         {
+            _max_load_factor = 1.0;
+            sz = 0;
             *this = other;
         }
 
         hash_table(const hash_table &other, const allocator_type &alloc) : alloc(alloc)
         {
+            _max_load_factor = 1.0;
+            sz = 0;
             *this = other;
         }
 
@@ -435,7 +446,7 @@ namespace ft
         // Lookup
 
 
-        size_type max_size() const noexcept
+        size_type max_size() const
         {
             return size_type(-1);
         }
@@ -447,8 +458,8 @@ namespace ft
             if (empty())
                 return ans;
 
-            size_t hsh = hash((key) )% table.size();
-            hash_node_ptr ptr = table[hsh];
+            // size_t hsh = hash((key) )% table.size();
+            // hash_node_ptr ptr = table[hsh];
             iterator it = find(key);
             while (it != end())
             {
@@ -550,20 +561,14 @@ namespace ft
             return _insert(value);
         }
 
-        ft::pair<iterator, bool> insert(value_type &&value)
-        {
-            return _insert(value);
-        }
+
 
         iterator insert(const_iterator hint, const value_type &value)
         {
+            (void)hint;
             return _insert(value).first;
         }
 
-        iterator insert(const_iterator hint, value_type &&value)
-        {
-            return _insert(value).first;
-        }
 
         template <class InputIt>
         void insert(InputIt first, InputIt last, typename ft::enable_if<has_iterator_category<InputIt>::value>::type * = 0)
@@ -581,7 +586,7 @@ namespace ft
             size_t hsh = hash(key_of_type()(pos.node->key)) % table.size();
 
             hash_node_ptr ptr = table[hsh];
-            hash_node_ptr prev = nullptr;
+            hash_node_ptr prev = NULL;
 
             while (ptr && ptr != pos.node)
             {
@@ -608,7 +613,7 @@ namespace ft
                 while (hsh < table.size())
                 {
                     ptr = table[hsh];
-                    table[hsh] = nullptr;
+                    table[hsh] = NULL;
                     while (ptr)
                     {
                         hash_node_ptr next = ptr->next;
@@ -681,7 +686,7 @@ namespace ft
             for (size_t i = 0; i < table.size(); ++i)
                 if (table[i])
                     return iterator(table[i], this);
-            return iterator(nullptr, this);
+            return iterator(NULL, this);
         }
 
         const_iterator begin() const
@@ -693,21 +698,21 @@ namespace ft
             for (size_t i = 0; i < table.size(); ++i)
                 if (table[i])
                     return const_iterator(table[i], this);
-            return const_iterator(nullptr, this);
+            return const_iterator(NULL, this);
         }
 
         iterator end()
         {
-            return iterator(nullptr, this);
+            return iterator(NULL, this);
         }
 
         const_iterator end() const
         {
-            return const_iterator(nullptr, this);
+            return const_iterator(NULL, this);
         }
         const_iterator cend()
         {
-            return const_iterator(nullptr, this);
+            return const_iterator(NULL, this);
         }
 
         // Bucket interface
@@ -742,27 +747,36 @@ namespace ft
 
         const_local_iterator begin(size_type n) const
         {
+            (void)n;
+
             return const_local_iterator(table[n]);
         }
 
         const_local_iterator cbegin(size_type n) const
         {
+            (void)n;
+
             return const_local_iterator(table[n]);
         }
 
         local_iterator end(size_type n)
         {
-            return local_iterator(nullptr);
+            (void)n;
+
+            return local_iterator(NULL);
         }
 
         const_local_iterator end(size_type n) const
         {
-            return const_local_iterator(nullptr);
+            (void)n;
+
+            return const_local_iterator(NULL);
         }
 
         const_local_iterator cend(size_type n) const
         {
-            return const_local_iterator(nullptr);
+            (void)n;
+            return const_local_iterator(NULL);
         }
 
         allocator_type get_allocator() const
