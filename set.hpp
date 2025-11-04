@@ -44,6 +44,8 @@ namespace ft
         set(const set &other) : rb_tree(other)
         {
         }
+
+
         class value_compare
         {
         protected:

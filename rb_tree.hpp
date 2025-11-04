@@ -22,14 +22,14 @@ namespace ft
     class rb_node
     {
     public:
+        Key key;
         rb_node *parent;
         rb_node *left;
         rb_node *right;
-        Key key;
         Color color;
 
         rb_node(const Key &key)
-            : key(key), left(NULL), right(NULL), parent(NULL), color(RED)
+            : key(key), parent(NULL), left(NULL), right(NULL), color(RED)
         {
         }
         rb_node()
@@ -677,6 +677,7 @@ namespace ft
 
         iterator insert(iterator position, const value_type &val)
         {
+            (void) position;
             ft::pair<iterator, bool> ans = insert(val);
             return ans.first;
         }

@@ -40,7 +40,7 @@ namespace ft
 
     private:
     public:
-        explicit priority_queue(const Compare &comp = Compare(), const Container &ctnr = Container()) : comp(comp), c(ctnr)
+        explicit priority_queue(const Compare &comp = Compare(), const Container &ctnr = Container()) :  c(ctnr), comp(comp)
         {
             ft::make_heap(c.begin(), c.end(), comp);
         }

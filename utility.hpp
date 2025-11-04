@@ -25,12 +25,6 @@ namespace ft
         {
 
         }
-        pair& operator=( const pair& other )
-		{
-			this->first = other.first;
-			this->second = other.second;
-			return *this;
-		}
     };
 
     template <class T1, class T2>

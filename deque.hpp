@@ -458,7 +458,7 @@ namespace ft
             ++next;
             difference_type i = pos - start;
 
-            if (i < (size() >> 1))
+            if (static_cast<unsigned long long>(i) < (size() >> 1))
             {
                 // g(55);
                 copy_backward(start, pos, next);
@@ -484,7 +484,7 @@ namespace ft
                 difference_type n = last - first;
                 difference_type elems_before = first - start;
 
-                if (elems_before < (size() - n) / 2)
+                if (static_cast<unsigned long long>(elems_before) < (size() - n) / 2)
                 {
                     copy_backward(start, first, last);
                     iterator new_start = start + n;
@@ -731,10 +731,10 @@ namespace ft
             else
             {
 
-                if (offset < size() / 2)
+                if (static_cast<unsigned long long>(offset) < size() / 2)
                 {
 
-                    for (difference_type i = 0; i < n; ++i)
+                    for (size_type i = 0; i < n; ++i)
                         push_front(front());
 
                     position = start + offset + n;
@@ -752,7 +752,7 @@ namespace ft
                 else
                 {
 
-                    for (difference_type i = 0; i < n; ++i)
+                    for (size_type i = 0; i < n; ++i)
                         push_back(back());
 
                     iterator old_finish = finish - n;

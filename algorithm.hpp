@@ -27,7 +27,7 @@ namespace ft
         {
             heapify_down(first, last, comp, pos);
             pos -= 1;
-            std::cerr << pos << "LLOOOO{{}}\n";
+            // std::cerr << pos << "LLOOOO{{}}\n";
         }
     }
 

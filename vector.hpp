@@ -92,7 +92,6 @@ namespace ft
         void assign(InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
         {
             difference_type n = ft::distance(first, last);
-            difference_type pos = 0;
             for (size_t i = 0; i < _size; ++i)
                 _allocator.destroy(_ptr + i);
             if (n > _capacity)
@@ -304,7 +303,6 @@ namespace ft
         void insert_dispatch(iterator pos, InputIt first, InputIt last,
                              std::input_iterator_tag)
         {
-            difference_type offset = pos - begin();
             if (first == last)
                 return;
             for (; first != last; ++first, ++pos)
@@ -318,13 +316,13 @@ namespace ft
             difference_type n = ft::distance(first, last);
             difference_type pos = ft::distance(begin(), position);
 
-            if (n > _capacity - _size)
+            if (static_cast<unsigned long long>(n) > _capacity - _size)
             {
 
                 size_type new_capacity = _capacity * __RATIO__FT__VECTOR__ * 2 + n;
                 value_type *new_ptr = _allocator.allocate(new_capacity);
 
-                for (size_type i = 0; i < pos; ++i)
+                for (size_type i = 0; i < static_cast<unsigned long long> (pos); ++i)
                     _allocator.construct(new_ptr + i, _ptr[i]);
 
                 for (size_type i = 0; first != last; ++i, ++first)
