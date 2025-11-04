@@ -15,6 +15,35 @@ using namespace std;
 namespace ft
 {
 
+
+
+    template <class K>
+    struct HashFunc
+    {
+        size_t operator()(const K &key)
+        {
+            return (size_t)key;
+        }
+    };
+
+    template <>
+    struct HashFunc<string>
+    {
+        size_t operator()(const string &key)
+        {
+            size_t val = 0;
+            for (auto ch : key)
+            {
+                val *= 131;
+                val += ch;
+            }
+
+            return val;
+        }
+    };
+
+
+
     template <class K>
     struct hash_node
     {
@@ -59,8 +88,8 @@ namespace ft
             typedef std::forward_iterator_tag iterator_category;
             typedef T value_type;
             typedef long long difference_type;
-            typedef T *pointer;
-            typedef T &reference;
+            typedef const T *pointer;
+            typedef const T &reference;
 
             _iterator(const hash_node_ptr &node, const hash_table *ht) : ht(ht), node(node)
             {
@@ -86,7 +115,7 @@ namespace ft
                 else
                 {
 
-                    size_t hsh = hasher()(key_of_type()(node->key)) % ht->table.size(); // curently i suppose the node->key is just one elmnt not a pair later add keyoftype
+                    size_t hsh = ht->hash((key_of_type()(node->key)) % ht->table.size()); // curently i suppose the node->key is just one elmnt not a pair later add keyoftype
                     hsh++;
                     while (hsh < ht->table.size())
                     {
@@ -163,7 +192,7 @@ namespace ft
         };
 
     public:
-        typedef Key key_type;
+        typedef Ky key_type;
         typedef Key value_type;
         typedef size_t size_type;
         typedef long difference_type;
@@ -186,6 +215,10 @@ namespace ft
         float _max_load_factor = 1.0;
         hasher hash;
         typename allocator_type::template rebind<ft::hash_node<value_type>>::other alloc;
+
+        allocator_type allocator;
+
+
 
         size_t next_prime(size_t p)
         {
@@ -214,7 +247,7 @@ namespace ft
                 while (cur)
                 {
                     from[i] = cur->next;
-                    size_t hsh = hasher()(key_of_type()(cur->key)) % to.size();
+                    size_t hsh = hash((key_of_type()(cur->key)) % to.size());
                     cur->next = to[hsh];
                     to[hsh] = cur;
 
@@ -223,7 +256,7 @@ namespace ft
             }
         }
 
-        ft::pair<iterator, bool> _insert(const key_type &k)
+        ft::pair<iterator, bool> _insert(const value_type &k)
         {
             // if Unique and k exists return ;
             hash_node_ptr ptr = _find(key_of_type()(k));
@@ -234,7 +267,7 @@ namespace ft
             if (v > table.size())
                 rehash(table.size());
 
-            size_t hsh = hasher()(key_of_type()(k)) % table.size();
+            size_t hsh = hash((key_of_type()(k)) % table.size());
             hash_node_ptr node = create_node(k);
             node->next = table[hsh];
             table[hsh] = node;
@@ -247,17 +280,20 @@ namespace ft
         {
             if (table.empty())
                 return nullptr;
-            size_t hsh = hasher()(k) % table.size();
+            size_t hsh = hash((k) % table.size());
 
             hash_node_ptr ptr = table[hsh];
 
             while (ptr)
             {
+
                 if (cmp(k, key_of_type()(ptr->key)))
-                    break;
+                {
+                    return ptr;
+                }
                 ptr = ptr->next;
             }
-            return ptr;
+            return nullptr;
         }
 
         bool _erase(const Ky &k)
@@ -265,7 +301,7 @@ namespace ft
             if (!_find(k))
                 return false;
 
-            size_t hsh = hasher()(k) % table.size();
+            size_t hsh = hash((k) % table.size());
             hash_node_ptr ptr = table[hsh];
 
             hash_node_ptr prev = nullptr;
@@ -386,12 +422,12 @@ namespace ft
         }
 
         // Capacity
-        bool empty() const noexcept
+        bool empty() const
         {
             return !sz;
         }
 
-        size_type size() const noexcept
+        size_type size() const
         {
             return sz;
         }
@@ -399,7 +435,10 @@ namespace ft
         // Lookup
 
 
- 
+        size_type max_size() const noexcept
+        {
+            return size_type(-1);
+        }
 
 
         size_type count(const Ky &key) const
@@ -408,17 +447,18 @@ namespace ft
             if (empty())
                 return ans;
 
-            size_t hsh = hasher()(key) % table.size();
+            size_t hsh = hash(((key) % table.size()));
             hash_node_ptr ptr = table[hsh];
-            while (ptr)
+            iterator it = find(key);
+            while (it != end())
             {
-                if (cmp(key, key_of_type()(ptr->key)))
+                if (cmp(key, key_of_type()(it.node->key)))
                 {
                     ans += 1;
                     if (Unique)
                         return ans;
                 }
-                ptr = ptr->next;
+                ++it;
             }
             return ans;
         }
@@ -443,19 +483,17 @@ namespace ft
 
             if (!start)
                 return ft::make_pair(start, start);
-            // std::cout << "o\n";
+
 
             if (Unique)
-            {
                 return ft::make_pair(start, start->next);
-            }
 
-            hash_node_ptr end = start;
+            iterator it = find(key);
+            iterator fin = it;
+            while (fin.node && cmp(key_of_type()(fin.node->key), key))
+                fin++;
 
-            while (end && cmp(key_of_type()(end->key), key))
-                end = end->next;
-
-            return ft::make_pair(start, end);
+            return ft::make_pair(it.node, fin.node);
         }
 
     public:
@@ -540,7 +578,7 @@ namespace ft
         iterator erase(const_iterator pos, const_iterator last)
         {
 
-            size_t hsh = hasher()(key_of_type()(pos.node->key)) % table.size();
+            size_t hsh = hash((key_of_type()(pos.node->key)) % table.size());
 
             hash_node_ptr ptr = table[hsh];
             hash_node_ptr prev = nullptr;
@@ -583,7 +621,8 @@ namespace ft
             }
             else // even if i am using more code i understand nice in this way
             {
-                while (hsh < table.size())
+                
+                while (ptr != last.node && hsh < table.size())
                 {
                     ptr = table[hsh];
                     while (ptr && ptr != last.node)
@@ -604,13 +643,25 @@ namespace ft
 
         iterator erase(iterator pos)
         {
+            if (pos == end()) return pos;
             iterator _start = pos++;
+            // while (_start++ != pos) 
+            // {
+            //     std::cerr << "YYY\n";
+            // }
             return erase(_start, pos);
         }
 
         size_type erase(const Ky &key)
         {
-            return _erase(key);
+            bool removed = true;
+            size_type ans = 0;
+            while (removed)
+            {
+                removed = _erase(key);
+                ans += removed;
+            }
+            return ans;
         }
 
         void swap(hash_table &other)
@@ -618,6 +669,9 @@ namespace ft
             table.swap(other.table);
             ft::swap(sz, other.sz);
             ft::swap(cmp, other.cmp);
+            ft::swap(hash, other.hash);
+            ft::swap(alloc, other.alloc);
+            ft::swap(allocator, other.allocator);
             // swap allocator_type too;
         }
 
@@ -659,7 +713,7 @@ namespace ft
         // Bucket interface
         size_t bucket(const Ky &key) const
         {
-            return hasher()(key) % table.size();
+            return hash((key) % table.size());
         }
 
         size_t bucket_count() const
@@ -668,7 +722,7 @@ namespace ft
         }
         size_type max_bucket_count() const
         {
-            return 4294967291; // todo
+            return size_type(-1); // todo
         }
         size_type bucket_size(size_type n) const
         {
@@ -711,19 +765,19 @@ namespace ft
             return const_local_iterator(nullptr);
         }
 
-        allocator_type get_allocator() const noexcept
+        allocator_type get_allocator() const
         {
-            return allocator_type(); // or return alloc;
+            return allocator; // or return alloc;
         }
 
         hasher hash_function() const
         {
-            return Hash();
+            return hash;
         }
 
         key_equal key_eq() const
         {
-            return Pred();
+            return cmp;
         }
     };
 
@@ -737,7 +791,7 @@ namespace ft
         for (typename hash_table<Key, Hash, KeyEqual, Alloc>::iterator it = lhs.begin();
              it != lhs.end(); ++it)
         {
-            if (rhs.find(*it) == rhs.end())
+            if (rhs.count(*it) != lhs.count(*it))
                 return false;
         }
         return true;
