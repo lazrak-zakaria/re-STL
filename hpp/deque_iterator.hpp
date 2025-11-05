@@ -16,19 +16,19 @@ namespace ft
         typedef T **map_pointer;
         typedef deque_iterator self;
 
+        map_pointer node;
         T *cur;
         T *first;
         T *last;
-        map_pointer node;
 
-        deque_iterator() : cur(0), first(0), last(0), node(0)
+        deque_iterator() : node(0), cur(0), first(0), last(0)
         {
         }
         // how many byte in each node;
-        size_type _buffer_size = 4096;
 
         size_t deque_buf_size(size_t sz) const
         {
+            size_type _buffer_size = 4096;
             // i return how many elements can be stored
             return sz < _buffer_size ? size_t(_buffer_size / sz) : size_t(1);
         }
@@ -54,20 +54,8 @@ namespace ft
         }
         difference_type operator-(const deque_iterator &other) const
         {
-            // return difference_type(buffer_size()) * (node - other.node - 1) + (cur - first) + (other.last - other.cur);
-        // return difference_type(buffer_size()) * (node - other.node) 
-        //        + (cur - first) 
-        //        - (other.cur - other.first);
-
-
-        return difference_type(buffer_size()) * (node - other.node) 
-       + (cur - first) 
-       - (other.cur - other.first);
+            return difference_type(buffer_size()) * (node - other.node) + (cur - first) - (other.cur - other.first);
         }
-
-
-
-
 
         deque_iterator &operator++()
         {
@@ -171,7 +159,7 @@ namespace ft
         }
 
         template <typename U>
-        deque_iterator (deque_iterator<U> const &other)
+        deque_iterator(deque_iterator<U> const &other)
             : node((map_pointer)other.node),
 
               cur((pointer)other.cur),

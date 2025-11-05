@@ -33,7 +33,7 @@ namespace ft
         typedef ft::reverse_iterator_<const_iterator> const_reverse_iterator;
 
         typedef unsigned long long size_type;
-        typedef std::ptrdiff_t difference_type;
+        typedef long difference_type;
 
     private:
         value_type *_ptr;
@@ -63,8 +63,7 @@ namespace ft
         // Use in constructor:
         template <class InputIterator>
         vector(InputIterator first, InputIterator last,
-               const allocator_type &alloc = allocator_type(),
-               typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
+               const allocator_type &alloc = allocator_type())
             : _ptr(NULL), _size(0), _capacity(0), _allocator(alloc)
         {
             insert(end(), first, last);
@@ -92,7 +91,6 @@ namespace ft
         void assign(InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
         {
             difference_type n = ft::distance(first, last);
-            difference_type pos = 0;
             for (size_t i = 0; i < _size; ++i)
                 _allocator.destroy(_ptr + i);
             if (n > _capacity)
@@ -123,14 +121,14 @@ namespace ft
 
         reference at(size_type n)
         {
-            if (n < 0 || n >= _size)
+            if (n >= _size)
                 throw ft::out_of_range("pos is out of range al9awad");
             return *(_ptr + n);
         }
 
         const_reference at(size_type n) const
         {
-            if (n < 0 || n >= _size)
+            if (n >= _size)
                 throw ft::out_of_range("pos is out of range zab");
             return *(_ptr + n);
         }
@@ -183,7 +181,7 @@ namespace ft
             size_type old_capacity = _capacity;
             _capacity = n;
             _ptr = _allocator.allocate(_capacity);
-            for (int i = 0; i < _size; ++i)
+            for (size_type i = 0; i < _size; ++i)
             {
                 _allocator.construct(_ptr + i, *(temp_ptr + i));
                 _allocator.destroy(temp_ptr + i);
@@ -197,7 +195,7 @@ namespace ft
         {
             if (n < _size)
             {
-                for (int i = n; i < _size; ++i)
+                for (size_type i = n; i < _size; ++i)
                     _allocator.destroy(_ptr + i);
                 _size = n;
             }
@@ -205,7 +203,7 @@ namespace ft
             {
                 if (n > _capacity)
                     reserve(n);
-                for (int i = _size; i < n; ++i)
+                for (size_type i = _size; i < n; ++i)
                     push_back(val);
             }
         }
@@ -213,7 +211,7 @@ namespace ft
         void clear()
         {
 
-            for (int i = 0; i < _size; ++i)
+            for (size_type i = 0; i < _size; ++i)
                 _allocator.destroy(_ptr + i);
             if (_capacity)
                 _allocator.deallocate(_ptr, _capacity);
@@ -231,14 +229,18 @@ namespace ft
         {
             difference_type pos = ft::distance(begin(), position);
 
-            if (pos == _size)
+            if (static_cast<unsigned long long> (pos) == _size)
                 push_back(val);
             else
                 insert(position, 1, val);
             return iterator(_ptr + pos);
         }
-
         void insert(iterator position, size_type n, const value_type &val)
+        {
+            insert_(position, n, val);
+        }
+        private:
+        void insert_(iterator position, size_type n, const value_type &val)
         {
             if (n == 0)
                 return;
@@ -251,7 +253,7 @@ namespace ft
                 size_type new_capacity = _capacity * __RATIO__FT__VECTOR__ + n;
                 value_type *new_ptr = _allocator.allocate(new_capacity);
 
-                for (size_type i = 0; i < pos; ++i)
+                for (size_type i = 0; i < static_cast<unsigned long long> (pos); ++i)
                     _allocator.construct(new_ptr + i, _ptr[i]);
 
                 for (size_type i = 0; i < n; ++i)
@@ -272,7 +274,7 @@ namespace ft
             else
             {
 
-                for (size_type i = _size; i > pos; --i)
+                for (size_type i = _size; i > static_cast<unsigned long long> (pos); --i)
                 {
                     if (i + n - 1 >= _size)
                         _allocator.construct(_ptr + i + n - 1, _ptr[i - 1]);
@@ -292,42 +294,39 @@ namespace ft
             }
         }
 
+        private:
         template <class InputIt>
-        void insert(iterator pos, InputIt first, InputIt last, 
-             typename ft::enable_if<!ft::is_integral<InputIt>::value>::type * = 0)
+        void insert_(iterator pos, InputIt first, InputIt last,
+                    typename ft::enable_if<!ft::is_integral<InputIt>::value>::type * = 0)
         {
-            insert_dispatch(pos, first, last, 
-                typename ft::iterator_traits<InputIt>::iterator_category());
+            insert_dispatch(pos, first, last,
+                            typename ft::iterator_traits<InputIt>::iterator_category());
         }
 
         template <class InputIt>
-        void insert_dispatch(iterator pos, InputIt first, InputIt last, 
-                                std::input_iterator_tag)
+        void insert_dispatch(iterator pos, InputIt first, InputIt last,
+                             std::input_iterator_tag)
         {
-            // std::cerr<<"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n";
-            difference_type offset = pos - begin();
-            if (first == last) return ;
-            for (; first != last ; ++first, ++pos)
+            if (first == last)
+                return;
+            for (; first != last; ++first, ++pos)
                 pos = insert(pos, *first);
-
-            // std::cerr << "SJSJKJSKJSK\n";
-            // return begin() + offset;
         }
-        
+
         template <class InputIt>
-        void insert_dispatch(iterator position, InputIt first, InputIt last, std::forward_iterator_tag )
+        void insert_dispatch(iterator position, InputIt first, InputIt last, std::forward_iterator_tag)
         {
 
             difference_type n = ft::distance(first, last);
             difference_type pos = ft::distance(begin(), position);
 
-            if (n > _capacity - _size)
+            if (static_cast<unsigned long long>(n) > _capacity - _size)
             {
 
                 size_type new_capacity = _capacity * __RATIO__FT__VECTOR__ * 2 + n;
                 value_type *new_ptr = _allocator.allocate(new_capacity);
 
-                for (size_type i = 0; i < pos; ++i)
+                for (size_type i = 0; i < static_cast<unsigned long long> (pos); ++i)
                     _allocator.construct(new_ptr + i, _ptr[i]);
 
                 for (size_type i = 0; first != last; ++i, ++first)
@@ -348,7 +347,7 @@ namespace ft
             else
             {
 
-                for (size_type i = _size; i > pos; --i)
+                for (size_type i = _size; i > static_cast<unsigned long long>(pos); --i)
                 {
                     if (i + n - 1 >= _size)
                         _allocator.construct(_ptr + i + n - 1, _ptr[i - 1]);
@@ -367,6 +366,15 @@ namespace ft
                 _size += n;
             }
         }
+
+        public:
+
+        template <class InputIt>
+        void insert(iterator pos, InputIt first, InputIt last)
+        {
+            insert_(pos, first, last);
+        }
+
 
         iterator erase(iterator position)
         {
@@ -457,14 +465,14 @@ namespace ft
                 {
                     clear();
                     _ptr = _allocator.allocate(x.size());
-                    for (int i = 0; i < x.size(); i++)
+                    for (size_type i = 0; i < x.size(); i++)
                         _allocator.construct(_ptr + i, *(x._ptr + i));
                     _size = x.size();
                     _capacity = _size;
                 }
                 else
                 {
-                    int i = 0;
+                    size_type i = 0;
                     for (; i < _size; i++)
                         _ptr[i] = x._ptr[i];
                     for (; i < x.size(); i++)
@@ -474,7 +482,7 @@ namespace ft
             }
             else
             {
-                for (int i = 0; i < x.size(); i++)
+                for (size_type i = 0; i < x.size(); i++)
                     _ptr[i] = x._ptr[i];
                 _size = x.size();
             }

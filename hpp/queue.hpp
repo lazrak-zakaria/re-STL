@@ -22,10 +22,6 @@ its parent =floor ((i-1/2))
 namespace ft
 {
 
-
-    
-
-
     template <class T, class Container = ft::vector<T>, class Compare = std::less<typename Container::value_type> >
     class priority_queue
     {
@@ -44,18 +40,16 @@ namespace ft
 
     private:
     public:
-        explicit priority_queue(const Compare &comp = Compare(), const Container &ctnr = Container()) : comp(comp), c(ctnr)
+        explicit priority_queue(const Compare &comp = Compare(), const Container &ctnr = Container())
+            : c(ctnr), comp(comp)
         {
-            for (auto v : c) std::cerr << "<<<<<" << v << "::\n";
             ft::make_heap(c.begin(), c.end(), comp);
-            std::cerr << "******************\n";
         }
 
         template <class InputIterator>
         priority_queue(InputIterator first, InputIterator last, const Compare &comp = Compare(),
-                       const Container &ctnr = Container(), typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0) : comp(comp), c(ctnr)
+                       const Container &ctnr = Container()) : comp(comp), c(ctnr)
         {
-            std::cerr << "RRRR||\n";
             while (first != last)
             {
                 c.push_back(*first);
@@ -94,13 +88,6 @@ namespace ft
             return c.size();
         }
 
-        // void swap (priority_queue& x) 
-        // {
-        //     ft::swap(c, x.c);
-        //     ft::swap(comp, x.comp);
-        // }
-        // priority_queue &operator=(const priority_queue &other);
-        // (1)(implicitly declared)
     };
 
     template <
@@ -198,17 +185,8 @@ namespace ft
         {
             return lhs.c >= rhs.c;
         }
-
-
-
-        
-        
     };
-    template <class T, class Container , class Compare>
-    void swap( priority_queue<T, Container, Compare> &lhs,  priority_queue<T, Container, Compare> &rhs)
-    {
-        return lhs.swap (rhs);
-    }
+
 
 }
 

@@ -29,7 +29,6 @@ namespace ft
         }
         template <class U>
         vector_iterator(const vector_iterator<U> &other)
-            // typename std::enable_if<std::is_convertible<U*, T*>::value>::type* = 0)
             : _ptr(other.base())
         {
         }

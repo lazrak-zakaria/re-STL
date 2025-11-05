@@ -875,27 +875,27 @@ int main() {
     std::cout << "  ft::list vs std::list Test Suite\n";
     std::cout << "========================================\n\n" << RESET;
     
-    // testBasicInsertion();
-    // testInsertAtPosition();
-    // testSort();
-    // testSpliceEntireList();
-    // testSpliceSingleElement();
-    // testSpliceRange();
-    // testIterators();
-    // testSortCustomComparator();
-    // testReverseIteratorTraversal();
-    // testReverseIteratorOperations();
-    // testReverseIteratorModification();
-    // testConstReverseIterator();
-    // testReverseIteratorBase();
-    // testConstIteratorTraversal();
-    // testConstIteratorOperations();
-    // testConstIteratorComparison();
-    // testConstIteratorMixedUsage();
-    // testConstIteratorArrowOperator();
-    // testConstIteratorWithConstMethods();
+    testBasicInsertion();
+    testInsertAtPosition();
+    testSort();
+    testSpliceEntireList();
+    testSpliceSingleElement();
+    testSpliceRange();
+    testIterators();
+    testSortCustomComparator();
+    testReverseIteratorTraversal();
+    testReverseIteratorOperations();
+    testReverseIteratorModification();
+    testConstReverseIterator();
+    testReverseIteratorBase();
+    testConstIteratorTraversal();
+    testConstIteratorOperations();
+    testConstIteratorComparison();
+    testConstIteratorMixedUsage();
+    testConstIteratorArrowOperator();
+    testConstIteratorWithConstMethods();
     
-    // printSummary();
+    printSummary();
     
 
     ft::list<std::string> st;

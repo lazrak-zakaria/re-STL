@@ -34,8 +34,7 @@ namespace ft
 
         template <class InputIt>
         map(InputIt first, InputIt last,
-            const Compare &comp = Compare(), const Alloc &alloc = Alloc(),
-            typename ft::enable_if<!ft::is_integral<InputIt>::value>::type * = 0) : rb_tree(first,
+            const Compare &comp = Compare(), const Alloc &alloc = Alloc()) : rb_tree(first,
                                                                                             last,
                                                                                             comp,
                                                                                             alloc)
@@ -98,7 +97,7 @@ namespace ft
     template <class Key, // map::key_type
               class T,
               class Compare = std::less<Key>,
-              class Alloc = std::allocator<std::pair< Key, T>>>
+              class Alloc = std::allocator<std::pair< Key, T> > >
     class multimap : public ft::rb_tree<ft::pair< const Key, T>, Key, MapKeyOfT<ft::pair< const Key, T> >, Compare, Alloc, false>
     {
         typedef ft::rb_tree<ft::pair< const Key, T>, Key, MapKeyOfT<ft::pair< const Key, T> >, Compare, Alloc, false> rb_tree;

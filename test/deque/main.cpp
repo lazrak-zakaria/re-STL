@@ -30,7 +30,7 @@ public:
     typedef T* pointer;
     typedef T& reference;
     
-    InputIterator(T* p = nullptr, T* e = nullptr) : ptr(p), end_ptr(e) {}
+    InputIterator(T* p = NULL, T* e = NULL) : ptr(p), end_ptr(e) {}
     
     reference operator*() const { return *ptr; }
     pointer operator->() const { return ptr; }

@@ -22,18 +22,18 @@ namespace ft
     class rb_node
     {
     public:
+        Key key;
         rb_node *parent;
         rb_node *left;
         rb_node *right;
-        Key key;
         Color color;
 
         rb_node(const Key &key)
-            : key(key), left(nullptr), right(nullptr), parent(nullptr), color(RED)
+            : key(key), parent(NULL), left(NULL), right(NULL), color(RED)
         {
         }
         rb_node()
-            : left(nullptr), right(nullptr), parent(nullptr), color(RED)
+            : left(NULL), right(NULL), parent(NULL), color(RED)
         {
         }
     };
@@ -63,8 +63,8 @@ namespace ft
         typedef typename Alloc::pointer pointer;
         typedef typename Alloc::const_pointer const_pointer;
         typedef Compare key_compare;
-        typedef ft::rb_iterator< Key> iterator;
-        typedef ft::rb_iterator< Key> const_iterator;
+        typedef ft::rb_iterator<Key> iterator;
+        typedef ft::rb_iterator<Key> const_iterator;
         typedef ft::reverse_iterator_<iterator> reverse_iterator;
         typedef ft::reverse_iterator_<const_iterator> const_reverse_iterator;
 
@@ -76,56 +76,47 @@ namespace ft
         rb_node_ptr nil;
 
         key_compare cmp;
-        bool unique = Unique;
+        bool unique;
         size_type _size;
-        typename allocator_type::template rebind<ft::rb_node<value_type>>::other alloc;
+        typename allocator_type::template rebind<ft::rb_node<value_type> >::other alloc;
 
     public:
-
         explicit rb_tree(const key_compare &comp = key_compare(), const allocator_type &a = allocator_type()) : cmp(comp), alloc(a)
         {
-            // try {
+            initialize();
+        }
+
+        void initialize()
+        {
+            unique = Unique;
             nil = alloc.allocate(1);
             alloc.construct(nil, value_type());
-            // std::cerr <<"HHHHHHHHHHHHHHHHHHHHHHHHHHHHH++++++++\n";
             nil->parent = nil;
             nil->left = nil;
             nil->right = nil;
             nil->color = BLACK;
             root = nil;
             _size = 0;
-            // }
-            // catch (const std::bad_alloc& e) {
-            //     std::cerr << "Memory HHHHHHHHHHHHHHHHHHHHHHHHHHHHH failed: " << e.what() << std::endl;
-            //     // Handle the error gracefully
-                
-            // }
         }
 
-
-
-
-
-
         template <class InputIterator>
-        rb_tree(InputIterator first, InputIterator last, const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type(),
-        typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0) : rb_tree(comp, alloc)
+        rb_tree(InputIterator first, InputIterator last, const key_compare &comp = key_compare(),
+                const allocator_type &alloc = allocator_type())
+            : cmp(comp), alloc(alloc)
         {
-            while (first!= last)
+            initialize();
+            while (first != last)
             {
                 insert(*first);
                 ++first;
             }
         }
-        
-        rb_tree(const rb_tree &x) : rb_tree(x.cmp, x.alloc)
+
+        rb_tree(const rb_tree &x) : cmp(x.cmp), alloc(x.alloc)
         {
+            initialize();
             *this = x;
         }
-
-
-
-
 
         void update_nil_parent()
         {
@@ -135,14 +126,10 @@ namespace ft
                 nil->parent = rb_maximum(root);
         }
 
-
     private:
         rb_node_ptr create_node(Key key)
         {
-            // try
-            // {
 
-            
             rb_node_ptr node = alloc.allocate(1);
             alloc.construct(node, key);
             node->color = RED;
@@ -150,13 +137,6 @@ namespace ft
             node->right = nil;
             node->parent = nil;
             return node;
-            // }
-            // catch (const std::bad_alloc& e) {
-            //     std::cerr << "Memory HHHHHHHHHHHHHHHHHHHHHHHHHHHHH failed: \n" << e.what() << std::endl;
-            //     // Handle the error gracefully
-                
-            // }
-            // return NULL;
         }
 
         void deallocate_node(rb_node_ptr node)
@@ -164,13 +144,12 @@ namespace ft
             // try
             // {
 
-            
             alloc.destroy(node);
             alloc.deallocate(node, 1);
             // catch (const std::bad_alloc& e) {
             //     std::cerr << "Memory HHHHHHHHHHHHHHHHHHHHHHHHHHHHH failed: \n" << e.what() << std::endl;
             //     // Handle the error gracefully
-                
+
             // }
         }
 
@@ -218,8 +197,6 @@ namespace ft
             y->parent = x;
         }
 
-
-
         const Ky &get_kot(rb_node_ptr node) const
         {
             return key_of_type()(node->key);
@@ -236,9 +213,6 @@ namespace ft
                 // cmpare here i think its ok as compare pair with pair; wont need kot
                 if (!cmp(get_kot(node), get_kot(cur)) && !cmp(get_kot(cur), get_kot(node)) && unique)
                     return ft::make_pair(cur, false);
-            
-
-            
 
                 if (cmp(get_kot(node), get_kot(cur)))
                     cur = cur->left;
@@ -496,63 +470,45 @@ namespace ft
 
             deallocate_node(node);
         }
-        public:
-        void print()
-        {
-            // std::cout << "print\n";
-            p(root);
-        }
 
-        void p(rb_node_ptr ptr)
-        {
-            if (ptr == nil)
-                return;
-
-            p(ptr->left);
-            // std::cout << get_kot(ptr) << " " << ptr->key.second<< "--\n";
-            p(ptr->right);
-        }
 
     public:
+        ~rb_tree()
+        {
 
-     ~rb_tree()
-     {
-
-        clear();
-        deallocate_node(root);
-
-
-     }
+            clear();
+            deallocate_node(root);
+        }
         iterator lower_bound(const Ky &val) const
         {
-            
-                            rb_node_ptr cur = root;
-                            rb_node_ptr ans = nil;
+
+            rb_node_ptr cur = root;
+            rb_node_ptr ans = nil;
             // try
             // {
-                while (cur != nil)
+            while (cur != nil)
+            {
+                if (!cmp(val, get_kot(cur)) && !cmp(get_kot(cur), val))
                 {
-                    if (!cmp(val, get_kot(cur)) && !cmp(get_kot(cur), val))
+                    if (unique)
                     {
-                        if (unique)
-                        {
-                            
-                            return iterator(cur, nil);
-                            
-                        }else
-                        {
-                            ans = cur;
-                            cur = cur->left;
-                        }
-                    }    
-                    else if (cmp(val, get_kot(cur)))
+
+                        return iterator(cur, nil);
+                    }
+                    else
                     {
                         ans = cur;
                         cur = cur->left;
                     }
-                    else
-                    cur = cur->right;
                 }
+                else if (cmp(val, get_kot(cur)))
+                {
+                    ans = cur;
+                    cur = cur->left;
+                }
+                else
+                    cur = cur->right;
+            }
             // }
             // catch (std::exception& e){
             //     std::cerr << "KKKKKKKKKKKKKKK\n";
@@ -634,8 +590,7 @@ namespace ft
             return const_iterator(nil, nil);
         }
 
-        
-        reverse_iterator rbegin ()
+        reverse_iterator rbegin()
         {
             return reverse_iterator(end());
         }
@@ -649,17 +604,10 @@ namespace ft
         {
             return const_reverse_iterator(end());
         }
-        const_reverse_iterator rend()const
+        const_reverse_iterator rend() const
         {
             return const_reverse_iterator(begin());
         }
-
-
-
-
-
-
-
 
         size_type size() const
         {
@@ -676,30 +624,41 @@ namespace ft
         {
             rb_node_ptr new_node = create_node(val);
             ft::pair<rb_node_ptr, bool> is_inserted = insert_node(new_node);
-            
+
             _size += is_inserted.second;
             ft::pair<iterator, bool> ans = ft::make_pair(iterator(is_inserted.first, nil), is_inserted.second);
-            // if (is_inserted.second)
-            // {
-            //     std::cerr << *ans.first << "###" << val << "----\n";
-            // }
+
             return ans;
         }
 
-        iterator insert(iterator position, const value_type &val)
+    private:
+        iterator insert_(iterator position, const value_type &val)
         {
+            (void)position;
             ft::pair<iterator, bool> ans = insert(val);
             return ans.first;
         }
 
         template <class InputIterator>
-        void insert(InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
+        void insert_(InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
         {
             while (first != last)
             {
                 insert(*first);
                 first++;
             }
+        }
+
+    public:
+        iterator insert(iterator position, const value_type &val)
+        {
+            return insert_(position, val);
+        }
+
+        template <class InputIterator>
+        void insert(InputIterator first, InputIterator last)
+        {
+            insert_(first, last);
         }
 
         void erase(iterator position)
@@ -714,7 +673,8 @@ namespace ft
             {
                 rb_node_ptr to_delete = find_(val);
                 _size -= delete_node(to_delete);
-                if (to_delete == nil) break;
+                if (to_delete == nil)
+                    break;
             }
             return old_size - _size;
         }
@@ -735,17 +695,16 @@ namespace ft
             _size = 0;
             root = nil;
         }
-        int valara = 78;
+
         void swap(rb_tree &other)
         {
             ft::swap(root, other.root);
             ft::swap(nil, other.nil);
-            std::swap(cmp, other.cmp);
+            ft::swap(cmp, other.cmp);
             ft::swap(_size, other._size);
-            ft::swap(alloc, other.alloc);  //
-            ft::swap(unique, other.unique);  //
+            ft::swap(alloc, other.alloc);   //
+            ft::swap(unique, other.unique); //
         }
-
 
         allocator_type get_allocator() const
         {
@@ -759,31 +718,29 @@ namespace ft
 
         size_type max_size() const
         {
-            return 22222222;
+            return size_type(-1);
         }
 
-
-
-        rb_tree& operator=(const rb_tree& x)
+        rb_tree &operator=(const rb_tree &x)
         {
-            if (this == &x){
+            if (this == &x)
+            {
                 return *this;
             }
 
             clear();
             iterator it = x.begin();
-            iterator it_end = x.end(); 
+            iterator it_end = x.end();
             cmp = x.cmp;
             alloc = x.alloc;
             while (it != it_end)
-            {    insert(*it); ++it;}
+            {
+                insert(*it);
+                ++it;
+            }
             return *this;
         }
     };
-
-
-
-
 
 }
 

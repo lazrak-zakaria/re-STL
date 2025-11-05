@@ -27,7 +27,7 @@ namespace ft
 {
     template <
         class T,
-        class Allocator = std::allocator<T> >
+        class Allocator = std::allocator<T>>
     class list
     {
 
@@ -51,8 +51,7 @@ namespace ft
 
         lst_node_ptr head;
 
-
-        typename allocator_type::template rebind<lst_node<value_type> >::other alloc;
+        typename allocator_type::template rebind<lst_node<value_type>>::other alloc;
 
         lst_node_ptr create_lst_node(const value_type &val)
         {
@@ -66,7 +65,6 @@ namespace ft
         {
             alloc.destroy(n);
             alloc.deallocate(n, 1);
-
         }
 
         void initialize()
@@ -75,7 +73,6 @@ namespace ft
 
             head->next = head;
             head->prev = head;
-
         }
 
     public:
@@ -84,18 +81,21 @@ namespace ft
             initialize();
         }
         explicit list(size_type n, const value_type &val = value_type(), const allocator_type &alloc = allocator_type())
-            : list(alloc)
+            : alloc(alloc)
         {
+            initialize();
             insert(begin(), n, val);
         }
         template <class InputIterator>
-        list(InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type()) : list(alloc)
+        list(InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type()) : alloc(alloc)
         {
+            initialize();
             insert(begin(), first, last);
         }
 
-        list(const list &x) : list(x.alloc)
+        list(const list &x) : alloc(x.alloc)
         {
+            initialize();
             insert(begin(), x.begin(), x.end());
         }
 
@@ -207,16 +207,28 @@ namespace ft
             return iterator(tmp);
         }
 
+    private:
         template <class InputIterator>
-        void insert(iterator position, InputIterator first, InputIterator last)
+        void insert_(iterator position, InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIt>::value>::type * = 0)
         {
             for (; first != last; ++first)
-            insert(position, *first);
+                insert(position, *first);
         }
-        void insert(iterator position, size_type n, const value_type &val)
+        void insert_(iterator position, size_type n, const value_type &val)
         {
             while (n--)
                 insert(position, val);
+        }
+
+    public:
+        template <class InputIterator>
+        void insert(iterator position, InputIterator first, InputIterator last)
+        {
+            insert_(position, first, last);
+        }
+        void insert(iterator position, size_type n, const value_type &val)
+        {
+            insert_(position, n, val);
         }
 
         void push_front(const value_type &val)
@@ -390,6 +402,7 @@ namespace ft
         }
         void splice(iterator position, list &x, iterator first, iterator last)
         {
+            (void)x;
             if (first != last)
                 transfer(position, first, last);
         }
@@ -458,55 +471,41 @@ namespace ft
         }
     };
 
-
-
-
-
-
-
-
     template <class T, class Allocator>
-    bool operator==(const list<T,  Allocator> &lhs, const list<T,  Allocator> &rhs)
+    bool operator==(const list<T, Allocator> &lhs, const list<T, Allocator> &rhs)
     {
         return ft::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
     }
 
     template <class T, class Allocator>
-    bool operator!=(const list<T,  Allocator> &lhs, const list<T,  Allocator> &rhs)
+    bool operator!=(const list<T, Allocator> &lhs, const list<T, Allocator> &rhs)
     {
         return !(lhs == rhs);
     }
 
     template <class T, class Allocator>
-    bool operator<(const list<T,  Allocator> &lhs, const list<T,  Allocator> &rhs)
+    bool operator<(const list<T, Allocator> &lhs, const list<T, Allocator> &rhs)
     {
         return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
     }
 
     template <class T, class Allocator>
-    bool operator>(const list<T,  Allocator> &lhs, const list<T,  Allocator> &rhs)
+    bool operator>(const list<T, Allocator> &lhs, const list<T, Allocator> &rhs)
     {
         return (rhs < lhs);
     }
 
     template <class T, class Allocator>
-    bool operator<=(const list<T,  Allocator> &lhs, const list<T,  Allocator> &rhs)
+    bool operator<=(const list<T, Allocator> &lhs, const list<T, Allocator> &rhs)
     {
         return !(lhs > rhs);
     }
 
     template <class T, class Allocator>
-    bool operator>=(const list<T,  Allocator> &lhs, const list<T,  Allocator> &rhs)
+    bool operator>=(const list<T, Allocator> &lhs, const list<T, Allocator> &rhs)
     {
         return !(lhs < rhs);
     }
-
-
-
-
-
-
-
 
 }
 #endif
