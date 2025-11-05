@@ -10,14 +10,14 @@ namespace ft
 {
 
     template <class RandomAccessIterator>
-    void make_heap(RandomAccessIterator first, RandomAccessIterator last, typename ft::enable_if<!ft::is_integral<RandomAccessIterator>::value>::type * = 0)
+    void make_heap(RandomAccessIterator first, RandomAccessIterator last)
     {
         (void)last;
         (void)first;
     }
 
     template <class RandomAccessIterator, class Compare>
-    void make_heap(RandomAccessIterator first, RandomAccessIterator last, Compare comp, typename ft::enable_if<!ft::is_integral<RandomAccessIterator>::value>::type * = 0)
+    void make_heap(RandomAccessIterator first, RandomAccessIterator last, Compare comp)
     {
         if (first == last)
             return;
@@ -32,7 +32,7 @@ namespace ft
     }
 
     template <class RandomAccessIterator>
-    void push_heap(RandomAccessIterator first, RandomAccessIterator last, typename ft::enable_if<!ft::is_integral<RandomAccessIterator>::value>::type * = 0)
+    void push_heap(RandomAccessIterator first, RandomAccessIterator last)
     {
         pop_heap(first, last, std::less<typename RandomAccessIterator::value_type>());
     }
@@ -46,7 +46,7 @@ namespace ft
     }
 
     template <class RandomAccessIterator, class Compare>
-    void push_heap(RandomAccessIterator first, RandomAccessIterator last, Compare comp, typename ft::enable_if<!ft::is_integral<RandomAccessIterator>::value>::type * = 0)
+    void push_heap(RandomAccessIterator first, RandomAccessIterator last, Compare comp)
     {
 
         if (first == last)
@@ -64,13 +64,13 @@ namespace ft
     }
 
     template <class RandomAccessIterator>
-    void pop_heap(RandomAccessIterator first, RandomAccessIterator last, typename ft::enable_if<!ft::is_integral<RandomAccessIterator>::value>::type * = 0)
+    void pop_heap(RandomAccessIterator first, RandomAccessIterator last)
     {
         pop_heap(first, last, std::less<typename RandomAccessIterator::value_type>());
     }
 
     template <class RandomAccessIterator, class Compare>
-    void heapify_down(RandomAccessIterator first, RandomAccessIterator last, Compare comp, size_t pos, typename ft::enable_if<!ft::is_integral<RandomAccessIterator>::value>::type * = 0)
+    void heapify_down(RandomAccessIterator first, RandomAccessIterator last, Compare comp, size_t pos)
     { // 0 1 2 3 4
         size_t sz = last - first;
         size_t child_pos = 0;
@@ -96,7 +96,7 @@ namespace ft
     }
 
     template <class RandomAccessIterator, class Compare>
-    void pop_heap(RandomAccessIterator first, RandomAccessIterator last, Compare comp, typename ft::enable_if<!ft::is_integral<RandomAccessIterator>::value>::type * = 0)
+    void pop_heap(RandomAccessIterator first, RandomAccessIterator last, Compare comp)
     {
         if (first == last)
             return;

@@ -17,7 +17,7 @@ namespace ft
 
     template <class Key,                        // unordered_set::key_type/value_type
               class Hash = ft::HashFunc<Key>,      // unordered_set::hasher
-              class Pred = std::equal_to<Key>,  // unordered_set::key_equal
+              class Pred = ft::equal_to<Key>,  // unordered_set::key_equal
               class Alloc = std::allocator<Key> // unordered_set::allocator_type
               >
     class unordered_set : public hash_table<Key, Key, SetKeyOfT<Key>, Hash, Pred, Alloc, true>
@@ -69,7 +69,7 @@ namespace ft
 
     template <class Key,                        // unordered_multiset::key_type/value_type
               class Hash = ft::HashFunc<Key>,      // unordered_multiset::hasher
-              class Pred = std::equal_to<Key>,  // unordered_multiset::key_equal
+              class Pred = ft::equal_to<Key>,  // unordered_multiset::key_equal
               class Alloc = std::allocator<Key> // unordered_multiset::allocator_type
               >
     class unordered_multiset : public hash_table<Key, Key, SetKeyOfT<Key>, Hash, Pred, Alloc, true>

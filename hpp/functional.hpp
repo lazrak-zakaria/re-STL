@@ -26,6 +26,18 @@ namespace ft
         }
     };
 
+
+    template <typename T>
+    struct equal_to : ft::binary_function<T, T, bool>
+    {
+        bool operator()(const T& lhs, const T& rhs) const {
+            return lhs == rhs;
+        }
+    };
+
+
+
+
 }
 
 #endif

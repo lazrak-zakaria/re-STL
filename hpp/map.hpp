@@ -34,8 +34,7 @@ namespace ft
 
         template <class InputIt>
         map(InputIt first, InputIt last,
-            const Compare &comp = Compare(), const Alloc &alloc = Alloc(),
-            typename ft::enable_if<!ft::is_integral<InputIt>::value>::type * = 0) : rb_tree(first,
+            const Compare &comp = Compare(), const Alloc &alloc = Alloc()) : rb_tree(first,
                                                                                             last,
                                                                                             comp,
                                                                                             alloc)

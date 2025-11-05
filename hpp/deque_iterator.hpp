@@ -20,7 +20,6 @@ namespace ft
         T *cur;
         T *first;
         T *last;
-        
 
         deque_iterator() : node(0), cur(0), first(0), last(0)
         {
@@ -55,20 +54,8 @@ namespace ft
         }
         difference_type operator-(const deque_iterator &other) const
         {
-            // return difference_type(buffer_size()) * (node - other.node - 1) + (cur - first) + (other.last - other.cur);
-        // return difference_type(buffer_size()) * (node - other.node) 
-        //        + (cur - first) 
-        //        - (other.cur - other.first);
-
-
-        return difference_type(buffer_size()) * (node - other.node) 
-       + (cur - first) 
-       - (other.cur - other.first);
+            return difference_type(buffer_size()) * (node - other.node) + (cur - first) - (other.cur - other.first);
         }
-
-
-
-
 
         deque_iterator &operator++()
         {
@@ -172,7 +159,7 @@ namespace ft
         }
 
         template <typename U>
-        deque_iterator (deque_iterator<U> const &other)
+        deque_iterator(deque_iterator<U> const &other)
             : node((map_pointer)other.node),
 
               cur((pointer)other.cur),

@@ -33,7 +33,7 @@ namespace ft
         typedef ft::reverse_iterator_<const_iterator> const_reverse_iterator;
 
         typedef unsigned long long size_type;
-        typedef std::ptrdiff_t difference_type;
+        typedef long difference_type;
 
     private:
         value_type *_ptr;
@@ -66,7 +66,6 @@ namespace ft
                const allocator_type &alloc = allocator_type())
             : _ptr(NULL), _size(0), _capacity(0), _allocator(alloc)
         {
-            std::cerr << "YES\n";
             insert(end(), first, last);
         }
         vector(const vector &x) : _ptr(NULL), _size(0), _capacity(0)
@@ -243,7 +242,6 @@ namespace ft
         private:
         void insert_(iterator position, size_type n, const value_type &val)
         {
-            std::cerr << "UP\n";
             if (n == 0)
                 return;
 

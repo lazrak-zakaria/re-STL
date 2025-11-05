@@ -10,18 +10,14 @@
 #include <cmath>
 using namespace std;
 
-
-
 namespace ft
 {
-
-
 
     template <class K>
     class HashFunc
     {
-        public:
-        size_t operator()(const K &key)const
+    public:
+        size_t operator()(const K &key) const
         {
             return (size_t)key;
         }
@@ -30,9 +26,8 @@ namespace ft
     template <>
     class HashFunc<string>
     {
-        public:
-
-        size_t operator()(const string &key) const 
+    public:
+        size_t operator()(const string &key) const
         {
             size_t val = 0;
             for (size_t i = 0; i < key.length(); ++i)
@@ -44,8 +39,6 @@ namespace ft
             return val;
         }
     };
-
-
 
     template <class K>
     struct hash_node
@@ -70,15 +63,12 @@ namespace ft
     {
     private:
         typedef hash_node<Key> *hash_node_ptr;
-        typedef hash_table<Key, Ky, KeyType,Hash, Pred, Alloc> hash_table_self;
+        typedef hash_table<Key, Ky, KeyType, Hash, Pred, Alloc> hash_table_self;
         typedef hash_table_self *hash_table_ptr;
 
         typedef KeyType key_of_type;
 
     private:
-
-        
-
         template <class T>
         class _iterator
         {
@@ -213,15 +203,13 @@ namespace ft
 
     private:
         std::vector<hash_node_ptr> table;
-        size_t sz ;
+        size_t sz;
         key_equal cmp;
         float _max_load_factor;
         hasher hash;
         typename allocator_type::template rebind<ft::hash_node<value_type> >::other alloc;
 
         allocator_type allocator;
-
-
 
         size_t next_prime(size_t p)
         {
@@ -356,10 +344,9 @@ namespace ft
                 }
                 table[i] = NULL;
             }
-            
+
             _max_load_factor = 1.0;
             sz = 0;
-
         }
 
         hash_table_self &operator=(const hash_table_self &oth)
@@ -387,14 +374,12 @@ namespace ft
         {
 
             clear();
-
-
         }
 
         explicit hash_table(size_type bucket_count = 13,
                             const Hash &hash = Hash(),
                             const key_equal &equal = key_equal(),
-                            const allocator_type &alloc = allocator_type()) :  cmp(equal), hash(hash),
+                            const allocator_type &alloc = allocator_type()) : cmp(equal), hash(hash),
                                                                               alloc(alloc)
 
         {
@@ -445,12 +430,10 @@ namespace ft
 
         // Lookup
 
-
         size_type max_size() const
         {
             return size_type(-1);
         }
-
 
         size_type count(const Ky &key) const
         {
@@ -494,7 +477,6 @@ namespace ft
 
             if (!start)
                 return ft::make_pair(start, start);
-
 
             if (Unique)
                 return ft::make_pair(start, start->next);
@@ -549,7 +531,7 @@ namespace ft
             return _max_load_factor;
         }
 
-        void reserve(size_type count)// calls ceil rehash;
+        void reserve(size_type count) // calls ceil rehash;
         {
             rehash(ceil(count / max_load_factor()));
         }
@@ -561,23 +543,34 @@ namespace ft
             return _insert(value);
         }
 
-
-
-        iterator insert(const_iterator hint, const value_type &value)
+        private:
+        iterator insert_(const_iterator hint, const value_type &value)
         {
             (void)hint;
             return _insert(value).first;
         }
 
-
         template <class InputIt>
-        void insert(InputIt first, InputIt last, typename ft::enable_if<has_iterator_category<InputIt>::value>::type * = 0)
+        void insert_(InputIt first, InputIt last, typename ft::enable_if<has_iterator_category<InputIt>::value>::type * = 0)
         {
             while (first != last)
             {
                 _insert(*first);
                 first++;
             }
+        }
+
+        public:
+          iterator insert(const_iterator hint, const value_type &value)
+        {
+            
+            return insert_(hint, value);
+        }
+
+        template <class InputIt>
+        void insert(InputIt first, InputIt last)
+        {
+            insert_(first, last);
         }
 
         iterator erase(const_iterator pos, const_iterator last)
@@ -626,7 +619,7 @@ namespace ft
             }
             else // even if i am using more code i understand nice in this way
             {
-                
+
                 while (ptr != last.node && hsh < table.size())
                 {
                     ptr = table[hsh];
@@ -648,9 +641,10 @@ namespace ft
 
         iterator erase(iterator pos)
         {
-            if (pos == end()) return pos;
+            if (pos == end())
+                return pos;
             iterator _start = pos++;
-            // while (_start++ != pos) 
+            // while (_start++ != pos)
             // {
             //     std::cerr << "YYY\n";
             // }

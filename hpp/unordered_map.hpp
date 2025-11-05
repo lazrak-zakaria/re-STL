@@ -1,7 +1,8 @@
 #include <memory>
 
 #include "hash_table.hpp"
-
+#include "functional.hpp"
+#include "stdexcept.hpp"
 namespace ft
 {
 
@@ -20,7 +21,7 @@ namespace ft
     template <class Key,
               class T,
               class Hash = ft::HashFunc<Key>,
-              class Pred = std::equal_to<Key>,
+              class Pred = ft::equal_to<Key>,
               class Alloc = std::allocator<ft::pair<const Key, T> > >
     class unordered_map : public hash_table<ft::pair<const Key, T>,  Key, MapKeyOfT<ft::pair<const Key, T> >, Hash, Pred, Alloc, true>
     {
@@ -69,7 +70,7 @@ namespace ft
         {
             typename hash_table_type::iterator it = this->find(key);
             if (it == this->end())
-                throw std::out_of_range("pos is out of range");
+                throw ft::out_of_range("pos is out of range");
             return it->second;
         }
 
@@ -77,7 +78,7 @@ namespace ft
         {
             typename hash_table_type::iterator it = this->find(key);
             if (it == this->end())
-                throw std::out_of_range("pos is out of range");
+                throw ft::out_of_range("pos is out of range");
             return it->second;
         }
 
@@ -98,7 +99,7 @@ namespace ft
         template <class Key,
               class T,
               class Hash = ft::HashFunc<Key>,
-              class Pred = std::equal_to<Key>,
+              class Pred = ft::equal_to<Key>,
               class Alloc = std::allocator<ft::pair<const Key, T> > >
     class unordered_multimap : public hash_table<ft::pair<const Key, T>,  Key, MapKeyOfT<ft::pair<const Key, T> >, Hash, Pred, Alloc, false>
     {
@@ -147,7 +148,7 @@ namespace ft
         {
             typename hash_table_type::iterator it = this->find(key);
             if (it == this->end())
-                throw std::out_of_range("pos is out of range");
+                throw ft::out_of_range("pos is out of range");
             return it->second;
         }
 
@@ -155,7 +156,7 @@ namespace ft
         {
             typename hash_table_type::iterator it = this->find(key);
             if (it == this->end())
-                throw std::out_of_range("pos is out of range");
+                throw ft::out_of_range("pos is out of range");
             return it->second;
         }
 
