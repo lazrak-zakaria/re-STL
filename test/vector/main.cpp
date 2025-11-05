@@ -514,7 +514,8 @@ int main() {
     } else {
         std::cout << "\nSOME TESTS FAILED\n";
     }
-    
+    ft::vector<int> vv(1,3);
+    std::cerr << vv.size();
     std::cout << "\n";
     return (failed == 0) ? 0 : 1;
 }

@@ -63,10 +63,10 @@ namespace ft
         // Use in constructor:
         template <class InputIterator>
         vector(InputIterator first, InputIterator last,
-               const allocator_type &alloc = allocator_type(),
-               typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
+               const allocator_type &alloc = allocator_type())
             : _ptr(NULL), _size(0), _capacity(0), _allocator(alloc)
         {
+            std::cerr << "YES\n";
             insert(end(), first, last);
         }
         vector(const vector &x) : _ptr(NULL), _size(0), _capacity(0)
@@ -236,9 +236,14 @@ namespace ft
                 insert(position, 1, val);
             return iterator(_ptr + pos);
         }
-
         void insert(iterator position, size_type n, const value_type &val)
         {
+            insert_(position, n, val);
+        }
+        private:
+        void insert_(iterator position, size_type n, const value_type &val)
+        {
+            std::cerr << "UP\n";
             if (n == 0)
                 return;
 
@@ -291,8 +296,9 @@ namespace ft
             }
         }
 
+        private:
         template <class InputIt>
-        void insert(iterator pos, InputIt first, InputIt last,
+        void insert_(iterator pos, InputIt first, InputIt last,
                     typename ft::enable_if<!ft::is_integral<InputIt>::value>::type * = 0)
         {
             insert_dispatch(pos, first, last,
@@ -362,6 +368,15 @@ namespace ft
                 _size += n;
             }
         }
+
+        public:
+
+        template <class InputIt>
+        void insert(iterator pos, InputIt first, InputIt last)
+        {
+            insert_(pos, first, last);
+        }
+
 
         iterator erase(iterator position)
         {
