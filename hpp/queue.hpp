@@ -35,27 +35,27 @@ namespace ft
         typedef typename Container::const_reference const_reference;
 
     protected:
-        container_type c;
+        container_type C;
         value_compare comp;
 
     private:
     public:
         explicit priority_queue(const Compare &comp = Compare(), const Container &ctnr = Container())
-            : c(ctnr), comp(comp)
+            : C(ctnr), comp(comp)
         {
-            ft::make_heap(c.begin(), c.end(), comp);
+            ft::make_heap(C.begin(), C.end(), comp);
         }
 
         template <class InputIterator>
         priority_queue(InputIterator first, InputIterator last, const Compare &comp = Compare(),
-                       const Container &ctnr = Container()) : comp(comp), c(ctnr)
+                       const Container &ctnr = Container()) : comp(comp), C(ctnr)
         {
             while (first != last)
             {
-                c.push_back(*first);
+                C.push_back(*first);
                 first++;
             }
-            ft::make_heap(c.begin(), c.end(), comp);
+            ft::make_heap(C.begin(), C.end(), comp);
         }
 
         ~priority_queue()
@@ -64,28 +64,28 @@ namespace ft
 
         void push(const value_type &val)
         {
-            c.push_back(val);
-            ft::push_heap(c.begin(), c.end(), comp);
+            C.push_back(val);
+            ft::push_heap(C.begin(), C.end(), comp);
         }
 
         void pop()
         {
-            ft::pop_heap(c.begin(), c.end(), comp);
-            c.pop_back();
+            ft::pop_heap(C.begin(), C.end(), comp);
+            C.pop_back();
         }
         bool empty() const
         {
-            return !c.size();
+            return !C.size();
         }
 
         const value_type &top() const
         {
-            return c.front();
+            return C.front();
         }
 
         size_type size() const
         {
-            return c.size();
+            return C.size();
         }
 
     };
@@ -105,85 +105,85 @@ namespace ft
         typedef typename Container::const_reference const_reference;
 
     protected:
-        container_type c;
+        container_type C;
 
     public:
-        explicit queue(const container_type &ctnr = container_type()) : c(ctnr)
+        explicit queue(const container_type &ctnr = container_type()) : C(ctnr)
         {
         }
 
         reference front()
         {
-            return c.front();
+            return C.front();
         }
         const_reference front() const
         {
-            return c.front();
+            return C.front();
         }
 
         reference back()
         {
-            return c.back();
+            return C.back();
         }
 
         const_reference back() const
         {
-            return c.back();
+            return C.back();
         }
 
         void push(const value_type &value)
         {
-            c.push_back(value);
+            C.push_back(value);
         }
         bool empty() const
         {
-            return !c.size();
+            return !C.size();
         }
 
         size_type size() const
         {
-            return c.size();
+            return C.size();
         }
 
         void pop()
         {
-            c.pop_front();
+            C.pop_front();
         }
 
         friend bool operator==(const queue &lhs,
                                const queue &rhs)
         {
-            return lhs.c == rhs.c;
+            return lhs.C == rhs.C;
         }
 
         friend bool operator!=(const queue &lhs,
                                const queue &rhs)
         {
-            return lhs.c != rhs.c;
+            return lhs.C != rhs.C;
         }
 
         friend bool operator<(const queue &lhs,
                               const queue &rhs)
         {
-            return lhs.c < rhs.c;
+            return lhs.C < rhs.C;
         }
 
         friend bool operator<=(const queue &lhs,
                                const queue &rhs)
         {
-            return lhs.c <= rhs.c;
+            return lhs.C <= rhs.C;
         }
 
         friend bool operator>(const queue &lhs,
                               const queue &rhs)
         {
-            return lhs.c > rhs.c;
+            return lhs.C > rhs.C;
         }
 
         friend bool operator>=(const queue &lhs,
                                const queue &rhs)
         {
-            return lhs.c >= rhs.c;
+            return lhs.C >= rhs.C;
         }
     };
 

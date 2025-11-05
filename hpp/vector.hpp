@@ -213,7 +213,7 @@ namespace ft
 
             for (size_type i = 0; i < _size; ++i)
                 _allocator.destroy(_ptr + i);
-            if (_capacity)
+            if (_capacity)//not mandatory to clear capacity too !
                 _allocator.deallocate(_ptr, _capacity);
             _size = 0;
             _ptr = 0;

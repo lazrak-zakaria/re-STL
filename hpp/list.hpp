@@ -209,7 +209,7 @@ namespace ft
 
     private:
         template <class InputIterator>
-        void insert_(iterator position, InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIt>::value>::type * = 0)
+        void insert_(iterator position, InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0)
         {
             for (; first != last; ++first)
                 insert(position, *first);

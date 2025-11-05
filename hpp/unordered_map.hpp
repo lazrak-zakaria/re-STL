@@ -6,13 +6,10 @@
 namespace ft
 {
 
-
-
-
     template <class Pair>
     struct MapKeyOfT
     {
-        const typename Pair::first_type &operator()(const Pair &p) const 
+        const typename Pair::first_type &operator()(const Pair &p) const
         {
             return p.first;
         }
@@ -23,10 +20,10 @@ namespace ft
               class Hash = ft::HashFunc<Key>,
               class Pred = ft::equal_to<Key>,
               class Alloc = std::allocator<ft::pair<const Key, T> > >
-    class unordered_map : public hash_table<ft::pair<const Key, T>,  Key, MapKeyOfT<ft::pair<const Key, T> >, Hash, Pred, Alloc, true>
+    class unordered_map : public hash_table<ft::pair<const Key, T>, Key, MapKeyOfT<ft::pair<const Key, T> >, Hash, Pred, Alloc, true>
     {
     private:
-        typedef hash_table<ft::pair<const Key, T>,  Key, MapKeyOfT<ft::pair<const Key, T> >, Hash, Pred, Alloc, true> hash_table_type;
+        typedef hash_table<ft::pair<const Key, T>, Key, MapKeyOfT<ft::pair<const Key, T> >, Hash, Pred, Alloc, true> hash_table_type;
 
     public:
         typedef T mapped_type; //            = T;
@@ -56,6 +53,10 @@ namespace ft
 
         unordered_map(const unordered_map &other) : hash_table_type(other)
         {
+        }
+        explicit unordered_map ( const Alloc& alloc ) : hash_table_type(alloc)
+        {
+
         }
 
         unordered_map(const unordered_map &other, const Alloc &alloc) : hash_table_type(other, alloc)
@@ -89,46 +90,44 @@ namespace ft
                 it = this->insert(ft::make_pair(key, T())).first;
             return it->second;
         }
-
     };
 
-
-
-
-
-        template <class Key,
+    template <class Key,
               class T,
               class Hash = ft::HashFunc<Key>,
               class Pred = ft::equal_to<Key>,
               class Alloc = std::allocator<ft::pair<const Key, T> > >
-    class unordered_multimap : public hash_table<ft::pair<const Key, T>,  Key, MapKeyOfT<ft::pair<const Key, T> >, Hash, Pred, Alloc, false>
+    class unordered_multimap : public hash_table<ft::pair<const Key, T>, Key, MapKeyOfT<ft::pair<const Key, T> >, Hash, Pred, Alloc, false>
     {
     private:
-        typedef hash_table<ft::pair<const Key, T>,  Key, MapKeyOfT<ft::pair<const Key, T> >, Hash, Pred, Alloc, false> hash_table_type;
+        typedef hash_table<ft::pair<const Key, T>, Key, MapKeyOfT<ft::pair<const Key, T> >, Hash, Pred, Alloc, false> hash_table_type;
 
     public:
         typedef T mapped_type; //            = T;
         explicit unordered_multimap(size_t bucket_count = 13,
-                               const Hash &hash = Hash(),
-                               const Pred &equal = Pred(),
-                               const Alloc &alloc = Alloc()) : hash_table_type(bucket_count,
-                                                                               hash,
-                                                                               equal,
-                                                                               alloc)
+                                    const Hash &hash = Hash(),
+                                    const Pred &equal = Pred(),
+                                    const Alloc &alloc = Alloc()) : hash_table_type(bucket_count,
+                                                                                    hash,
+                                                                                    equal,
+                                                                                    alloc)
         {
         }
+        explicit unordered_multimap ( const Alloc& alloc ) : hash_table_type(alloc)
+        {
 
+        }
         template <class InputIt>
         unordered_multimap(InputIt first, InputIt last,
-                      size_t bucket_count = 13,
-                      const Hash &hash = Hash(),
-                      const Pred &equal = Pred(),
-                      const Alloc &alloc = Alloc()) : hash_table_type(first,
-                                                                      last,
-                                                                      bucket_count,
-                                                                      hash,
-                                                                      equal,
-                                                                      alloc)
+                           size_t bucket_count = 13,
+                           const Hash &hash = Hash(),
+                           const Pred &equal = Pred(),
+                           const Alloc &alloc = Alloc()) : hash_table_type(first,
+                                                                           last,
+                                                                           bucket_count,
+                                                                           hash,
+                                                                           equal,
+                                                                           alloc)
         {
         }
 
@@ -168,5 +167,35 @@ namespace ft
             return it->second;
         }
     };
+
+    template <class Key,
+              class T,
+              class Hash,
+              class Pred,
+              class Alloc>
+    void swap(ft::unordered_map<Key, T,  Hash,
+                                 Pred,
+                                 Alloc> &lhs,
+              ft::unordered_map<Key, T,  Hash,
+                                 Pred,
+                                 Alloc> &rhs)
+    {
+        lhs.swap(rhs);
+    }
+
+    template <class Key,
+              class T,
+              class Hash,
+              class Pred,
+              class Alloc>
+    void swap(ft::unordered_multimap<Key, T,  Hash,
+                                 Pred,
+                                 Alloc> &lhs,
+              ft::unordered_multimap<Key, T,  Hash,
+                                 Pred,
+                                 Alloc> &rhs)
+    {
+        lhs.swap(rhs);
+    }
 
 }

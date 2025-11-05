@@ -2,7 +2,7 @@
 #include <stack>
 #include <vector>
 #include <ctime>
-#include "../../stack.hpp"  // your ft::stack
+#include "../../hpp/stack.hpp"  // your ft::stack
 
 // Utility to compare stack contents
 template <typename T>

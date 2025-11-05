@@ -2,12 +2,12 @@
 #define FT_HASH_TABLE_HPP
 
 #include <memory>
-#include <vector>
+#include "vector.hpp"
 #include <utility>
 #include "utility.hpp"
 #include "iterator_traits.hpp"
 #include "algorithm.hpp"
-#include <cmath>
+
 using namespace std;
 
 namespace ft
@@ -202,7 +202,7 @@ namespace ft
         typedef _local_iterator<Key> const_local_iterator;
 
     private:
-        std::vector<hash_node_ptr> table;
+        ft::vector<hash_node_ptr> table;
         size_t sz;
         key_equal cmp;
         float _max_load_factor;
@@ -230,7 +230,7 @@ namespace ft
             return primes[sz - 1];
         }
 
-        void _copy(std::vector<hash_node_ptr> &from, std::vector<hash_node_ptr> &to)
+        void _copy(ft::vector<hash_node_ptr> &from, ft::vector<hash_node_ptr> &to)
         {
             for (size_t i = 0; i < from.size(); ++i)
             {
@@ -372,8 +372,8 @@ namespace ft
 
         ~hash_table()
         {
-
             clear();
+            
         }
 
         explicit hash_table(size_type bucket_count = 13,
@@ -386,6 +386,13 @@ namespace ft
             sz = 0;
             _max_load_factor = 1.0;
             table.resize(bucket_count, NULL);
+        }
+
+        explicit hash_table ( const allocator_type& alloc ) : alloc(alloc)
+        {
+            sz = 0;
+            _max_load_factor = 1.0;
+            table.resize(13, NULL);
         }
 
         template <class InputIt>
@@ -520,7 +527,7 @@ namespace ft
             size_t n = size() / max_load_factor();
             if (count >= n)
             {
-                std::vector<hash_node_ptr> n_table(next_prime(count));
+                ft::vector<hash_node_ptr> n_table(next_prime(count));
                 _copy(table, n_table);
                 table.swap(n_table);
             }
@@ -531,9 +538,19 @@ namespace ft
             return _max_load_factor;
         }
 
+        private:
+        int ceil(float num) 
+        {
+            int inum = (int)num;
+            if (num < 0 || num == (float)inum) {
+                return inum;
+            }
+            return inum + 1;
+        }
+        public:
         void reserve(size_type count) // calls ceil rehash;
         {
-            rehash(ceil(count / max_load_factor()));
+            rehash(this->ceil(count / max_load_factor()));
         }
 
         // modifiers

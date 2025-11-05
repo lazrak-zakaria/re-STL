@@ -126,6 +126,27 @@ namespace ft
                 nil->parent = rb_maximum(root);
         }
 
+        class value_compare
+        {
+        protected:
+            Compare comp;
+            value_compare(Compare c)
+                : comp(c)
+            {
+            }
+
+        public:
+            bool operator()(const typename rb_tree::value_type &x, const typename rb_tree::value_type &y) const
+            {
+                return comp(x.first, y.first);
+            }
+        };
+
+        value_compare value_comp() const
+        {
+            return value_compare();
+        }
+
     private:
         rb_node_ptr create_node(Key key)
         {
@@ -470,7 +491,6 @@ namespace ft
 
             deallocate_node(node);
         }
-
 
     public:
         ~rb_tree()

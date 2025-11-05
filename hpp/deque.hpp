@@ -78,6 +78,13 @@ namespace ft
             insert(begin(), x.begin(), x.end());
         }
 
+        ~deque()
+        {
+            clear();
+            deallocate_node(*(start.node)); //39t bik
+            map_allocator.deallocate(map, map_size);
+        }
+
         void swap(deque &x)
         {
             ft::swap(x.start, start);

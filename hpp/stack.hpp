@@ -21,77 +21,77 @@ namespace ft
         typedef typename Container::const_reference const_reference;
 
     protected:
-        container_type c;
+        container_type C;
 
     public:
-        explicit stack(const container_type &ctnr = container_type()) : c(ctnr)
+        explicit stack(const container_type &ctnr = container_type()) : C(ctnr)
         {
         }
 
         reference top()
         {
-            return c.back();
+            return C.back();
         }
 
         const_reference top() const
         {
-            return c.back();
+            return C.back();
         }
 
 
         void push(const value_type &value)
         {
-            c.push_back(value);
+            C.push_back(value);
         }
         bool empty() const
         {
-            return !c.size();
+            return !C.size();
         }
 
         size_type size() const
         {
-            return c.size();
+            return C.size();
         }
 
         void pop()
         {
-            c.pop_back();
+            C.pop_back();
         }
 
         friend bool operator==(const stack &lhs,
                                const stack &rhs)
         {
-            return lhs.c == rhs.c;
+            return lhs.C == rhs.C;
         }
 
         friend bool operator!=(const stack &lhs,
                                const stack &rhs)
         {
-            return lhs.c != rhs.c;
+            return lhs.C != rhs.C;
         }
 
         friend bool operator<(const stack &lhs,
                               const stack &rhs)
         {
-            return lhs.c < rhs.c;
+            return lhs.C < rhs.C;
         }
 
         friend bool operator<=(const stack &lhs,
                                const stack &rhs)
         {
-            return lhs.c <= rhs.c;
+            return lhs.C <= rhs.C;
         }
 
         friend bool operator>(const stack &lhs,
                               const stack &rhs)
         {
-            return lhs.c > rhs.c;
+            return lhs.C > rhs.C;
         }
 
         friend bool operator>=(const stack &lhs,
                                const stack &rhs)
         {
-            return lhs.c >= rhs.c;
+            return lhs.C >= rhs.C;
         }
     };
 

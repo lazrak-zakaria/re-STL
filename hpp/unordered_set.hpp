@@ -3,7 +3,7 @@
 
 #include <memory>
 #include "hash_table.hpp"
-
+#include "functional.hpp"
 namespace ft
 {
     template <class K>
@@ -36,7 +36,10 @@ namespace ft
 
         {
         }
+        explicit unordered_set ( const Alloc& alloc ) : hash_table_type(alloc)
+        {
 
+        }
         template <class InputIt>
         unordered_set(InputIt first, InputIt last,
                       size_t bucket_count = 13,
@@ -87,7 +90,10 @@ namespace ft
                                                                                     alloc)
         {
         }
+        explicit unordered_multiset ( const Alloc& alloc ) : hash_table_type(alloc)
+        {
 
+        }
         template <class InputIt>
         unordered_multiset(InputIt first, InputIt last,
                            size_t bucket_count = 13,
@@ -114,6 +120,36 @@ namespace ft
         {
         }
     };
+
+
+
+        template <class Key,
+              class Hash,
+              class Pred,
+              class Alloc>
+    void swap(ft::unordered_set<Key,   Hash,
+                                 Pred,
+                                 Alloc> &lhs,
+              ft::unordered_set<Key,   Hash,
+                                 Pred,
+                                 Alloc> &rhs)
+    {
+        lhs.swap(rhs);
+    }
+
+    template <class Key,
+              class Hash,
+              class Pred,
+              class Alloc>
+    void swap(ft::unordered_multiset<Key,   Hash,
+                                 Pred,
+                                 Alloc> &lhs,
+              ft::unordered_multiset<Key,   Hash,
+                                 Pred,
+                                 Alloc> &rhs)
+    {
+        lhs.swap(rhs);
+    }
 
 }
 

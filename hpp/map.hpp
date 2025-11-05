@@ -20,10 +20,10 @@ namespace ft
     template <class Key, // map::key_type
               class T,
               class Compare = std::less<Key>,
-              class Alloc = std::allocator<ft::pair< Key, T> > >
-    class map : public ft::rb_tree<ft::pair< const Key, T>, Key, MapKeyOfT<ft::pair< const Key, T> >, Compare, Alloc>
+              class Alloc = std::allocator<ft::pair<Key, T> > >
+    class map : public ft::rb_tree<ft::pair<const Key, T>, Key, MapKeyOfT<ft::pair<const Key, T> >, Compare, Alloc>
     {
-        typedef ft::rb_tree<ft::pair< const Key, T>, Key, MapKeyOfT<ft::pair< const Key, T> >, Compare, Alloc> rb_tree;
+        typedef ft::rb_tree<ft::pair<const Key, T>, Key, MapKeyOfT<ft::pair<const Key, T> >, Compare, Alloc> rb_tree;
 
     public:
         typedef T mapped_type; //            = T;
@@ -35,9 +35,9 @@ namespace ft
         template <class InputIt>
         map(InputIt first, InputIt last,
             const Compare &comp = Compare(), const Alloc &alloc = Alloc()) : rb_tree(first,
-                                                                                            last,
-                                                                                            comp,
-                                                                                            alloc)
+                                                                                     last,
+                                                                                     comp,
+                                                                                     alloc)
         {
         }
 
@@ -46,23 +46,7 @@ namespace ft
         }
         ~map()
         {
-
         }
-        class value_compare
-        {
-        protected:
-            Compare comp;
-            value_compare(Compare c)
-                : comp(c)
-            {
-            }
-
-        public:
-            bool operator()(const typename rb_tree::value_type &x, const typename rb_tree::value_type &y) const
-            {
-                return comp(x.first, y.first);
-            }
-        };
 
         T &at(const Key &key)
         {
@@ -87,38 +71,38 @@ namespace ft
                 it = this->insert(ft::make_pair(key, T())).first;
             return it->second;
         }
-
-        value_compare value_comp() const
-        {
-            return value_compare();
-        }
     };
 
     template <class Key, // map::key_type
               class T,
               class Compare = std::less<Key>,
-              class Alloc = std::allocator<std::pair< Key, T> > >
-    class multimap : public ft::rb_tree<ft::pair< const Key, T>, Key, MapKeyOfT<ft::pair< const Key, T> >, Compare, Alloc, false>
+              class Alloc = std::allocator<std::pair<Key, T> > >
+    class multimap : public ft::rb_tree<ft::pair<const Key, T>, Key, MapKeyOfT<ft::pair<const Key, T> >, Compare, Alloc, false>
     {
-        typedef ft::rb_tree<ft::pair< const Key, T>, Key, MapKeyOfT<ft::pair< const Key, T> >, Compare, Alloc, false> rb_tree;
+        typedef ft::rb_tree<ft::pair<const Key, T>, Key, MapKeyOfT<ft::pair<const Key, T> >, Compare, Alloc, false> rb_tree;
 
     public:
-        class value_compare
+        typedef T mapped_type; //            = T;
+    
+        explicit multimap(const Compare &comp = Compare(), const Alloc &a = Alloc()) : rb_tree(comp, a)
         {
-        protected:
-            Compare comp;
-            value_compare(Compare c)
-                : comp(c)
-            {
-            }
+        }
 
-        public:
-            bool operator()(const typename rb_tree::value_type &x, const typename rb_tree::value_type &y) const
-            {
-                return comp(x.first, y.first);
-            }
-        };
+        template <class InputIt>
+        multimap(InputIt first, InputIt last,
+                 const Compare &comp = Compare(), const Alloc &alloc = Alloc()) : rb_tree(first,
+                                                                                          last,
+                                                                                          comp,
+                                                                                          alloc)
+        {
+        }
 
+        multimap(const multimap &other) : rb_tree(other)
+        {
+        }
+        ~multimap()
+        {
+        }
         T &at(const Key &key)
         {
             typename rb_tree::iterator it = this->find(key);
@@ -143,10 +127,7 @@ namespace ft
             return it->second;
         }
 
-        value_compare value_comp() const
-        {
-            return value_compare();
-        }
+
     };
 
     template <class T, class Compare, class Allocator>

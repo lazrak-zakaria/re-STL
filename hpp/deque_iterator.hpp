@@ -158,6 +158,16 @@ namespace ft
             return !(*this < rhs) && !(*this == rhs);
         }
 
+        bool operator>=(const self &rhs) const
+        {
+            return !(*this < rhs);
+        }
+
+        bool operator<=(const self &rhs) const
+        {
+            return !(*this > rhs);
+        }
+
         template <typename U>
         deque_iterator(deque_iterator<U> const &other)
             : node((map_pointer)other.node),

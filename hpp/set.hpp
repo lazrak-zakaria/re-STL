@@ -44,32 +44,10 @@ namespace ft
         set(const set &other) : rb_tree(other)
         {
         }
-
-
-        class value_compare
-        {
-        protected:
-            Compare comp;
-            value_compare(Compare c)
-                : comp(c)
+            ~set()
             {
+                
             }
-
-        public:
-            bool operator()(const typename rb_tree::value_type &x, const typename rb_tree::value_type &y) const
-            {
-                return comp(x.first, y.first);
-            }
-        };
-
-
-        value_compare value_comp() const
-        {
-            return value_compare();
-        }
-
-
-
 
     };
 
@@ -100,31 +78,12 @@ namespace ft
     multiset(const multiset &other) : rb_tree(other)
     {
     }
-    class value_compare
+
+
+    ~multiset()
     {
-    protected:
-        Compare comp;
-        value_compare(Compare c)
-            : comp(c)
-        {
-        }
 
-    public:
-        bool operator()(const typename rb_tree::value_type &x, const typename rb_tree::value_type &y) const
-        {
-            return comp(x.first, y.first);
-        }
-    };
-
-
-    value_compare value_comp() const
-    {
-        return value_compare();
     }
-
-
-
-
 
     };
 
