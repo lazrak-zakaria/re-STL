@@ -122,14 +122,14 @@ namespace ft
         reference at(size_type n)
         {
             if (n >= _size)
-                throw ft::out_of_range("pos is out of range al9awad");
+                throw ft::out_of_range("pos is out of range");
             return *(_ptr + n);
         }
 
         const_reference at(size_type n) const
         {
             if (n >= _size)
-                throw ft::out_of_range("pos is out of range zab");
+                throw ft::out_of_range("pos is out of range");
             return *(_ptr + n);
         }
 
@@ -402,7 +402,7 @@ namespace ft
 
         size_type max_size() const
         {
-            return __MAX_SIZE_FT_VECTOR__;
+            return size_type(-1);
         }
 
         // iterator

@@ -128,18 +128,18 @@ namespace ft
 
         class value_compare
         {
-        protected:
-            Compare comp;
-            value_compare(Compare c)
-                : comp(c)
-            {
-            }
+            protected:
+                Compare comp;
+                value_compare(Compare c)
+                    : comp(c)
+                {
+                }
 
-        public:
-            bool operator()(const typename rb_tree::value_type &x, const typename rb_tree::value_type &y) const
-            {
-                return comp(x.first, y.first);
-            }
+            public:
+                bool operator()(const typename rb_tree::value_type &x, const typename rb_tree::value_type &y) const
+                {
+                    return comp(x.first, y.first);
+                }
         };
 
         value_compare value_comp() const
@@ -499,22 +499,20 @@ namespace ft
             clear();
             deallocate_node(root);
         }
-        iterator lower_bound(const Ky &val) const
+        
+        iterator lower_bound(const Ky &val)
         {
 
             rb_node_ptr cur = root;
             rb_node_ptr ans = nil;
-            // try
-            // {
+
             while (cur != nil)
             {
                 if (!cmp(val, get_kot(cur)) && !cmp(get_kot(cur), val))
                 {
                     if (unique)
-                    {
-
                         return iterator(cur, nil);
-                    }
+
                     else
                     {
                         ans = cur;
@@ -529,14 +527,40 @@ namespace ft
                 else
                     cur = cur->right;
             }
-            // }
-            // catch (std::exception& e){
-            //     std::cerr << "KKKKKKKKKKKKKKK\n";
-            // }
             return iterator(ans, nil);
         }
 
-        iterator upper_bound(const Ky &val) const
+        const_iterator lower_bound(const Ky &val) const
+        {
+
+            rb_node_ptr cur = root;
+            rb_node_ptr ans = nil;
+
+            while (cur != nil)
+            {
+                if (!cmp(val, get_kot(cur)) && !cmp(get_kot(cur), val))
+                {
+                    if (unique)
+                        return const_iterator(cur, nil);
+                    else
+                    {
+                        ans = cur;
+                        cur = cur->left;
+                    }
+                }
+                else if (cmp(val, get_kot(cur)))
+                {
+                    ans = cur;
+                    cur = cur->left;
+                }
+                else
+                    cur = cur->right;
+            }
+            return const_iterator(ans, nil);
+        }
+
+
+        iterator upper_bound(const Ky &val)
         {
             rb_node_ptr cur = root;
             rb_node_ptr ans = nil;
@@ -551,6 +575,22 @@ namespace ft
                     cur = cur->right;
             }
             return iterator(ans, nil);
+        }
+        const_iterator upper_bound(const Ky &val) const
+        {
+            rb_node_ptr cur = root;
+            rb_node_ptr ans = nil;
+            while (cur != nil)
+            {
+                if (cmp(val, get_kot(cur)))
+                {
+                    ans = cur;
+                    cur = cur->left;
+                }
+                else
+                    cur = cur->right;
+            }
+            return const_iterator(ans, nil);
         }
 
     private:
@@ -578,15 +618,26 @@ namespace ft
             return count(val, root);
         }
 
-        iterator find(const Ky &val) const
+        iterator find(const Ky &val)
         {
             return iterator(find_(val), nil);
         }
+        const_iterator find(const Ky &val) const
+        {
+            return const_iterator(find_(val), nil);
+        }
 
-        pair<iterator, iterator> equal_range(const Ky &val) const
+
+        pair<iterator, iterator> equal_range(const Ky &val)
         {
             return ft::make_pair(lower_bound(val), upper_bound(val));
         }
+
+        pair<const_iterator, const_iterator> equal_range(const Ky &val) const
+        {
+            return ft::make_pair(lower_bound(val), upper_bound(val));
+        }
+
 
         iterator begin()
         {

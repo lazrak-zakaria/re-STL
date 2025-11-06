@@ -13,16 +13,13 @@ its parent =floor ((i-1/2))
 
 */
 #include "algorithm.hpp"
-#include <vector>
-#include <deque>
 #include "vector.hpp"
-#include <iostream>
 #include "deque.hpp"
-#include <iostream>
+#include "functional.hpp"
 namespace ft
 {
 
-    template <class T, class Container = ft::vector<T>, class Compare = std::less<typename Container::value_type> >
+    template <class T, class Container = ft::vector<T>, class Compare = ft::less<typename Container::value_type> >
     class priority_queue
     {
     private:
@@ -92,7 +89,7 @@ namespace ft
 
     template <
         class T,
-        class Container = std::deque<T> >
+        class Container = ft::deque<T> >
     class queue
     {
 
@@ -111,7 +108,8 @@ namespace ft
         explicit queue(const container_type &ctnr = container_type()) : C(ctnr)
         {
         }
-
+        ~queue()
+        {}
         reference front()
         {
             return C.front();

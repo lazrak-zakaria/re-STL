@@ -7,8 +7,9 @@
 #include "utility.hpp"
 #include "iterator_traits.hpp"
 #include "algorithm.hpp"
+#include "functional.hpp"
 
-using namespace std;
+
 
 namespace ft
 {
@@ -24,10 +25,10 @@ namespace ft
     };
 
     template <>
-    class HashFunc<string>
+    class HashFunc<std::string>
     {
     public:
-        size_t operator()(const string &key) const
+        size_t operator()(const std::string &key) const
         {
             size_t val = 0;
             for (size_t i = 0; i < key.length(); ++i)
@@ -56,7 +57,7 @@ namespace ft
               class Ky,
               class KeyType,
               class Hash = HashFunc<Ky>,
-              class Pred = std::equal_to<Key>,
+              class Pred = ft::equal_to<Key>,
               class Alloc = std::allocator<Key>,
               bool Unique = true>
     class hash_table

@@ -28,6 +28,10 @@ namespace ft
         {
         }
 
+        ~stack()
+        {
+        }
+
         reference top()
         {
             return C.back();

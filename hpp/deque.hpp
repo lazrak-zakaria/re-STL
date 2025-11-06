@@ -106,6 +106,7 @@ namespace ft
             return *this;
         }
 
+
         void fill_initialize(size_t n, const value_type &value)
         {
             create_map_and_nodes(n);
@@ -147,8 +148,17 @@ namespace ft
         {
             return *start;
         }
-
+        const_reference front() const
+        {
+            return *start;
+        }
         reference back()
+        {
+            iterator answer = finish;
+            answer--;
+            return *answer;
+        }
+        const_reference back() const
         {
             iterator answer = finish;
             answer--;
@@ -232,7 +242,7 @@ namespace ft
             }
             else
             {
-                size_type new_map_size = map_size + std::max(map_size, nodes_to_add) + 2;
+                size_type new_map_size = map_size + (map_size > nodes_to_add ? map_size : nodes_to_add) + 2;
                 map_pointer new_map = map_allocator.allocate(new_map_size);
                 new_nstart = new_map + (new_map_size - num_new_nodes) / 2 + (in_front ? nodes_to_add : 0);
                 copy(start.node, finish.node + 1, new_nstart);
@@ -562,7 +572,12 @@ namespace ft
             return pos;
         }
 
-        reference operator[](size_type n) const
+        reference operator[](size_type n)
+        {
+            return start[n];
+        }
+
+        const_reference operator[]( size_type n ) const
         {
             return start[n];
         }
@@ -614,7 +629,7 @@ namespace ft
         {
             if (first == last)
                 return;
-            difference_type n = std::distance(first, last);
+            difference_type n = ft::distance(first, last);
 
             difference_type offset = pos - start;
 

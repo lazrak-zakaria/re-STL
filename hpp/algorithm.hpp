@@ -5,6 +5,7 @@
 
 // i suppose i get a random_access_iterator_tag
 #include "iterator_traits.hpp"
+#include "functional.hpp"
 #include <iostream>
 namespace ft
 {
@@ -21,20 +22,19 @@ namespace ft
     {
         if (first == last)
             return;
-        typename std::iterator_traits<RandomAccessIterator>::difference_type pos = std::distance(first, last);
+        typename ft::iterator_traits<RandomAccessIterator>::difference_type pos = ft::distance(first, last);
         // silonze_t pos = last - first - 1;
         while (pos >= 0)
         {
             heapify_down(first, last, comp, pos);
             pos -= 1;
-            // std::cerr << pos << "LLOOOO{{}}\n";
         }
     }
 
     template <class RandomAccessIterator>
     void push_heap(RandomAccessIterator first, RandomAccessIterator last)
     {
-        pop_heap(first, last, std::less<typename RandomAccessIterator::value_type>());
+        pop_heap(first, last, ft::less<typename RandomAccessIterator::value_type>());
     }
 
     template <class T>
@@ -66,7 +66,7 @@ namespace ft
     template <class RandomAccessIterator>
     void pop_heap(RandomAccessIterator first, RandomAccessIterator last)
     {
-        pop_heap(first, last, std::less<typename RandomAccessIterator::value_type>());
+        pop_heap(first, last, ft::less<typename RandomAccessIterator::value_type>());
     }
 
     template <class RandomAccessIterator, class Compare>
@@ -135,8 +135,8 @@ namespace ft
             InputIterator2 first2, InputIterator2 last2)
     {
 
-        typename std::iterator_traits<InputIterator1>::difference_type dist1 = std::distance(first1, last1);
-        typename std::iterator_traits<InputIterator2>::difference_type dist2 = std::distance(first2, last2);
+        typename ft::iterator_traits<InputIterator1>::difference_type dist1 = ft::distance(first1, last1);
+        typename ft::iterator_traits<InputIterator2>::difference_type dist2 = ft::distance(first2, last2);
         
         if (dist1 != dist2)
             return false;

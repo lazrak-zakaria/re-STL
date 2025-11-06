@@ -2,6 +2,7 @@
 #include "algorithm.hpp"
 #include "vector.hpp"
 #include "deque.hpp"
+#include "functional.hpp"
 
 
 
@@ -10,7 +11,7 @@
 namespace ft
 {
 
-    template <class T, class Container = ft::vector<T>, class Compare = std::less<typename Container::value_type>  >
+    template <class T, class Container = ft::vector<T>, class Compare = ft::less<typename Container::value_type>  >
     class min_max_heap
     {
 

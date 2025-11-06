@@ -5,6 +5,7 @@
 #include "iterator_traits.hpp"
 #include "reverse_iterator.hpp"
 #include "algorithm.hpp"
+#include "functional.hpp"
 
 namespace ft
 {
@@ -27,7 +28,7 @@ namespace ft
 {
     template <
         class T,
-        class Allocator = std::allocator<T>>
+        class Allocator = std::allocator<T> >
     class list
     {
 
@@ -35,8 +36,8 @@ namespace ft
     public:
         typedef T value_type;
         typedef Allocator allocator_type;
-        typedef std::size_t size_type;
-        typedef std::ptrdiff_t difference_type;
+        typedef unsigned long long size_type;
+        typedef long difference_type;
         typedef value_type &reference;
         typedef const value_type &const_reference;
         typedef typename Allocator::pointer pointer;
@@ -51,7 +52,7 @@ namespace ft
 
         lst_node_ptr head;
 
-        typename allocator_type::template rebind<lst_node<value_type>>::other alloc;
+        typename allocator_type::template rebind<lst_node<value_type> >::other alloc;
 
         lst_node_ptr create_lst_node(const value_type &val)
         {
@@ -316,7 +317,7 @@ namespace ft
 
         void unique()
         {
-            unique(std::equal_to<value_type>());
+            unique(ft::equal_to<value_type>());
         }
         template <class BinaryPredicate>
         void unique(BinaryPredicate binary_pred)
@@ -354,7 +355,7 @@ namespace ft
     public:
         void merge(list &x)
         {
-            merge(x, std::less<value_type>());
+            merge(x, ft::less<value_type>());
         }
 
         template <class Compare>
@@ -409,7 +410,7 @@ namespace ft
 
         void sort()
         {
-            sort(std::less<value_type>());
+            sort(ft::less<value_type>());
         }
         template <class Compare>
         void sort(Compare comp)

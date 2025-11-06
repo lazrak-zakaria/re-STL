@@ -19,7 +19,7 @@ namespace ft
 
     template <class Key, // map::key_type
               class T,
-              class Compare = std::less<Key>,
+              class Compare = ft::less<Key>,
               class Alloc = std::allocator<ft::pair<Key, T> > >
     class map : public ft::rb_tree<ft::pair<const Key, T>, Key, MapKeyOfT<ft::pair<const Key, T> >, Compare, Alloc>
     {
@@ -75,8 +75,8 @@ namespace ft
 
     template <class Key, // map::key_type
               class T,
-              class Compare = std::less<Key>,
-              class Alloc = std::allocator<std::pair<Key, T> > >
+              class Compare = ft::less<Key>,
+              class Alloc = std::allocator<ft::pair<Key, T> > >
     class multimap : public ft::rb_tree<ft::pair<const Key, T>, Key, MapKeyOfT<ft::pair<const Key, T> >, Compare, Alloc, false>
     {
         typedef ft::rb_tree<ft::pair<const Key, T>, Key, MapKeyOfT<ft::pair<const Key, T> >, Compare, Alloc, false> rb_tree;
@@ -123,7 +123,7 @@ namespace ft
         {
             typename rb_tree::iterator it = this->find(key);
             if (it == this->end())
-                it = this->insert(std::make_pair(key, T())).first;
+                it = this->insert(ft::make_pair(key, T())).first;
             return it->second;
         }
 
