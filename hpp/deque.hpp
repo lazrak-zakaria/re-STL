@@ -254,7 +254,23 @@ namespace ft
             start.set_node(new_nstart);
             finish.set_node(new_nstart + num_old_nodes - 1);
         }
+        private:
+            template <class RandomAccessIterator>
+            void iter_swap(RandomAccessIterator first, RandomAccessIterator last)
+            {
+                typename RandomAccessIterator::value_type tmp = *first;
+                *first = *last;
+                *last = tmp;
+            }
 
+            template <class RandomAccessIterator>
+            void reverse(RandomAccessIterator first, RandomAccessIterator last)
+            {
+                while (first<last)
+                {
+                    iter_swap(first++, --last);
+                }
+            }
     public:
         void push_back(const value_type &t)
         {
@@ -641,7 +657,7 @@ namespace ft
                     push_front(*it);
 
                 iterator old_start = start + n;
-                std::reverse(start, old_start);
+                this->reverse(start, old_start);
                 return;
             }
 
@@ -705,7 +721,7 @@ namespace ft
                     push_front(val);
 
                 iterator old_start = start + n;
-                std::reverse(start, old_start);
+                this->reverse(start, old_start);
                 return;
             }
 
