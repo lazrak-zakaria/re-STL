@@ -19,12 +19,12 @@ namespace ft
         typedef T &reference;
 
         typedef ft::lst_node<T> *lst_node_ptr;
-
+        
         lst_node_ptr node;
 
-        // lst_iterator() : node(NULL)
-        // {
-        // }
+        lst_iterator() : node(NULL)
+        {
+        }
 
         lst_iterator(const lst_node_ptr & n) : node(n)
         {

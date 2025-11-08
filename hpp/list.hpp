@@ -2,8 +2,8 @@
 #define FT_LIST_HPP__
 
 #include <memory>
-#include "iterator_traits.hpp"
-#include "reverse_iterator.hpp"
+#include "iterator.hpp"
+#include "iterator.hpp"
 #include "algorithm.hpp"
 #include "functional.hpp"
 

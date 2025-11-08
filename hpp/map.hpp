@@ -130,74 +130,74 @@ namespace ft
 
     };
 
-    template <class T, class Compare, class Allocator>
-    bool operator==(const map<T, Compare, Allocator> &lhs, const map<T, Compare, Allocator> &rhs)
+    template <class Key, class T, class Compare, class Allocator>
+    bool operator==(const ft::map< Key,  T,  Compare,  Allocator> &lhs, const ft::map< Key,  T,  Compare,  Allocator> &rhs)
     {
         return ft::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
     }
 
-    template <class T, class Compare, class Allocator>
-    bool operator!=(const map<T, Compare, Allocator> &lhs, const map<T, Compare, Allocator> &rhs)
+    template <class Key, class T, class Compare, class Allocator>
+    bool operator!=(const ft::map< Key,  T,  Compare,  Allocator> &lhs, const ft::map< Key,  T,  Compare,  Allocator> &rhs)
     {
         return !(lhs == rhs);
     }
 
-    template <class T, class Compare, class Allocator>
-    bool operator<(const map<T, Compare, Allocator> &lhs, const map<T, Compare, Allocator> &rhs)
+    template <class Key, class T, class Compare, class Allocator>
+    bool operator<(const ft::map< Key,  T,  Compare,  Allocator> &lhs, const ft::map< Key,  T,  Compare,  Allocator> &rhs)
     {
         return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
     }
 
-    template <class T, class Compare, class Allocator>
-    bool operator>(const map<T, Compare, Allocator> &lhs, const map<T, Compare, Allocator> &rhs)
+    template <class Key, class T, class Compare, class Allocator>
+    bool operator>(const ft::map< Key,  T,  Compare,  Allocator> &lhs, const ft::map< Key,  T,  Compare,  Allocator> &rhs)
     {
         return (rhs < lhs);
     }
 
-    template <class T, class Compare, class Allocator>
-    bool operator<=(const map<T, Compare, Allocator> &lhs, const map<T, Compare, Allocator> &rhs)
+    template <class Key, class T, class Compare, class Allocator>
+    bool operator<=(const ft::map< Key,  T,  Compare,  Allocator> &lhs, const ft::map< Key,  T,  Compare,  Allocator> &rhs)
     {
         return !(lhs > rhs);
     }
 
-    template <class T, class Compare, class Allocator>
-    bool operator>=(const map<T, Compare, Allocator> &lhs, const map<T, Compare, Allocator> &rhs)
+    template <class Key, class T, class Compare, class Allocator>
+    bool operator>=(const ft::map< Key,  T,  Compare,  Allocator> &lhs, const ft::map< Key,  T,  Compare,  Allocator> &rhs)
     {
         return !(lhs < rhs);
     }
 
-    template <class T, class Compare, class Allocator>
-    bool operator==(const multimap<T, Compare, Allocator> &lhs, const multimap<T, Compare, Allocator> &rhs)
+    template <class Key, class T, class Compare, class Allocator>
+    bool operator==(const ft::multimap< Key,  T,  Compare,  Allocator> &lhs, const ft::multimap< Key,  T,  Compare,  Allocator> &rhs)
     {
         return ft::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
     }
 
-    template <class T, class Compare, class Allocator>
-    bool operator!=(const multimap<T, Compare, Allocator> &lhs, const multimap<T, Compare, Allocator> &rhs)
+    template <class Key, class T, class Compare, class Allocator>
+    bool operator!=(const ft::multimap< Key,  T,  Compare,  Allocator> &lhs, const ft::multimap< Key,  T,  Compare,  Allocator> &rhs)
     {
         return !(lhs == rhs);
     }
 
-    template <class T, class Compare, class Allocator>
-    bool operator<(const multimap<T, Compare, Allocator> &lhs, const multimap<T, Compare, Allocator> &rhs)
+    template <class Key, class T, class Compare, class Allocator>
+    bool operator<(const ft::multimap< Key,  T,  Compare,  Allocator> &lhs, const ft::multimap< Key,  T,  Compare,  Allocator> &rhs)
     {
         return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
     }
 
-    template <class T, class Compare, class Allocator>
-    bool operator>(const multimap<T, Compare, Allocator> &lhs, const multimap<T, Compare, Allocator> &rhs)
+    template <class Key, class T, class Compare, class Allocator>
+    bool operator>(const ft::multimap< Key,  T,  Compare,  Allocator> &lhs, const ft::multimap< Key,  T,  Compare,  Allocator> &rhs)
     {
         return (rhs < lhs);
     }
 
-    template <class T, class Compare, class Allocator>
-    bool operator<=(const multimap<T, Compare, Allocator> &lhs, const multimap<T, Compare, Allocator> &rhs)
+    template <class Key, class T, class Compare, class Allocator>
+    bool operator<=(const ft::multimap< Key,  T,  Compare,  Allocator> &lhs, const ft::multimap< Key,  T,  Compare,  Allocator> &rhs)
     {
         return !(lhs > rhs);
     }
 
-    template <class T, class Compare, class Allocator>
-    bool operator>=(const multimap<T, Compare, Allocator> &lhs, const multimap<T, Compare, Allocator> &rhs)
+    template <class Key, class T, class Compare, class Allocator>
+    bool operator>=(const ft::multimap< Key,  T,  Compare,  Allocator> &lhs, const ft::multimap< Key,  T,  Compare,  Allocator> &rhs)
     {
         return !(lhs < rhs);
     }

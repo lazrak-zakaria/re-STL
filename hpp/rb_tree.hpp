@@ -10,11 +10,11 @@
 typedef bool Color;
 
 #include <memory>
-#include "iterator_traits.hpp"
+#include "iterator.hpp"
 #include "functional.hpp"
 #include "algorithm.hpp"
 #include "utility.hpp"
-#include "reverse_iterator.hpp"
+#include "iterator.hpp"
 namespace ft
 {
 
@@ -39,7 +39,7 @@ namespace ft
     };
 }
 
-#include "rb_iterator.hpp"
+// #include "rb_iterator.hpp"
 
 namespace ft
 {
@@ -52,6 +52,126 @@ namespace ft
     class rb_tree
     {
 
+    private:
+        template <class T>
+        class rb_iterator
+        {
+        public:
+            friend class rb_tree;
+            typedef std::bidirectional_iterator_tag iterator_category;
+            typedef const T value_type;
+            typedef long difference_type;
+            typedef T *pointer;
+            typedef const T &reference;
+
+        private:
+            typedef ft::rb_node<T> *rb_node_ptr;
+            rb_node_ptr node;
+            rb_node_ptr nil;
+
+        public:
+            rb_iterator() : node(NULL), nil(NULL)
+            {
+            }
+
+            rb_iterator(const rb_node_ptr node, rb_node_ptr nil) : node(node), nil(nil)
+            {
+            }
+
+            rb_iterator &operator++()
+            {
+                if (node->right != nil)
+                {
+                    rb_node_ptr cur = node->right;
+                    while (cur->left != nil)
+                        cur = cur->left;
+                    node = cur;
+                }
+                else
+                {
+                    rb_node_ptr cur = node;
+                    rb_node_ptr parent = cur->parent;
+                    if (cur == nil)
+                        node = parent;
+                    else
+                    {
+                        while (parent != nil && parent->right == cur)
+                        {
+                            cur = parent;
+                            parent = parent->parent;
+                        }
+                        node = parent;
+                    }
+                }
+
+                // if (node->parent == nil)
+                // std::cout << ")))))))" << node->key << "\n";
+                return *this;
+            }
+
+            rb_iterator &operator--()
+            {
+                if (node->left != nil)
+                {
+                    rb_node_ptr cur = node->left;
+                    while (cur->right != nil)
+                        cur = cur->right;
+                    node = cur;
+                }
+                else
+                {
+                    rb_node_ptr cur = node;
+                    rb_node_ptr parent = cur->parent;
+                    if (cur == nil)
+                        node = parent; // i added this for rev iter bcz parent->left == cur alwys true if cur is nil;
+                    else
+                    {
+                        while (parent != nil && parent->left == cur)
+                        {
+                            cur = parent;
+                            parent = parent->parent;
+                        }
+                        node = parent;
+                    }
+                }
+                return *this;
+            }
+
+            pointer operator->()
+            {
+                return &node->key;
+            }
+
+            reference operator*()
+            {
+                return node->key;
+            }
+
+            rb_iterator operator--(int)
+            {
+                rb_iterator ans = *this;
+                --(*this);
+                return ans;
+            }
+
+            rb_iterator operator++(int)
+            {
+                rb_iterator ans = *this;
+                ++(*this);
+                return ans;
+            }
+
+            bool operator==(const rb_iterator &it) const
+            {
+                return it.node == node;
+            }
+
+            bool operator!=(const rb_iterator &it) const
+            {
+                return it.node != node;
+            }
+        };
+
     public:
         typedef Ky key_type;
         typedef Key value_type;
@@ -63,8 +183,8 @@ namespace ft
         typedef typename Alloc::pointer pointer;
         typedef typename Alloc::const_pointer const_pointer;
         typedef Compare key_compare;
-        typedef ft::rb_iterator<Key> iterator;
-        typedef ft::rb_iterator<Key> const_iterator;
+        typedef rb_iterator<Key> iterator;
+        typedef rb_iterator<Key> const_iterator;
         typedef ft::reverse_iterator_<iterator> reverse_iterator;
         typedef ft::reverse_iterator_<const_iterator> const_reverse_iterator;
 
@@ -128,18 +248,18 @@ namespace ft
 
         class value_compare
         {
-            protected:
-                Compare comp;
-                value_compare(Compare c)
-                    : comp(c)
-                {
-                }
+        protected:
+            Compare comp;
+            value_compare(Compare c)
+                : comp(c)
+            {
+            }
 
-            public:
-                bool operator()(const typename rb_tree::value_type &x, const typename rb_tree::value_type &y) const
-                {
-                    return comp(x.first, y.first);
-                }
+        public:
+            bool operator()(const typename rb_tree::value_type &x, const typename rb_tree::value_type &y) const
+            {
+                return comp(x.first, y.first);
+            }
         };
 
         value_compare value_comp() const
@@ -499,7 +619,7 @@ namespace ft
             clear();
             deallocate_node(root);
         }
-        
+
         iterator lower_bound(const Ky &val)
         {
 
@@ -558,7 +678,6 @@ namespace ft
             }
             return const_iterator(ans, nil);
         }
-
 
         iterator upper_bound(const Ky &val)
         {
@@ -627,7 +746,6 @@ namespace ft
             return const_iterator(find_(val), nil);
         }
 
-
         pair<iterator, iterator> equal_range(const Ky &val)
         {
             return ft::make_pair(lower_bound(val), upper_bound(val));
@@ -637,7 +755,6 @@ namespace ft
         {
             return ft::make_pair(lower_bound(val), upper_bound(val));
         }
-
 
         iterator begin()
         {
@@ -812,6 +929,7 @@ namespace ft
             return *this;
         }
     };
+
 
 }
 

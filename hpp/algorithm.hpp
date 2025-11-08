@@ -4,7 +4,7 @@
 #define FT_ALGORITHM_HPP__
 
 // i suppose i get a random_access_iterator_tag
-#include "iterator_traits.hpp"
+#include "iterator.hpp"
 #include "functional.hpp"
 #include <iostream>
 namespace ft
