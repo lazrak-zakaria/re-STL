@@ -5,17 +5,9 @@
 #include <memory>
 #include "rb_tree.hpp"
 #include "stdexcept.hpp"
+#include "functional.hpp"
 namespace ft
 {
-
-    template <class Pair>
-    struct MapKeyOfT
-    {
-        const typename Pair::first_type &operator()(const Pair &p) const
-        {
-            return p.first;
-        }
-    };
 
     template <class Key, // map::key_type
               class T,

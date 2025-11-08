@@ -36,6 +36,24 @@ namespace ft
     };
 
 
+    template <class Pair>
+    struct MapKeyOfT
+    {
+        const typename Pair::first_type &operator()(const Pair &p) const
+        {
+            return p.first;
+        }
+    };
+
+    template <class K>
+    struct SetKeyOfT
+    {
+        const K &operator()(const K &key) const
+        {
+            return key;
+        }
+    };
+
 
 
 }

@@ -36,6 +36,10 @@ namespace ft
             : left(NULL), right(NULL), parent(NULL), color(RED)
         {
         }
+        ~rb_node()
+        {
+
+        }
     };
 }
 
@@ -286,6 +290,7 @@ namespace ft
             // {
 
             alloc.destroy(node);
+            std::cerr << "ZZZZ\n";
             alloc.deallocate(node, 1);
             // catch (const std::bad_alloc& e) {
             //     std::cerr << "Memory HHHHHHHHHHHHHHHHHHHHHHHHHHHHH failed: \n" << e.what() << std::endl;
@@ -526,6 +531,7 @@ namespace ft
             if (y_color == BLACK)
                 delete_fixup(fix);
             update_nil_parent();
+            deallocate_node(to_delete); // :)
             return true;
         }
 
@@ -812,7 +818,8 @@ namespace ft
         {
             rb_node_ptr new_node = create_node(val);
             ft::pair<rb_node_ptr, bool> is_inserted = insert_node(new_node);
-
+            if (!is_inserted.second)
+                deallocate_node(new_node);//hehehehe
             _size += is_inserted.second;
             ft::pair<iterator, bool> ans = ft::make_pair(iterator(is_inserted.first, nil), is_inserted.second);
 

@@ -1,6 +1,7 @@
 
 #include <iterator>
-
+#ifndef FT__DEQUE_HPP_ITER__
+#define FT__DEQUE_HPP_ITER__
 namespace ft
 {
     template <class T>
@@ -180,3 +181,4 @@ namespace ft
     };
 
 }
+#endif

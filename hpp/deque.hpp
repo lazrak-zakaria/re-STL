@@ -12,6 +12,10 @@
 #define h std::cout << "here\n"
 #define g(x) std::cout << "here: " << x << "\n"
 
+
+#ifndef FT__DEQUE_HPP__
+#define FT__DEQUE_HPP__
+
 namespace ft
 {
 
@@ -834,3 +838,4 @@ namespace ft
     }
 
 }
+#endif

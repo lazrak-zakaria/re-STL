@@ -82,7 +82,7 @@ namespace ft
             typedef std::forward_iterator_tag iterator_category;
             typedef T value_type;
             typedef long long difference_type;
-            typedef const T *pointer;
+            typedef T *pointer;
             typedef const T &reference;
 
             _iterator(const hash_node_ptr &node, const hash_table *ht) : ht(ht), node(node)
@@ -109,7 +109,7 @@ namespace ft
                 else
                 {
 
-                    size_t hsh = ht->hash(key_of_type()(node->key)) % ht->table.size(); // curently i suppose the node->key is just one elmnt not a pair later add keyoftype
+                    size_t hsh = ht->hash(key_of_type()(node->key)) % ht->table.size();
                     hsh++;
                     while (hsh < ht->table.size())
                     {

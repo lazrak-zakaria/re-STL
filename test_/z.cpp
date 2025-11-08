@@ -1,36 +1,102 @@
 
 #include "../hpp/map.hpp"
-int main()
+#include "../hpp/set.hpp"
+#include "../hpp/vector.hpp"
+#include "../hpp/deque.hpp"
+#include "../hpp/unordered_set.hpp"
+#include "../hpp/unordered_map.hpp"
+#include "../hpp/stack.hpp"
+#include <vector>
+#include <set>
+
+class m
 {
-    ft::map<int, int> a;
-    a.insert(ft::make_pair(13, 130));
-    a.insert(ft::make_pair(37, 370));
+public:
+    int *a;
 
-    // ft::map<int, int>::const_reverse_iterator citr = a.rbegin();
-    // ft::map<int, int>::const_iterator cit = a.begin();
-    // ft::map<int, int>::reverse_iterator itr = a.rbegin();
-    // ft::map<int, int>::iterator it = a.begin();
+    m() {
+        a = new int();
+    }
 
-    // *it = ft::make_pair(32, 320); // ❌ not allowed (read-only key)
-    // but you can modify the mapped value:
-    // it->second = 320;
-    // itr->second = 3700; // OK, reverse iterator still gives modifiable reference
-    // cit and citr are const, so these are not allowed:
-    // cit->second = 999; 
-    // citr->second = 999; 
+    // Copy constructor
+    m(const m &b) {
+        a = new int();
+        *a = *(b.a);
+    }
 
-    // == comparison examples:
-    ft::map<int, int> b(a);
-    if (a == b)
-        std::cout << "a == b" << std::endl;
-    else
-        std::cout << "a != b" << std::endl;
 
-    b[13] = 999;
-    if (a == b)
-        std::cout << "a == b" << std::endl;
-    else
-        std::cout << "a != b" << std::endl;
+    m& operator=(const m &b) {
+        if (this != &b) {  
+            delete a;
+            a = new int();
+            *a = *(b.a);  
+        }
+        return *this;
+    }
+    bool operator<(const m &b) const {
+        return *a < *(b.a);
+    }
+    ~m() {
+        delete a;
+    }
+};
+
+
+struct m_hash {
+    std::size_t operator()(const m &obj) const {
+        return std::hash<int>()(*(obj.a));
+    }
+};
+
+// Equality function for m
+struct m_equal {
+    bool operator()(const m &lhs, const m &rhs) const {
+        return *(lhs.a) == *(rhs.a);
+    }
+};
+
+
+#include "../hpp/list.hpp"
+#include <iostream>
+
+#include "../hpp/list.hpp"
+#include <iostream>
+
+bool isZero(const m &obj) {
+    return *(obj.a) == 0; 
+}
+
+int main() {
+
+ ft::vector<m> myVec;
+
+    // Fill vector
+    for (int i = 0; i < 5; i++) {
+        m tmp;
+        *(tmp.a) = i;
+        myVec.push_back(tmp);
+    }
+
+    std::cout << "Original vector:" << std::endl;
+    for (size_t i = 0; i < myVec.size(); ++i) {
+        std::cout << "Element " << i << ": " << *(myVec[i].a) << std::endl;
+    }
+
+    // Erase second element (index 1)
+    myVec.erase(myVec.begin() + 3);
+
+    std::cout << "After erasing element at index 1:" << std::endl;
+    for (size_t i = 0; i < myVec.size(); ++i) {
+        std::cout << "Element " << i << ": " << *(myVec[i].a) << std::endl;
+    }
+
+    // Erase a range: last two elements
+    myVec.erase(myVec.end() - 2, myVec.end());
+
+    std::cout << "After erasing last two elements:" << std::endl;
+    for (size_t i = 0; i < myVec.size(); ++i) {
+        std::cout << "Element " << i << ": " << *(myVec[i].a) << std::endl;
+    }
 
     return 0;
 }

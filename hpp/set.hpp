@@ -5,25 +5,15 @@
 
 #include <memory>
 #include "rb_tree.hpp"
-
+#include "functional.hpp"
 namespace ft
 {
-
-    template <class K>
-    struct SetKeyOfTT
-    {
-        const K &operator()(const K &key) const
-        {
-            return key;
-        }
-    };
-
     template <class T,                     // set::key_type/value_type
               class Compare = ft::less<T>, // set::key_compare/value_compare  // later i should implement my own comparison object
               class Alloc = std::allocator<T> >
-    class set : public rb_tree< T,  T, SetKeyOfTT<T>, Compare, Alloc>
+    class set : public rb_tree< T,  T, ft::SetKeyOfT<T>, Compare, Alloc>
     {
-        typedef ft::rb_tree<  T,  T, SetKeyOfTT<T>, Compare, Alloc> rb_tree;
+        typedef ft::rb_tree<  T,  T, ft::SetKeyOfT<T>, Compare, Alloc> rb_tree;
 
     public:
 
@@ -54,9 +44,9 @@ namespace ft
     template <class T,                     // set::key_type/value_type
               class Compare = ft::less<T>, // set::key_compare/value_compare  // later i should implement my own comparison object
               class Alloc = std::allocator<T> >
-    class multiset : public rb_tree< T,  T, SetKeyOfTT<T>, Compare, Alloc, false>
+    class multiset : public rb_tree< T,  T, SetKeyOfT<T>, Compare, Alloc, false>
     {
-        typedef ft::rb_tree<  T,  T, SetKeyOfTT<T>, Compare, Alloc, false> rb_tree;
+        typedef ft::rb_tree<  T,  T, SetKeyOfT<T>, Compare, Alloc, false> rb_tree;
 
     public:
 

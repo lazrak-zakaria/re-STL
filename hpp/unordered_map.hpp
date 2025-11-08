@@ -3,27 +3,23 @@
 #include "hash_table.hpp"
 #include "functional.hpp"
 #include "stdexcept.hpp"
+#ifndef FT_HASH_MAP_HPP
+#define FT_HASH_MAP_HPP
+
 namespace ft
 {
 
-    template <class Pair>
-    struct MapKeyOfT
-    {
-        const typename Pair::first_type &operator()(const Pair &p) const
-        {
-            return p.first;
-        }
-    };
+
 
     template <class Key,
               class T,
               class Hash = ft::HashFunc<Key>,
               class Pred = ft::equal_to<Key>,
               class Alloc = std::allocator<ft::pair<const Key, T> > >
-    class unordered_map : public hash_table<ft::pair<const Key, T>, Key, MapKeyOfT<ft::pair<const Key, T> >, Hash, Pred, Alloc, true>
+    class unordered_map : public hash_table<ft::pair<const Key, T>, Key, ft::MapKeyOfT<ft::pair<const Key, T> >, Hash, Pred, Alloc, true>
     {
     private:
-        typedef hash_table<ft::pair<const Key, T>, Key, MapKeyOfT<ft::pair<const Key, T> >, Hash, Pred, Alloc, true> hash_table_type;
+        typedef hash_table<ft::pair<const Key, T>, Key, ft::MapKeyOfT<ft::pair<const Key, T> >, Hash, Pred, Alloc, true> hash_table_type;
 
     public:
         typedef T mapped_type; //            = T;
@@ -97,10 +93,10 @@ namespace ft
               class Hash = ft::HashFunc<Key>,
               class Pred = ft::equal_to<Key>,
               class Alloc = std::allocator<ft::pair<const Key, T> > >
-    class unordered_multimap : public hash_table<ft::pair<const Key, T>, Key, MapKeyOfT<ft::pair<const Key, T> >, Hash, Pred, Alloc, false>
+    class unordered_multimap : public hash_table<ft::pair<const Key, T>, Key, ft::MapKeyOfT<ft::pair<const Key, T> >, Hash, Pred, Alloc, false>
     {
     private:
-        typedef hash_table<ft::pair<const Key, T>, Key, MapKeyOfT<ft::pair<const Key, T> >, Hash, Pred, Alloc, false> hash_table_type;
+        typedef hash_table<ft::pair<const Key, T>, Key, ft::MapKeyOfT<ft::pair<const Key, T> >, Hash, Pred, Alloc, false> hash_table_type;
 
     public:
         typedef T mapped_type; //            = T;
@@ -199,3 +195,4 @@ namespace ft
     }
 
 }
+#endif

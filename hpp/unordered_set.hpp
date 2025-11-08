@@ -4,26 +4,20 @@
 #include <memory>
 #include "hash_table.hpp"
 #include "functional.hpp"
+
 namespace ft
 {
-    template <class K>
-    struct SetKeyOfT
-    {
-        const K &operator()(const K &key) const
-        {
-            return key;
-        }
-    };
+
 
     template <class Key,                        // unordered_set::key_type/value_type
               class Hash = ft::HashFunc<Key>,      // unordered_set::hasher
               class Pred = ft::equal_to<Key>,  // unordered_set::key_equal
               class Alloc = std::allocator<Key> // unordered_set::allocator_type
               >
-    class unordered_set : public hash_table<Key, Key, SetKeyOfT<Key>, Hash, Pred, Alloc, true>
+    class unordered_set : public hash_table<Key, Key, ft::SetKeyOfT<Key>, Hash, Pred, Alloc, true>
     {
     private:
-        typedef hash_table<Key, Key, SetKeyOfT<Key>, Hash, Pred, Alloc, true> hash_table_type;
+        typedef hash_table<Key, Key, ft::SetKeyOfT<Key>, Hash, Pred, Alloc, true> hash_table_type;
 
     public:
         explicit unordered_set(size_t bucket_count = 13,
@@ -75,10 +69,10 @@ namespace ft
               class Pred = ft::equal_to<Key>,  // unordered_multiset::key_equal
               class Alloc = std::allocator<Key> // unordered_multiset::allocator_type
               >
-    class unordered_multiset : public hash_table<Key, Key, SetKeyOfT<Key>, Hash, Pred, Alloc, true>
+    class unordered_multiset : public hash_table<Key, Key, ft::SetKeyOfT<Key>, Hash, Pred, Alloc, true>
     {
     private:
-        typedef hash_table<Key, Key, SetKeyOfT<Key>, Hash, Pred, Alloc, true> hash_table_type;
+        typedef hash_table<Key, Key, ft::SetKeyOfT<Key>, Hash, Pred, Alloc, true> hash_table_type;
 
     public:
         explicit unordered_multiset(size_t bucket_count = 13,
